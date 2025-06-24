@@ -62,9 +62,9 @@ class WP_MSD_Todo_Manager {
 
         $where_sql = implode(' AND ', $where_clauses);
 
-        $sql = "SELECT * FROM {$this->table_name} 
-                WHERE {$where_sql} 
-                ORDER BY completed ASC, priority DESC, created_at DESC 
+        $sql = "SELECT * FROM {$this->table_name}
+                WHERE {$where_sql}
+                ORDER BY completed ASC, priority DESC, created_at DESC
                 LIMIT %d";
 
         $where_values[] = $limit;
@@ -104,7 +104,7 @@ class WP_MSD_Todo_Manager {
         }
 
         $user_id = $user_id ?: get_current_user_id();
-        
+
         if (!$user_id) {
             return false;
         }
@@ -125,7 +125,7 @@ class WP_MSD_Todo_Manager {
 
         if ($result !== false) {
             $this->clear_cache();
-            
+
             if (class_exists('WP_MSD_Network_Data')) {
                 $network_data = new WP_MSD_Network_Data();
                 $network_data->log_activity(
@@ -143,7 +143,7 @@ class WP_MSD_Todo_Manager {
 
     public function delete_todo_item($item_id, $user_id = null) {
         $item_id = intval($item_id);
-        
+
         if (!$item_id) {
             return false;
         }
@@ -170,7 +170,7 @@ class WP_MSD_Todo_Manager {
 
         if ($result !== false && $item) {
             $this->clear_cache();
-            
+
             if (class_exists('WP_MSD_Network_Data')) {
                 $network_data = new WP_MSD_Network_Data();
                 $network_data->log_activity(
@@ -187,7 +187,7 @@ class WP_MSD_Todo_Manager {
 
     public function toggle_todo_item($item_id, $completed = null, $user_id = null) {
         $item_id = intval($item_id);
-        
+
         if (!$item_id) {
             return false;
         }
@@ -210,11 +210,11 @@ class WP_MSD_Todo_Manager {
                     ...$where_values
                 )
             );
-            
+
             if (!$current_item) {
                 return false;
             }
-            
+
             $completed = !$current_item->completed;
         }
 
@@ -238,7 +238,7 @@ class WP_MSD_Todo_Manager {
 
     public function update_todo_item($item_id, $data, $user_id = null) {
         $item_id = intval($item_id);
-        
+
         if (!$item_id) {
             return false;
         }
@@ -329,7 +329,7 @@ class WP_MSD_Todo_Manager {
         ];
 
         $total_result = $this->wpdb->get_row(
-            "SELECT 
+            "SELECT
                 COUNT(*) as total,
                 SUM(completed) as completed,
                 SUM(CASE WHEN completed = 0 THEN 1 ELSE 0 END) as pending,
@@ -345,9 +345,9 @@ class WP_MSD_Todo_Manager {
         }
 
         $priority_results = $this->wpdb->get_results(
-            "SELECT priority, COUNT(*) as count 
-             FROM {$this->table_name} 
-             WHERE completed = 0 
+            "SELECT priority, COUNT(*) as count
+             FROM {$this->table_name}
+             WHERE completed = 0
              GROUP BY priority"
         );
 
@@ -358,10 +358,10 @@ class WP_MSD_Todo_Manager {
         }
 
         $user_results = $this->wpdb->get_results(
-            "SELECT user_id, COUNT(*) as total, SUM(completed) as completed 
-             FROM {$this->table_name} 
-             GROUP BY user_id 
-             ORDER BY total DESC 
+            "SELECT user_id, COUNT(*) as total, SUM(completed) as completed
+             FROM {$this->table_name}
+             GROUP BY user_id
+             ORDER BY total DESC
              LIMIT 10"
         );
 
@@ -392,10 +392,10 @@ class WP_MSD_Todo_Manager {
             return $cached;
         }
 
-        $sql = "SELECT * FROM {$this->table_name} 
-                WHERE due_date < NOW() 
-                AND completed = 0 
-                ORDER BY due_date ASC 
+        $sql = "SELECT * FROM {$this->table_name}
+                WHERE due_date < NOW()
+                AND completed = 0
+                ORDER BY due_date ASC
                 LIMIT %d";
 
         $results = $this->wpdb->get_results(
@@ -445,7 +445,7 @@ class WP_MSD_Todo_Manager {
 
         if ($result !== false) {
             $this->clear_cache();
-            
+
             if (class_exists('WP_MSD_Network_Data')) {
                 $network_data = new WP_MSD_Network_Data();
                 $network_data->log_activity(
@@ -489,7 +489,7 @@ class WP_MSD_Todo_Manager {
         }
 
         $cutoff_date = date('Y-m-d H:i:s', strtotime("-{$days} days"));
-        
+
         $result = $this->wpdb->delete(
             $this->table_name,
             [
@@ -501,7 +501,7 @@ class WP_MSD_Todo_Manager {
 
         if ($result !== false) {
             $this->clear_cache();
-            
+
             if (class_exists('WP_MSD_Network_Data')) {
                 $network_data = new WP_MSD_Network_Data();
                 $network_data->log_activity(

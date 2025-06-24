@@ -1634,8 +1634,8 @@ div#network_dashboard_right_now .inside {
 
 .msd-widget-toggle .description {
     margin: 0;
-    font-size: 13px;
-    color: var(--msd-text-light);
+    font-size: 11px;
+    color: #8c8c8c;
     line-height: 1.4;
 }
 
@@ -1868,4 +1868,34 @@ body.modal-open {
     font-size: 18px !important;
     display: inline-block;
     filter: grayscale(55%);
+}
+
+.msd-update-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    margin-bottom: var(--msd-spacing);
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: var(--msd-radius-small);
+    color: #856404;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.msd-update-notice .dashicons {
+    color: #dba617;
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+.msd-update-link {
+    color: var(--msd-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.msd-update-link:hover {
+    text-decoration: underline;
 }

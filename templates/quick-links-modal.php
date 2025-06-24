@@ -14,10 +14,6 @@ $quick_links = get_site_option('msd_quick_links', []);
         </div>
 
         <div class="msd-modal-body">
-            <div class="msd-modal-intro">
-                <p><?php _e('Add custom links to frequently used pages or external tools. These will appear as clickable tiles in your Quick Links widget. You can use WordPress Dashicons or emojis for icons. Links can be reordered by dragging and dropping.', 'wp-multisite-dashboard'); ?></p>
-            </div>
-
             <div id="msd-quick-links-editor">
                 <?php if (!empty($quick_links)): ?>
                     <?php foreach ($quick_links as $index => $link): ?>
@@ -75,32 +71,12 @@ $quick_links = get_site_option('msd_quick_links', []);
                             <div class="msd-icon-example">
                                 <span class="dashicons dashicons-admin-home"></span>
                                 <code>dashicons-admin-home</code>
-                                <span><?php _e('Home/Dashboard', 'wp-multisite-dashboard'); ?></span>
-                            </div>
-                            <div class="msd-icon-example">
-                                <span class="dashicons dashicons-admin-settings"></span>
-                                <code>dashicons-admin-settings</code>
-                                <span><?php _e('Settings', 'wp-multisite-dashboard'); ?></span>
-                            </div>
-                            <div class="msd-icon-example">
-                                <span class="dashicons dashicons-admin-users"></span>
-                                <code>dashicons-admin-users</code>
-                                <span><?php _e('Users', 'wp-multisite-dashboard'); ?></span>
+                                <span><?php _e('Home', 'wp-multisite-dashboard'); ?></span>
                             </div>
                             <div class="msd-icon-example">
                                 <span class="dashicons dashicons-chart-bar"></span>
                                 <code>dashicons-chart-bar</code>
                                 <span><?php _e('Analytics', 'wp-multisite-dashboard'); ?></span>
-                            </div>
-                            <div class="msd-icon-example">
-                                <span class="dashicons dashicons-email"></span>
-                                <code>dashicons-email</code>
-                                <span><?php _e('Email', 'wp-multisite-dashboard'); ?></span>
-                            </div>
-                            <div class="msd-icon-example">
-                                <span class="dashicons dashicons-external"></span>
-                                <code>dashicons-external</code>
-                                <span><?php _e('External Link', 'wp-multisite-dashboard'); ?></span>
                             </div>
                         </div>
                     </div>
@@ -118,33 +94,8 @@ $quick_links = get_site_option('msd_quick_links', []);
                                 <code>⚙️</code>
                                 <span><?php _e('Settings', 'wp-multisite-dashboard'); ?></span>
                             </div>
-                            <div class="msd-icon-example">
-                                <span class="msd-emoji">👥</span>
-                                <code>👥</code>
-                                <span><?php _e('Users', 'wp-multisite-dashboard'); ?></span>
-                            </div>
-                            <div class="msd-icon-example">
-                                <span class="msd-emoji">📊</span>
-                                <code>📊</code>
-                                <span><?php _e('Analytics', 'wp-multisite-dashboard'); ?></span>
-                            </div>
-                            <div class="msd-icon-example">
-                                <span class="msd-emoji">📧</span>
-                                <code>📧</code>
-                                <span><?php _e('Email', 'wp-multisite-dashboard'); ?></span>
-                            </div>
-                            <div class="msd-icon-example">
-                                <span class="msd-emoji">🔗</span>
-                                <code>🔗</code>
-                                <span><?php _e('Link', 'wp-multisite-dashboard'); ?></span>
-                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="msd-reorder-tip">
-                    <h5><?php _e('Drag & Drop Reordering', 'wp-multisite-dashboard'); ?></h5>
-                    <p class="description"><?php _e('After saving your links, you can reorder them by dragging and dropping the tiles in the Quick Links widget.', 'wp-multisite-dashboard'); ?></p>
                 </div>
 
                 <p class="description">
