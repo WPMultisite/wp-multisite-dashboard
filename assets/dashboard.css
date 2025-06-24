@@ -21,7 +21,8 @@ div#network_dashboard_right_now .inside {
     padding: 28px;
 }
 
-#search-sites, #search-users {
+#search-sites,
+#search-users {
     border: 1px solid #e7e7e7;
     background-color: #f6f7f7;
     color: #2c3338;
@@ -95,8 +96,12 @@ div#network_dashboard_right_now .inside {
 }
 
 @keyframes msd-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .msd-overview-simple {
@@ -324,8 +329,8 @@ div#network_dashboard_right_now .inside {
 }
 
 .msd-qr-image {
-    max-width: 100px;
-    max-height: 100px;
+    max-width: 260px;
+    max-height: 260px;
     border-radius: var(--msd-radius-small);
     border: 1px solid var(--msd-border);
 }
@@ -355,7 +360,9 @@ div#network_dashboard_right_now .inside {
     border: 1px solid var(--msd-border);
     border-radius: var(--msd-radius-small);
     font-size: 14px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .msd-form-field input:focus,
@@ -1646,7 +1653,7 @@ div#network_dashboard_right_now .inside {
     max-width: unset;
     margin-top: 20px;
     padding: 20px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
     overflow: hidden;
 }
 

@@ -281,11 +281,9 @@ $widget_options = [
                 <?php _e("Clear All Caches", "wp-multisite-dashboard"); ?>
             </button>
             <button type="button" class="button" onclick="MSD.clearCache('network')">
-                <span class="dashicons dashicons-admin-multisite"></span>
                 <?php _e("Clear Network Data", "wp-multisite-dashboard"); ?>
             </button>
             <button type="button" class="button" onclick="MSD.clearWidgetCache()">
-                <span class="dashicons dashicons-dashboard"></span>
                 <?php _e("Clear Widget Cache", "wp-multisite-dashboard"); ?>
             </button>
         </div>
