@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WP Multisite Dashboard\n"
-"POT-Creation-Date: 2025-06-24 04:39+0800\n"
-"PO-Revision-Date: 2025-06-24 04:42+0800\n"
+"POT-Creation-Date: 2025-06-24 16:11+0800\n"
+"PO-Revision-Date: 2025-06-24 16:32+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -19,364 +19,1115 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 
-#: includes/admin-template.php:38 includes/class-admin-interface.php:51
-#: includes/class-admin-interface.php:57 includes/class-admin-interface.php:63
-#: includes/class-admin-interface.php:193
-#: includes/class-admin-interface.php:200
-#: includes/class-admin-interface.php:287
-#: includes/class-admin-interface.php:330 includes/class-helpers.php:38
-#: includes/class-plugin-core.php:138
+#: backup/admin-template.php:38 includes/class-admin-interface.php:88
+#: includes/class-admin-interface.php:97 includes/class-admin-interface.php:106
+#: includes/class-admin-interface.php:187
+#: includes/class-admin-interface.php:196
+#: includes/class-admin-interface.php:205
+#: includes/class-admin-interface.php:336
+#: includes/class-admin-interface.php:401 includes/class-helpers.php:38
+#: includes/class-plugin-core.php:180
 msgid "Loading..."
 msgstr "加载中..."
 
-#: includes/admin-template.php:123 includes/class-helpers.php:123
-#: includes/class-user-manager.php:71 includes/class-user-manager.php:426
+#: backup/admin-template.php:123 includes/class-helpers.php:123
+#: includes/class-plugin-core.php:417 includes/class-user-manager.php:71
+#: includes/class-user-manager.php:426
 msgid "Never"
 msgstr "从不"
 
-#: includes/admin-template.php:131 includes/class-helpers.php:131
-#: includes/class-helpers.php:320 includes/class-network-data.php:171
-#: includes/class-user-manager.php:189 includes/class-user-manager.php:431
+#: backup/admin-template.php:131 includes/class-admin-interface.php:133
+#: includes/class-ajax-handler.php:125 includes/class-helpers.php:131
+#: includes/class-helpers.php:320 includes/class-network-data.php:205
+#: includes/class-plugin-core.php:418 includes/class-user-manager.php:189
+#: includes/class-user-manager.php:431
 msgid "Unknown"
 msgstr "未知"
 
-#: includes/class-admin-interface.php:150
+#: backup/class-todo-manager.php:465
+msgid "Low"
+msgstr "低"
+
+#: backup/class-todo-manager.php:466
+msgid "Medium"
+msgstr "中"
+
+#: backup/class-todo-manager.php:467
+msgid "High"
+msgstr "高"
+
+#: backup/contact-info-modal.php:23 templates/admin-modals.php:37
+msgid "Edit Contact Information"
+msgstr "编辑联系信息"
+
+#: backup/contact-info-modal.php:31 templates/admin-modals.php:48
+msgid "Organization Name:"
+msgstr "机构名称："
+
+#: backup/contact-info-modal.php:32 templates/admin-modals.php:54
+msgid "Network Administrator"
+msgstr "网络管理员"
+
+#: backup/contact-info-modal.php:36 templates/admin-modals.php:61
+msgid "Email:"
+msgstr "邮箱："
+
+#: backup/contact-info-modal.php:41 templates/admin-modals.php:71
+msgid "Phone:"
+msgstr "电话："
+
+#: backup/contact-info-modal.php:46 templates/admin-modals.php:81
+msgid "Website:"
+msgstr "网站："
+
+#: backup/contact-info-modal.php:51 templates/admin-modals.php:91
+msgid "Description:"
+msgstr "描述："
+
+#: backup/contact-info-modal.php:52 templates/admin-modals.php:95
+msgid "Brief description or role"
+msgstr "简要描述或角色"
+
+#: backup/contact-info-modal.php:61 templates/admin-modals.php:108
+msgid "QQ:"
+msgstr "QQ："
+
+#: backup/contact-info-modal.php:69 templates/admin-modals.php:119
+msgid "WeChat:"
+msgstr "微信："
+
+#: backup/contact-info-modal.php:79 templates/admin-modals.php:137
+msgid "WhatsApp:"
+msgstr "WhatsApp："
+
+#: backup/contact-info-modal.php:87 templates/admin-modals.php:150
+msgid "Telegram:"
+msgstr "电报："
+
+#: backup/contact-info-modal.php:96 templates/admin-modals.php:164
+msgid "QR Code Image URL:"
+msgstr "二维码图片链接："
+
+#: backup/contact-info-modal.php:99 templates/admin-modals.php:172
+msgid "Select Image"
+msgstr "选择图片"
+
+#: backup/contact-info-modal.php:101 templates/admin-modals.php:177
+msgid "Upload or provide URL for a QR code image (WeChat, contact info, etc.)"
+msgstr "上传或提供二维码图片链接（微信、联系信息等）"
+
+#: backup/contact-info-modal.php:114 includes/class-plugin-core.php:607
+#: templates/admin-modals.php:201
+msgid "Save Contact Info"
+msgstr "保存联系信息"
+
+#: backup/contact-info-modal.php:117 backup/news-sources-modal.php:70
+#: backup/quick-links-modal.php:117 includes/class-plugin-core.php:636
+#: templates/admin-modals.php:204 templates/admin-modals.php:317
+#: templates/admin-modals.php:493
+msgid "Cancel"
+msgstr "取消"
+
+#: backup/news-sources-modal.php:18 templates/admin-modals.php:214
+msgid "Configure News Sources"
+msgstr "配置新闻源"
+
+#: backup/news-sources-modal.php:29 includes/class-plugin-core.php:598
+#: templates/admin-modals.php:228
+msgid "Source Name"
+msgstr "源名称"
+
+#: backup/news-sources-modal.php:34 includes/class-plugin-core.php:599
+#: templates/admin-modals.php:238
+msgid "RSS Feed URL"
+msgstr "RSS 订阅链接"
+
+#: backup/news-sources-modal.php:45 includes/class-plugin-core.php:600
+#: templates/admin-modals.php:256
+msgid "Enabled"
+msgstr "已启用"
+
+#: backup/news-sources-modal.php:49 backup/quick-links-modal.php:49
+#: includes/class-plugin-core.php:597 templates/admin-modals.php:263
+#: templates/admin-modals.php:387
+msgid "Remove"
+msgstr "移除"
+
+#: backup/news-sources-modal.php:60 templates/admin-modals.php:276
+msgid "Add News Source"
+msgstr "添加新闻源"
+
+#: backup/news-sources-modal.php:67 includes/class-plugin-core.php:603
+#: templates/admin-modals.php:314
+msgid "Save News Sources"
+msgstr "保存新闻源"
+
+#: backup/quick-links-modal.php:12 templates/admin-modals.php:327
+msgid "Configure Quick Links"
+msgstr "配置快速链接"
+
+#: backup/quick-links-modal.php:23 includes/class-plugin-core.php:587
+#: templates/admin-modals.php:341
+msgid "Link Title"
+msgstr "链接标题"
+
+#: backup/quick-links-modal.php:36 includes/class-plugin-core.php:590
+#: templates/admin-modals.php:361
+msgid "dashicons-admin-home or 🏠"
+msgstr "dashicons-admin-home 或 🏠"
+
+#: backup/quick-links-modal.php:39 templates/admin-modals.php:369
+msgid "Icon (Dashicon class or emoji)"
+msgstr "图标（Dashicon 类或表情符号）"
+
+#: backup/quick-links-modal.php:45 includes/class-plugin-core.php:594
+#: templates/admin-modals.php:380
+msgid "Open in new tab"
+msgstr "在新标签页打开"
+
+#: backup/quick-links-modal.php:60 templates/admin-modals.php:400
+msgid "Add Link"
+msgstr "添加链接"
+
+#: backup/quick-links-modal.php:65 templates/admin-modals.php:405
+msgid "Icon Options"
+msgstr "图标选项"
+
+#: backup/quick-links-modal.php:69 templates/admin-modals.php:410
+msgid "WordPress Dashicons"
+msgstr "WordPress Dashicons"
+
+#: backup/quick-links-modal.php:74 backup/quick-links-modal.php:90
+#: templates/admin-modals.php:418 templates/admin-modals.php:443
+msgid "Home"
+msgstr "首页"
+
+#: backup/quick-links-modal.php:79 templates/admin-modals.php:426
+msgid "Analytics"
+msgstr "分析"
+
+#: backup/quick-links-modal.php:85 templates/admin-modals.php:435
+msgid "Emojis"
+msgstr "表情符号"
+
+#: backup/quick-links-modal.php:95 includes/class-plugin-core.php:493
+#: templates/admin-modals.php:451
+msgid "Settings"
+msgstr "设置"
+
+#: backup/quick-links-modal.php:102 templates/admin-modals.php:461
+msgid "Dashicons:"
+msgstr "Dashicons："
+
+#: backup/quick-links-modal.php:102 templates/admin-modals.php:464
+msgid "Built into WordPress, always available. Use format:"
+msgstr "内置于 WordPress，始终可用。使用格式："
+
+#: backup/quick-links-modal.php:103 templates/admin-modals.php:468
+msgid "Emojis:"
+msgstr "表情符号："
+
+#: backup/quick-links-modal.php:103 templates/admin-modals.php:471
+msgid "Copy and paste emoji directly. Works on all devices."
+msgstr "直接复制粘贴表情符号。适用于所有设备。"
+
+#: backup/quick-links-modal.php:107 templates/admin-modals.php:479
 #, php-format
-msgid "Version %s available! "
-msgstr "版本：%s 已可用！"
+msgid "Find more Dashicons at %s"
+msgstr "在 %s 查找更多 Dashicons"
 
+#: backup/quick-links-modal.php:114 includes/class-plugin-core.php:601
+#: templates/admin-modals.php:490
+msgid "Save Links"
+msgstr "保存链接"
+
+#: includes/class-admin-interface.php:29 includes/class-settings-manager.php:21
+#: templates/settings-page.php:17
+msgid "Network Overview"
+msgstr "网络概览"
+
+#: includes/class-admin-interface.php:33 includes/class-settings-manager.php:25
+#: templates/settings-page.php:19
+msgid "Quick Site Management"
+msgstr "快捷网站管理"
+
+#: includes/class-admin-interface.php:37 includes/class-settings-manager.php:29
+#: templates/settings-page.php:22
+msgid "Storage Usage"
+msgstr "储存用量"
+
+#: includes/class-admin-interface.php:41 includes/class-settings-manager.php:33
+#: templates/settings-page.php:23
+msgid "Server Information"
+msgstr "服务器信息"
+
+#: includes/class-admin-interface.php:45 includes/class-settings-manager.php:36
+#: templates/settings-page.php:24
+msgid "Quick Links"
+msgstr "快速链接"
+
+#: includes/class-admin-interface.php:49 includes/class-settings-manager.php:38
+#: templates/settings-page.php:25
+msgid "Version Information"
+msgstr "版本信息"
+
+#: includes/class-admin-interface.php:53 includes/class-settings-manager.php:41
+#: templates/settings-page.php:26
+msgid "Network News"
+msgstr "网络新闻"
+
+#: includes/class-admin-interface.php:57 includes/class-settings-manager.php:43
+#: templates/settings-page.php:27
+msgid "User Management"
+msgstr "用户管理"
+
+#: includes/class-admin-interface.php:61 includes/class-settings-manager.php:47
+#: templates/settings-page.php:28
+msgid "Contact Information"
+msgstr "联系信息"
+
+#: includes/class-admin-interface.php:65 includes/class-settings-manager.php:51
+#: templates/settings-page.php:29
+msgid "Recent Network Activity"
+msgstr "最近网络活动"
+
+#: includes/class-admin-interface.php:69 includes/class-settings-manager.php:54
+#: templates/settings-page.php:30
+msgid "Todo List"
+msgstr "待办事项"
+
+#: includes/class-admin-interface.php:115
+#: includes/class-admin-interface.php:214 includes/class-plugin-core.php:473
+msgid "Refresh"
+msgstr "刷新"
+
+#: includes/class-admin-interface.php:126
+#: includes/class-admin-interface.php:147
+msgid "PHP Version"
+msgstr "PHP 版本"
+
+#: includes/class-admin-interface.php:128
 #: includes/class-admin-interface.php:151
-msgid "View Details"
-msgstr "查看详情"
+msgid "MySQL Version"
+msgstr "MySQL 版本"
 
-#: includes/class-admin-interface.php:278
+#: includes/class-admin-interface.php:131
+#: includes/class-admin-interface.php:155
+msgid "Server Software"
+msgstr "服务器软件"
+
+#: includes/class-admin-interface.php:134
+#: includes/class-admin-interface.php:158
+msgid "Server Time"
+msgstr "服务器时间"
+
+#: includes/class-admin-interface.php:137
+#: includes/class-admin-interface.php:160
+msgid "Memory Limit"
+msgstr "内存限制"
+
+#: includes/class-admin-interface.php:140
+#: includes/class-admin-interface.php:164 includes/class-plugin-core.php:462
+msgid "Max Upload Size"
+msgstr "最大上传大小"
+
+#: includes/class-admin-interface.php:228 templates/admin-modals.php:12
+msgid "Network Administrator Contact Information"
+msgstr "网络管理员联系方式"
+
+#: includes/class-admin-interface.php:285
+msgid "WeChat"
+msgstr "微信"
+
+#: includes/class-admin-interface.php:289
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: includes/class-admin-interface.php:293
+msgid "Telegram"
+msgstr "Telegram"
+
+#: includes/class-admin-interface.php:316
+msgid "QR Code"
+msgstr "二维码"
+
+#: includes/class-admin-interface.php:325
 msgid "Edit Contact Info"
 msgstr "编辑联系信息"
 
-#: includes/class-admin-interface.php:298
+#: includes/class-admin-interface.php:350
 msgid "No quick links configured."
 msgstr "未配置快速链接。"
 
-#: includes/class-admin-interface.php:299
+#: includes/class-admin-interface.php:353
 msgid "Add Links"
 msgstr "添加链接"
 
-#: includes/class-admin-interface.php:320
+#: includes/class-admin-interface.php:389
 msgid "Edit Links"
 msgstr "编辑链接"
 
-#: includes/class-ajax-handler.php:65
+#: includes/class-ajax-handler.php:72
 msgid "Failed to load network overview"
 msgstr "加载网络概览失败"
 
-#: includes/class-ajax-handler.php:79
+#: includes/class-ajax-handler.php:89
 msgid "Failed to load sites"
 msgstr "加载站点失败"
 
-#: includes/class-ajax-handler.php:93
+#: includes/class-ajax-handler.php:106
 msgid "Failed to load storage data"
 msgstr "加载存储数据失败"
 
-#: includes/class-ajax-handler.php:190
+#: includes/class-ajax-handler.php:180 includes/class-plugin-core.php:514
+msgid "Activity table created"
+msgstr "活动表已创建"
+
+#: includes/class-ajax-handler.php:181 includes/class-plugin-core.php:518
+msgid "Activity table missing"
+msgstr "活动表丢失"
+
+#: includes/class-ajax-handler.php:221
 msgid "Failed to load news"
 msgstr "加载新闻失败"
 
-#: includes/class-ajax-handler.php:204
+#: includes/class-ajax-handler.php:238
 msgid "Failed to load network settings"
 msgstr "加载网络设置失败"
 
-#: includes/class-ajax-handler.php:218
+#: includes/class-ajax-handler.php:255
 msgid "Failed to load user data"
 msgstr "加载用户数据失败"
 
-#: includes/class-ajax-handler.php:232
+#: includes/class-ajax-handler.php:272
 msgid "Failed to load recent activity"
 msgstr "加载最近活动失败"
 
-#: includes/class-ajax-handler.php:258
+#: includes/class-ajax-handler.php:294 includes/class-ajax-handler.php:300
+#: includes/class-network-data.php:261 includes/class-network-data.php:289
+#: includes/class-network-data.php:482 includes/class-plugin-core.php:421
+msgid "ago"
+msgstr "前"
+
+#: includes/class-ajax-handler.php:307
 msgid "Failed to load todo items"
 msgstr "加载待办事项失败"
 
-#: includes/class-ajax-handler.php:291
+#: includes/class-ajax-handler.php:344 includes/class-plugin-core.php:324
 msgid "News sources saved successfully"
 msgstr "新闻源保存成功"
 
-#: includes/class-ajax-handler.php:314
+#: includes/class-ajax-handler.php:373 includes/class-plugin-core.php:320
 msgid "Quick links saved successfully"
 msgstr "快速链接保存成功"
 
-#: includes/class-ajax-handler.php:336
+#: includes/class-ajax-handler.php:403 includes/class-plugin-core.php:328
 msgid "Contact information saved successfully"
 msgstr "联系信息保存成功"
 
-#: includes/class-ajax-handler.php:349
+#: includes/class-ajax-handler.php:421 includes/class-plugin-core.php:276
 msgid "Title is required"
 msgstr "标题必填"
 
-#: includes/class-ajax-handler.php:373
+#: includes/class-ajax-handler.php:454 includes/class-plugin-core.php:332
 msgid "Todo item created"
 msgstr "待办事项已创建"
 
-#: includes/class-ajax-handler.php:375 includes/class-ajax-handler.php:378
+#: includes/class-ajax-handler.php:460 includes/class-ajax-handler.php:465
+#: includes/class-plugin-core.php:362
 msgid "Failed to create todo item"
 msgstr "创建待办事项失败"
 
-#: includes/class-ajax-handler.php:393
+#: includes/class-ajax-handler.php:483 includes/class-plugin-core.php:289
 msgid "ID and title are required"
 msgstr "ID 和标题必填"
 
-#: includes/class-ajax-handler.php:399 includes/class-ajax-handler.php:447
-#: includes/class-ajax-handler.php:485
+#: includes/class-ajax-handler.php:491 includes/class-ajax-handler.php:564
+#: includes/class-ajax-handler.php:625 includes/class-plugin-core.php:382
 msgid "No todos found"
 msgstr "未找到待办事项"
 
-#: includes/class-ajax-handler.php:420
+#: includes/class-ajax-handler.php:521 includes/class-plugin-core.php:336
 msgid "Todo item updated"
 msgstr "待办事项已更新"
 
-#: includes/class-ajax-handler.php:422 includes/class-ajax-handler.php:428
+#: includes/class-ajax-handler.php:528 includes/class-ajax-handler.php:540
+#: includes/class-plugin-core.php:366
 msgid "Failed to update todo item"
 msgstr "更新待办事项失败"
 
-#: includes/class-ajax-handler.php:425 includes/class-ajax-handler.php:463
-#: includes/class-ajax-handler.php:507
+#: includes/class-ajax-handler.php:535 includes/class-ajax-handler.php:596
+#: includes/class-ajax-handler.php:663 includes/class-plugin-core.php:386
 msgid "Todo item not found"
 msgstr "待办事项未找到"
 
-#: includes/class-ajax-handler.php:441 includes/class-ajax-handler.php:479
+#: includes/class-ajax-handler.php:556 includes/class-ajax-handler.php:617
+#: includes/class-plugin-core.php:287
 msgid "ID is required"
 msgstr "ID 必填"
 
-#: includes/class-ajax-handler.php:458
+#: includes/class-ajax-handler.php:582 includes/class-plugin-core.php:340
 msgid "Todo item deleted"
 msgstr "待办事项已删除"
 
-#: includes/class-ajax-handler.php:460 includes/class-ajax-handler.php:466
+#: includes/class-ajax-handler.php:589 includes/class-ajax-handler.php:601
+#: includes/class-plugin-core.php:370
 msgid "Failed to delete todo item"
 msgstr "删除待办事项失败"
 
-#: includes/class-ajax-handler.php:502
+#: includes/class-ajax-handler.php:649 includes/class-plugin-core.php:344
 msgid "Todo status updated"
 msgstr "待办事项状态已更新"
 
-#: includes/class-ajax-handler.php:504 includes/class-ajax-handler.php:510
+#: includes/class-ajax-handler.php:656 includes/class-ajax-handler.php:668
+#: includes/class-plugin-core.php:374
 msgid "Failed to update todo status"
 msgstr "更新待办事项状态失败"
 
-#: includes/class-ajax-handler.php:521
+#: includes/class-ajax-handler.php:682 includes/class-plugin-core.php:293
 msgid "Invalid order data"
 msgstr "无效的排序数据"
 
-#: includes/class-ajax-handler.php:536
+#: includes/class-ajax-handler.php:700 includes/class-plugin-core.php:314
 msgid "Links reordered successfully"
 msgstr "链接重新排序成功"
 
-#: includes/class-ajax-handler.php:548
+#: includes/class-ajax-handler.php:717 includes/class-plugin-core.php:297
 msgid "Invalid widget ID"
 msgstr "无效的小工具 ID"
 
-#: includes/class-ajax-handler.php:555
+#: includes/class-ajax-handler.php:727 includes/class-plugin-core.php:306
 msgid "Widget settings updated"
 msgstr "小工具设置已更新"
 
-#: includes/class-ajax-handler.php:568
+#: includes/class-ajax-handler.php:745 includes/class-plugin-core.php:310
 msgid "Cache cleared"
 msgstr "缓存已清除"
 
-#: includes/class-ajax-handler.php:573 includes/class-ajax-handler.php:656
-#: includes/class-ajax-handler.php:678 includes/class-user-manager.php:460
-#: includes/class-user-manager.php:790 includes/class-user-manager.php:809
-#: includes/class-user-manager.php:1025
+#: includes/class-ajax-handler.php:753 includes/class-ajax-handler.php:867
+#: includes/class-ajax-handler.php:900 includes/class-plugin-core.php:394
+#: includes/class-user-manager.php:460 includes/class-user-manager.php:790
+#: includes/class-user-manager.php:809 includes/class-user-manager.php:1025
 msgid "Insufficient permissions"
 msgstr "权限不足"
 
-#: includes/class-ajax-handler.php:579 includes/class-ajax-handler.php:662
-#: includes/class-ajax-handler.php:673
+#: includes/class-ajax-handler.php:763 includes/class-ajax-handler.php:877
+#: includes/class-ajax-handler.php:894 includes/class-plugin-core.php:398
 msgid "Invalid nonce"
 msgstr "无效的随机数"
 
-#: includes/class-ajax-handler.php:600
+#: includes/class-ajax-handler.php:786
 msgid "Cache cleared successfully"
 msgstr "缓存清除成功"
 
-#: includes/class-ajax-handler.php:602
+#: includes/class-ajax-handler.php:792 includes/class-plugin-core.php:206
 msgid "Failed to clear cache"
 msgstr "清除缓存失败"
 
-#: includes/class-ajax-handler.php:625
+#: includes/class-ajax-handler.php:822 includes/class-plugin-core.php:390
 msgid "Failed to perform user action"
 msgstr "执行用户操作失败"
 
-#: includes/class-ajax-handler.php:638 includes/class-ajax-handler.php:650
+#: includes/class-ajax-handler.php:839 includes/class-ajax-handler.php:856
 msgid "No updates available"
-msgstr ""
+msgstr "无可用更新"
 
-#: includes/class-ajax-handler.php:668
-#, fuzzy
-#| msgid "News cache cleared successfully!"
+#: includes/class-ajax-handler.php:885
 msgid "Widget cache cleared successfully"
-msgstr "新闻缓存清除成功！"
+msgstr "小工具缓存清除成功"
 
-#: includes/class-helpers.php:314
+#: includes/class-helpers.php:314 includes/class-plugin-core.php:428
 msgid "Active"
-msgstr "启用"
+msgstr "活跃"
 
-#: includes/class-helpers.php:315
+#: includes/class-helpers.php:315 includes/class-plugin-core.php:429
 msgid "Recent"
-msgstr ""
+msgstr "最近活跃"
 
-#: includes/class-helpers.php:316
+#: includes/class-helpers.php:316 includes/class-plugin-core.php:430
 msgid "Inactive"
-msgstr ""
+msgstr "不活跃"
 
-#: includes/class-helpers.php:317
-#| msgid "User activated"
+#: includes/class-helpers.php:317 includes/class-plugin-core.php:432
 msgid "Very Inactive"
-msgstr ""
+msgstr "非常不活跃"
 
-#: includes/class-helpers.php:318
+#: includes/class-helpers.php:318 includes/class-plugin-core.php:436
 msgid "Never Logged In"
-msgstr ""
+msgstr "从未登录"
 
-#: includes/class-network-data.php:111
+#: includes/class-network-data.php:119
 msgid "Subdomain Installation"
 msgstr "子域名安装"
 
-#: includes/class-network-data.php:112
+#: includes/class-network-data.php:120
 msgid "Subdirectory Installation"
 msgstr "子目录安装"
 
-#: includes/class-network-data.php:166 includes/class-user-manager.php:181
+#: includes/class-network-data.php:199 includes/class-user-manager.php:181
 msgid "Registration disabled"
 msgstr "注册已禁用"
 
-#: includes/class-network-data.php:167
+#: includes/class-network-data.php:200
 msgid "User registration only"
 msgstr "仅用户注册"
 
-#: includes/class-network-data.php:168
+#: includes/class-network-data.php:201
 msgid "Site registration only"
 msgstr "仅站点注册"
 
-#: includes/class-network-data.php:169
+#: includes/class-network-data.php:202
 msgid "User and site registration"
 msgstr "用户和站点注册"
 
-#: includes/class-network-data.php:211
+#: includes/class-network-data.php:250
 msgid "Post"
 msgstr "文章"
 
-#: includes/class-network-data.php:229
+#: includes/class-network-data.php:278
 msgid "Page"
 msgstr "页面"
 
-#: includes/class-network-data.php:363
+#: includes/class-network-data.php:436
 msgid "All systems operating normally"
 msgstr "所有系统运行正常"
 
-#: includes/class-network-data.php:369
+#: includes/class-network-data.php:444
 msgid "No sites found"
 msgstr "未找到站点"
 
-#: includes/class-network-data.php:405
+#: includes/class-network-data.php:483
 msgid "No recent activity"
 msgstr "无最近活动"
 
-#: includes/class-network-data.php:623 includes/class-user-manager.php:359
+#: includes/class-network-data.php:735 includes/class-user-manager.php:359
 msgid "Unknown Site"
 msgstr "未知站点"
 
-#: includes/class-plugin-core.php:137
+#: includes/class-plugin-core.php:111 includes/class-plugin-core.php:112
+msgid "Dashboard Settings"
+msgstr "仪表板设置"
+
+#: includes/class-plugin-core.php:177
 msgid "Are you sure?"
 msgstr "您确定吗？"
 
-#: includes/class-plugin-core.php:139
+#: includes/class-plugin-core.php:182
 msgid "An error occurred"
 msgstr "发生错误"
 
-#: includes/class-plugin-core.php:140
+#: includes/class-plugin-core.php:186
 msgid "Data refreshed successfully"
 msgstr "数据刷新成功"
 
-#: includes/class-plugin-core.php:141
+#: includes/class-plugin-core.php:190
 msgid "Are you sure you want to delete this item?"
 msgstr "您确定要删除此项目吗？"
 
-#: includes/class-plugin-core.php:142
+#: includes/class-plugin-core.php:194
 msgid "Saved successfully"
 msgstr "保存成功"
 
-#: includes/class-plugin-core.php:168
+#: includes/class-plugin-core.php:198
+msgid "Are you sure you want to clear the cache?"
+msgstr "您确定要清除缓存吗？"
+
+#: includes/class-plugin-core.php:202
+msgid "Cache cleared successfully!"
+msgstr "缓存清除成功！"
+
+#: includes/class-plugin-core.php:210 templates/settings-page.php:327
+msgid "Check for Updates"
+msgstr "检查更新"
+
+#: includes/class-plugin-core.php:214
+msgid "Checking..."
+msgstr "检查中..."
+
+#: includes/class-plugin-core.php:218
+msgid "Version {version} available!"
+msgstr "版本 {version} 已可用！"
+
+#: includes/class-plugin-core.php:221
+msgid "Up to date"
+msgstr "已是最新版本"
+
+#: includes/class-plugin-core.php:223
+msgid "Failed to check for updates"
+msgstr "检查更新失败"
+
+#: includes/class-plugin-core.php:227
+msgid ""
+"Are you sure you want to clear the widget cache? This will refresh the list "
+"of detected widgets."
+msgstr "您确定要清除小工具缓存吗？这将刷新检测到的小工具列表。"
+
+#: includes/class-plugin-core.php:231
+msgid ""
+"Widget cache cleared successfully! Please reload the page to see updated "
+"widgets."
+msgstr "小工具缓存清除成功！请重新加载页面以查看更新的小工具。"
+
+#: includes/class-plugin-core.php:235
+msgid "Failed to clear widget cache"
+msgstr "清除小工具缓存失败"
+
+#: includes/class-plugin-core.php:241
+msgid "No active sites found."
+msgstr "未找到活跃站点。"
+
+#: includes/class-plugin-core.php:245
+msgid "No storage data available."
+msgstr "无可用存储数据。"
+
+#: includes/class-plugin-core.php:249
+msgid "No recent network activity found."
+msgstr "未找到最近的网络活动。"
+
+#: includes/class-plugin-core.php:253
+msgid "No news items available."
+msgstr "无可用新闻项目。"
+
+#: includes/class-plugin-core.php:257
+msgid "Configure news sources to see updates."
+msgstr "配置新闻源以查看更新。"
+
+#: includes/class-plugin-core.php:261
+msgid "No recent registrations"
+msgstr "无最近注册"
+
+#: includes/class-plugin-core.php:265
+msgid "No todos yet. Click \"Add Todo\" to get started!"
+msgstr "还没有待办事项。点击\"添加待办\"开始！"
+
+#: includes/class-plugin-core.php:269
+msgid "Unable to load data"
+msgstr "无法加载数据"
+
+#: includes/class-plugin-core.php:272
+msgid "Try Again"
+msgstr "重试"
+
+#: includes/class-plugin-core.php:280
+msgid "Please fill in all required fields correctly"
+msgstr "请正确填写所有必填字段"
+
+#: includes/class-plugin-core.php:284
+msgid "Name and email are required"
+msgstr "姓名和邮箱必填"
+
+#: includes/class-plugin-core.php:302
+msgid "Saving..."
+msgstr "保存中..."
+
+#: includes/class-plugin-core.php:303
+msgid "Processing..."
+msgstr "处理中..."
+
+#: includes/class-plugin-core.php:304
+msgid "Refreshing..."
+msgstr "刷新中..."
+
+#: includes/class-plugin-core.php:350
+msgid "Failed to save quick links"
+msgstr "保存快速链接失败"
+
+#: includes/class-plugin-core.php:354
+msgid "Failed to save news sources"
+msgstr "保存新闻源失败"
+
+#: includes/class-plugin-core.php:358
+msgid "Failed to save contact information"
+msgstr "保存联系信息失败"
+
+#: includes/class-plugin-core.php:378
+msgid "Failed to save order"
+msgstr "保存顺序失败"
+
+#: includes/class-plugin-core.php:402
+msgid "Network error occurred"
+msgstr "发生网络错误"
+
+#: includes/class-plugin-core.php:408
+msgid "News cache cleared successfully"
+msgstr "新闻缓存清除成功"
+
+#: includes/class-plugin-core.php:412
+msgid "Failed to clear news cache"
+msgstr "清除新闻缓存失败"
+
+#: includes/class-plugin-core.php:419
+msgid "Yesterday"
+msgstr "昨天"
+
+#: includes/class-plugin-core.php:420
+#, php-format
+msgid "%d days ago"
+msgstr "%d 天前"
+
+#: includes/class-plugin-core.php:424 includes/class-plugin-core.php:713
+msgid "users"
+msgstr "用户"
+
+#: includes/class-plugin-core.php:425 includes/class-plugin-core.php:712
+msgid "sites"
+msgstr "站点"
+
+#: includes/class-plugin-core.php:426
+msgid "total"
+msgstr "总计"
+
+#: includes/class-plugin-core.php:427
+msgid "done"
+msgstr "完成"
+
+#: includes/class-plugin-core.php:439
+msgid "No activity"
+msgstr "无活动"
+
+#: includes/class-plugin-core.php:440
+msgid "low"
+msgstr "低"
+
+#: includes/class-plugin-core.php:441
+msgid "medium"
+msgstr "中"
+
+#: includes/class-plugin-core.php:442
+msgid "high"
+msgstr "高"
+
+#: includes/class-plugin-core.php:446
+msgid "Multisite Configuration"
+msgstr "多站点配置"
+
+#: includes/class-plugin-core.php:450
+msgid "Installation Type"
+msgstr "安装类型"
+
+#: includes/class-plugin-core.php:454
+msgid "Network Admin Email"
+msgstr "网络管理员邮箱"
+
+#: includes/class-plugin-core.php:458
+msgid "Site Upload Quota"
+msgstr "站点上传配额"
+
+#: includes/class-plugin-core.php:466
+msgid "Default Language"
+msgstr "默认语言"
+
+#: includes/class-plugin-core.php:469
+msgid "Registration"
+msgstr "注册"
+
+#: includes/class-plugin-core.php:470
+msgid "Not set"
+msgstr "未设置"
+
+#: includes/class-plugin-core.php:471
+msgid "Posts"
+msgstr "文章"
+
+#: includes/class-plugin-core.php:472
+msgid "Pages"
+msgstr "页面"
+
+#: includes/class-plugin-core.php:474
+msgid "Admin"
+msgstr "管理"
+
+#: includes/class-plugin-core.php:475
+msgid "View"
+msgstr "查看"
+
+#: includes/class-plugin-core.php:476
+msgid "Edit"
+msgstr "编辑"
+
+#: includes/class-plugin-core.php:477
+msgid "View Details"
+msgstr "查看详情"
+
+#: includes/class-plugin-core.php:479
+msgid "Configure Sources"
+msgstr "配置源"
+
+#: includes/class-plugin-core.php:482
+msgid "Add Todo"
+msgstr "添加待办"
+
+#: includes/class-plugin-core.php:483
+msgid "Network"
+msgstr "网络"
+
+#: includes/class-plugin-core.php:484
+msgid "Upload Limit"
+msgstr "上传限制"
+
+#: includes/class-plugin-core.php:486
+msgid "Active Plugins"
+msgstr "已启用插件"
+
+#: includes/class-plugin-core.php:490
+msgid "Network Themes"
+msgstr "网络主题"
+
+#: includes/class-plugin-core.php:494
+msgid "Themes"
+msgstr "主题"
+
+#: includes/class-plugin-core.php:495 includes/class-settings-manager.php:156
+msgid "Plugins"
+msgstr "插件"
+
+#: includes/class-plugin-core.php:496
+msgid "Updates"
+msgstr "更新"
+
+#: includes/class-plugin-core.php:497
+msgid "admins"
+msgstr "管理员"
+
+#: includes/class-plugin-core.php:499
+msgid "pending activation(s)"
+msgstr "待激活"
+
+#: includes/class-plugin-core.php:502
+msgid "Activate"
+msgstr "激活"
+
+#: includes/class-plugin-core.php:504
+msgid "Plugin Version"
+msgstr "插件版本"
+
+#: includes/class-plugin-core.php:507
+msgid "Author URI"
+msgstr "作者网址"
+
+#: includes/class-plugin-core.php:508
+msgid "Required PHP"
+msgstr "需要 PHP"
+
+#: includes/class-plugin-core.php:510
+msgid "Database Tables"
+msgstr "数据库表"
+
+#: includes/class-plugin-core.php:522 templates/settings-page.php:43
+msgid "Documentation"
+msgstr "文档"
+
+#: includes/class-plugin-core.php:525 templates/settings-page.php:46
+msgid "Support"
+msgstr "支持"
+
+#: includes/class-plugin-core.php:526
+msgid "GitHub"
+msgstr "GitHub"
+
+#: includes/class-plugin-core.php:528
+msgid "Top 5 sites by storage usage"
+msgstr "按存储使用量排名前 5 的站点"
+
+#: includes/class-plugin-core.php:532
+msgid "Total Network Storage"
+msgstr "网络总存储"
+
+#: includes/class-plugin-core.php:542
+msgid "N/A"
+msgstr "不可用"
+
+#: includes/class-plugin-core.php:543
+msgid "MB"
+msgstr "MB"
+
+#: includes/class-plugin-core.php:544
+msgid "•"
+msgstr "•"
+
+#: includes/class-plugin-core.php:545
+msgid "M"
+msgstr "M"
+
+#: includes/class-plugin-core.php:546
+msgid "K"
+msgstr "K"
+
+#: includes/class-plugin-core.php:549
+msgid "Unknown error"
+msgstr "未知错误"
+
+#: includes/class-plugin-core.php:553
+msgid "due to network error."
+msgstr "由于网络错误。"
+
+#: includes/class-plugin-core.php:559
+msgid "Disabled"
+msgstr "禁用"
+
+#: includes/class-plugin-core.php:563
+msgid "Users Only"
+msgstr "仅用户"
+
+#: includes/class-plugin-core.php:567
+msgid "Sites Only"
+msgstr "仅站点"
+
+#: includes/class-plugin-core.php:571
+msgid "Users & Sites"
+msgstr "用户和站点"
+
+#: includes/class-plugin-core.php:576
+msgid "Low Priority"
+msgstr "低优先级"
+
+#: includes/class-plugin-core.php:578
+msgid "Medium Priority"
+msgstr "中优先级"
+
+#: includes/class-plugin-core.php:582
+msgid "High Priority"
+msgstr "高优先级"
+
+#: includes/class-plugin-core.php:611
+msgid "Select QR Image"
+msgstr "选择图像"
+
+#: includes/class-plugin-core.php:614
+msgid "Use Image"
+msgstr "使用图像"
+
+#: includes/class-plugin-core.php:616
+msgid "Enter QR code image URL:"
+msgstr "输入二维码图片链接："
+
+#: includes/class-plugin-core.php:621
+msgid "Title"
+msgstr "标题"
+
+#: includes/class-plugin-core.php:623
+msgid "Enter todo item title..."
+msgstr "输入待办事项标题…"
+
+#: includes/class-plugin-core.php:627
+msgid "Description (Optional)"
+msgstr "描述 (可选)"
+
+#: includes/class-plugin-core.php:631
+msgid "Additional details..."
+msgstr "添加详情…"
+
+#: includes/class-plugin-core.php:634
+msgid "Priority"
+msgstr "优先级"
+
+#: includes/class-plugin-core.php:635
+msgid "Save"
+msgstr "保存"
+
+#: includes/class-plugin-core.php:637
+msgid "Delete"
+msgstr "删除"
+
+#: includes/class-plugin-core.php:638
+msgid "Action"
+msgstr "操作"
+
+#: includes/class-plugin-core.php:640
+msgid "Action completed successfully"
+msgstr "操作已成功完成"
+
+#: includes/class-plugin-core.php:646
+msgid "MSD Settings loaded with functions"
+msgstr "加载了功能的MSD设置"
+
+#: includes/class-plugin-core.php:690 includes/class-plugin-core.php:735
 msgid "Add New Plugin"
 msgstr "添加新插件"
 
-#: includes/class-plugin-core.php:169
+#: includes/class-plugin-core.php:695
 msgid "Manage Plugins"
 msgstr "管理插件"
 
-#: includes/class-settings-manager.php:132
+#: includes/class-plugin-core.php:714
+msgid "themes"
+msgstr "主题"
+
+#: includes/class-plugin-core.php:715
+msgid "plugins"
+msgstr "插件"
+
+#: includes/class-plugin-core.php:716
+msgid "You have"
+msgstr "您有"
+
+#: includes/class-settings-manager.php:140
+msgid "Right Now"
+msgstr "现在"
+
+#: includes/class-settings-manager.php:148
+msgid "Activity"
+msgstr "动态"
+
+#: includes/class-settings-manager.php:165
+msgid "WordPress Events and News"
+msgstr "WordPress活动和新闻"
+
+#: includes/class-settings-manager.php:175
+msgid "Other WordPress News"
+msgstr "其他 WordPress 新闻"
+
+#: includes/class-settings-manager.php:227
 msgid "Network statistics and multisite configuration information"
 msgstr "网络统计和多站点配置信息"
 
-#: includes/class-settings-manager.php:133
+#: includes/class-settings-manager.php:231
 msgid "Quick access to recently active sites with favicons"
 msgstr "带网站图标的最近活跃站点快速访问"
 
-#: includes/class-settings-manager.php:134
+#: includes/class-settings-manager.php:235
 msgid "Top 5 sites by storage usage and performance insights"
 msgstr "按存储使用情况排名前 5 的站点和性能洞察"
 
-#: includes/class-settings-manager.php:135
+#: includes/class-settings-manager.php:239
 msgid "Server specifications and WordPress environment details"
 msgstr "服务器规格和 WordPress 环境详情"
 
-#: includes/class-settings-manager.php:136
+#: includes/class-settings-manager.php:243
 msgid ""
 "Customizable quick access links for common tasks with drag-and-drop "
 "reordering"
 msgstr "可自定义的常用任务快速访问链接，支持拖放重新排序"
 
-#: includes/class-settings-manager.php:137
+#: includes/class-settings-manager.php:247
 msgid "Plugin version and system information with help links"
 msgstr "插件版本和系统信息及帮助链接"
 
-#: includes/class-settings-manager.php:138
+#: includes/class-settings-manager.php:251
 msgid "Custom news sources and updates"
 msgstr "自定义新闻源和更新"
 
-#: includes/class-settings-manager.php:139
+#: includes/class-settings-manager.php:255
 msgid "Network configuration and settings overview"
 msgstr "网络配置和设置概览"
 
-#: includes/class-settings-manager.php:140
+#: includes/class-settings-manager.php:259
 msgid "Recent user registrations and user management tools"
 msgstr "最近用户注册和用户管理工具"
 
-#: includes/class-settings-manager.php:141
+#: includes/class-settings-manager.php:263
 msgid ""
 "Network administrator contact information with instant messaging and QR code "
 "support"
 msgstr "网络管理员联系信息，支持即时消息和二维码"
 
-#: includes/class-settings-manager.php:142
+#: includes/class-settings-manager.php:267
 msgid "Recent posts, pages, and content activity across the network"
 msgstr "整个网络的最近文章、页面和内容活动"
 
-#: includes/class-settings-manager.php:143
+#: includes/class-settings-manager.php:271
 msgid "Simple todo list for network administrators with priority levels"
 msgstr "网络管理员的简单待办事项列表，带优先级"
-
-#: includes/class-todo-manager.php:465
-msgid "Low"
-msgstr "低"
-
-#: includes/class-todo-manager.php:466
-msgid "Medium"
-msgstr "中"
-
-#: includes/class-todo-manager.php:467
-msgid "High"
-msgstr "高"
 
 #: includes/class-user-manager.php:167
 msgid "Edit User"
@@ -580,331 +1331,166 @@ msgstr "将删除 %d 个用户"
 msgid "%d inactive users deleted"
 msgstr "已删除 %d 个非活跃用户"
 
-#: templates/admin-modals.php:33 templates/contact-info-modal.php:23
-msgid "Edit Contact Information"
-msgstr "编辑联系信息"
+#: templates/admin-modals.php:24
+msgid "WordPress News"
+msgstr "WordPress 新闻"
 
-#: templates/admin-modals.php:41 templates/contact-info-modal.php:31
-msgid "Organization Name:"
-msgstr "组织名称："
+#: templates/admin-modals.php:126
+msgid "WeChat ID"
+msgstr "微信号"
 
-#: templates/admin-modals.php:42 templates/contact-info-modal.php:32
-msgid "Network Administrator"
-msgstr "网络管理员"
+#: templates/admin-modals.php:189
+msgid "QR Code Preview"
+msgstr "二维码预览"
 
-#: templates/admin-modals.php:46 templates/contact-info-modal.php:36
-msgid "Email:"
-msgstr "邮箱："
-
-#: templates/admin-modals.php:51 templates/contact-info-modal.php:41
-msgid "Phone:"
-msgstr "电话："
-
-#: templates/admin-modals.php:56 templates/contact-info-modal.php:46
-msgid "Website:"
-msgstr "网站："
-
-#: templates/admin-modals.php:61 templates/contact-info-modal.php:51
-msgid "Description:"
-msgstr "描述："
-
-#: templates/admin-modals.php:62 templates/contact-info-modal.php:52
-msgid "Brief description or role"
-msgstr "简要描述或角色"
-
-#: templates/admin-modals.php:71 templates/contact-info-modal.php:61
-msgid "QQ:"
-msgstr "QQ："
-
-#: templates/admin-modals.php:79 templates/contact-info-modal.php:69
-msgid "WeChat:"
-msgstr "微信："
-
-#: templates/admin-modals.php:89 templates/contact-info-modal.php:79
-msgid "WhatsApp:"
-msgstr "WhatsApp："
-
-#: templates/admin-modals.php:97 templates/contact-info-modal.php:87
-msgid "Telegram:"
-msgstr "Telegram："
-
-#: templates/admin-modals.php:106 templates/contact-info-modal.php:96
-msgid "QR Code Image URL:"
-msgstr "二维码图片链接："
-
-#: templates/admin-modals.php:109 templates/contact-info-modal.php:99
-msgid "Select Image"
-msgstr "选择图片"
-
-#: templates/admin-modals.php:111 templates/contact-info-modal.php:101
-msgid "Upload or provide URL for a QR code image (WeChat, contact info, etc.)"
-msgstr "上传或提供二维码图片链接（微信、联系信息等）"
-
-#: templates/admin-modals.php:124 templates/contact-info-modal.php:114
-msgid "Save Contact Info"
-msgstr "保存联系信息"
-
-#: templates/admin-modals.php:127 templates/admin-modals.php:204
-#: templates/admin-modals.php:318 templates/contact-info-modal.php:117
-#: templates/news-sources-modal.php:70 templates/quick-links-modal.php:117
-msgid "Cancel"
-msgstr "取消"
-
-#: templates/admin-modals.php:136 templates/news-sources-modal.php:18
-msgid "Configure News Sources"
-msgstr "配置新闻源"
-
-#: templates/admin-modals.php:147 templates/news-sources-modal.php:29
-msgid "Source Name"
-msgstr "源名称"
-
-#: templates/admin-modals.php:152 templates/news-sources-modal.php:34
-msgid "RSS Feed URL"
-msgstr "RSS 订阅链接"
-
-#: templates/admin-modals.php:163 templates/news-sources-modal.php:45
-msgid "Enabled"
-msgstr "已启用"
-
-#: templates/admin-modals.php:167 templates/admin-modals.php:250
-#: templates/news-sources-modal.php:49 templates/quick-links-modal.php:49
-msgid "Remove"
-msgstr "移除"
-
-#: templates/admin-modals.php:178 templates/news-sources-modal.php:60
-msgid "Add News Source"
-msgstr "添加新闻源"
-
-#: templates/admin-modals.php:183
+#: templates/admin-modals.php:282
 msgid "Popular RSS Feeds"
 msgstr "热门 RSS 源"
 
-#: templates/admin-modals.php:201 templates/news-sources-modal.php:67
-msgid "Save News Sources"
-msgstr "保存新闻源"
+#: templates/admin-modals.php:288
+msgid "WenPai.org News"
+msgstr "文派开源新闻"
 
-#: templates/admin-modals.php:213 templates/quick-links-modal.php:12
-msgid "Configure Quick Links"
-msgstr "配置快速链接"
+#: templates/admin-modals.php:293
+msgid "Official WenPai.org news and updates"
+msgstr "文派开源官方新闻和更新"
 
-#: templates/admin-modals.php:224 templates/quick-links-modal.php:23
-msgid "Link Title"
-msgstr "链接标题"
+#: templates/admin-modals.php:299
+msgid "WP TEA"
+msgstr "文派茶馆（WP TEA）"
 
-#: templates/admin-modals.php:237 templates/quick-links-modal.php:36
-msgid "dashicons-admin-home or 🏠"
-msgstr "dashicons-admin-home 或 🏠"
+#: templates/admin-modals.php:304
+msgid "WordPress China community news and insights"
+msgstr "WordPress 中国社区新闻和统计"
 
-#: templates/admin-modals.php:240 templates/quick-links-modal.php:39
-msgid "Icon (Dashicon class or emoji)"
-msgstr "图标（Dashicon 类或表情符号）"
-
-#: templates/admin-modals.php:246 templates/quick-links-modal.php:45
-msgid "Open in new tab"
-msgstr "在新标签页打开"
-
-#: templates/admin-modals.php:261 templates/quick-links-modal.php:60
-msgid "Add Link"
-msgstr "添加链接"
-
-#: templates/admin-modals.php:266 templates/quick-links-modal.php:65
-msgid "Icon Options"
-msgstr "图标选项"
-
-#: templates/admin-modals.php:270 templates/quick-links-modal.php:69
-msgid "WordPress Dashicons"
-msgstr "WordPress Dashicons"
-
-#: templates/admin-modals.php:275 templates/admin-modals.php:291
-#: templates/quick-links-modal.php:74 templates/quick-links-modal.php:90
-msgid "Home"
-msgstr "首页"
-
-#: templates/admin-modals.php:280 templates/quick-links-modal.php:79
-msgid "Analytics"
-msgstr "分析"
-
-#: templates/admin-modals.php:286 templates/quick-links-modal.php:85
-msgid "Emojis"
-msgstr "表情符号"
-
-#: templates/admin-modals.php:296 templates/quick-links-modal.php:95
-msgid "Settings"
-msgstr "设置"
-
-#: templates/admin-modals.php:303 templates/quick-links-modal.php:102
-msgid "Dashicons:"
-msgstr "Dashicons："
-
-#: templates/admin-modals.php:303 templates/quick-links-modal.php:102
-msgid "Built into WordPress, always available. Use format:"
-msgstr "内置于 WordPress，始终可用。使用格式："
-
-#: templates/admin-modals.php:304 templates/quick-links-modal.php:103
-msgid "Emojis:"
-msgstr "表情符号："
-
-#: templates/admin-modals.php:304 templates/quick-links-modal.php:103
-msgid "Copy and paste emoji directly. Works on all devices."
-msgstr "直接复制粘贴表情符号。适用于所有设备。"
-
-#: templates/admin-modals.php:308 templates/quick-links-modal.php:107
-#, php-format
-msgid "Find more Dashicons at %s"
-msgstr "在 %s 查找更多 Dashicons"
-
-#: templates/admin-modals.php:315 templates/quick-links-modal.php:114
-msgid "Save Links"
-msgstr "保存链接"
-
-#: templates/settings-page.php:7
+#: templates/settings-page.php:8
 msgid "Settings saved successfully!"
 msgstr "设置保存成功！"
 
-#: templates/settings-page.php:18
+#: templates/settings-page.php:38
 #, php-format
 msgid "Version: %s"
 msgstr "版本：%s"
 
-#: templates/settings-page.php:21
-msgid "Documentation"
-msgstr "文档"
-
-#: templates/settings-page.php:24
-msgid "Support"
-msgstr "支持"
-
-#: templates/settings-page.php:29
-#, fuzzy
-#| msgid "Widget Configuration"
+#: templates/settings-page.php:52
 msgid "Plugin Widget Configuration"
-msgstr "小工具配置"
+msgstr "插件小工具配置"
 
-#: templates/settings-page.php:30
-#, fuzzy
-#| msgid "Enable or disable dashboard widgets according to your needs."
+#: templates/settings-page.php:56
 msgid "Enable or disable custom dashboard widgets provided by this plugin."
-msgstr "根据您的需要启用或禁用仪表板小工具。"
+msgstr "启用或禁用此插件提供的自定义仪表板小工具。"
 
-#: templates/settings-page.php:54
+#: templates/settings-page.php:92
 msgid "System & Third-Party Widgets"
-msgstr ""
+msgstr "系统和第三方小工具"
 
-#: templates/settings-page.php:55
+#: templates/settings-page.php:96
 msgid ""
 "Control the display of WordPress system widgets and widgets from other "
 "plugins."
-msgstr ""
+msgstr "控制 WordPress 系统小工具和其他插件小工具的显示。"
 
-#: templates/settings-page.php:76
-#, fuzzy
-#| msgid "WordPress Dashicons"
+#: templates/settings-page.php:129
 msgid "WordPress System Widgets"
-msgstr "WordPress Dashicons"
+msgstr "WordPress 系统小工具"
 
-#: templates/settings-page.php:96 templates/settings-page.php:114
+#: templates/settings-page.php:166 templates/settings-page.php:203
 msgid "Third-Party Plugin Widgets"
-msgstr ""
+msgstr "第三方插件小工具"
 
-#: templates/settings-page.php:116
+#: templates/settings-page.php:208
 msgid "No third-party widgets detected yet."
-msgstr ""
+msgstr "尚未检测到第三方小工具。"
 
-#: templates/settings-page.php:117
+#: templates/settings-page.php:212
 msgid ""
 "Third-party widgets are automatically detected when you visit the network "
 "dashboard. If you have plugins that add dashboard widgets, visit the "
 "dashboard first, then return here to see them."
 msgstr ""
+"当您访问网络仪表板时，会自动检测第三方小工具。如果您有添加仪表板小工具的插"
+"件，请先访问仪表板，然后返回此处查看它们。"
 
-#: templates/settings-page.php:119
+#: templates/settings-page.php:218 templates/settings-page.php:246
 msgid "Visit Network Dashboard"
-msgstr ""
+msgstr "访问网络仪表板"
 
-#: templates/settings-page.php:127
-#, fuzzy
-#| msgid "No sites found"
+#: templates/settings-page.php:224 templates/settings-page.php:252
+msgid "Refresh Widget Detection"
+msgstr "刷新小工具检测"
+
+#: templates/settings-page.php:236
 msgid "No system widgets found."
-msgstr "未找到站点"
+msgstr "未找到系统小工具。"
 
-#: templates/settings-page.php:132
+#: templates/settings-page.php:240
+msgid "Visit the network dashboard to detect available widgets."
+msgstr "访问网络仪表板以检测可用的小工具。"
+
+#: templates/settings-page.php:263
 msgid "Save Widget Settings"
 msgstr "保存小工具设置"
 
-#: templates/settings-page.php:138
+#: templates/settings-page.php:273
 msgid "Cache Management"
 msgstr "缓存管理"
 
-#: templates/settings-page.php:139
+#: templates/settings-page.php:275
 msgid "Clear cached data to refresh dashboard widgets."
 msgstr "清除缓存数据以刷新仪表板小工具。"
 
-#: templates/settings-page.php:144
+#: templates/settings-page.php:281
 msgid "Clear All Caches"
 msgstr "清除所有缓存"
 
-#: templates/settings-page.php:148
+#: templates/settings-page.php:285
 msgid "Clear Network Data"
 msgstr "清除网络数据"
 
-#: templates/settings-page.php:152
-#, fuzzy
-#| msgid "Clear News Cache"
+#: templates/settings-page.php:289
 msgid "Clear Widget Cache"
-msgstr "清除新闻缓存"
+msgstr "清除小工具缓存"
 
-#: templates/settings-page.php:157
-#, fuzzy
-#| msgid ""
-#| "Clearing caches will force the dashboard widgets to reload fresh data on "
-#| "the next page visit."
+#: templates/settings-page.php:295
 msgid ""
 "Clearing caches will force the dashboard widgets to reload fresh data on the "
 "next page visit. Widget cache contains the list of detected third-party "
 "widgets."
-msgstr "清除缓存将强制仪表板小工具在下次访问页面时重新加载新数据。"
+msgstr ""
+"清除缓存将强制仪表板小工具在下次访问页面时重新加载新数据。小工具缓存包含检测"
+"到的第三方小工具列表。"
 
-#: templates/settings-page.php:162
-#, fuzzy
-#| msgid "Edit Contact Information"
+#: templates/settings-page.php:302
 msgid "Plugin Information"
-msgstr "编辑联系信息"
+msgstr "插件信息"
 
-#: templates/settings-page.php:163
+#: templates/settings-page.php:304
 msgid "Current plugin status and update information."
-msgstr ""
+msgstr "当前插件状态和更新信息。"
 
-#: templates/settings-page.php:167
-#, fuzzy
-#| msgid "Current News Sources"
+#: templates/settings-page.php:311
 msgid "Current Version:"
-msgstr "当前新闻源"
+msgstr "当前版本："
 
-#: templates/settings-page.php:172
-#, fuzzy
-#| msgid "Status"
+#: templates/settings-page.php:321
 msgid "Update Status:"
-msgstr "状态"
+msgstr "更新状态："
 
-#: templates/settings-page.php:175
-msgid "Check for Updates"
-msgstr ""
-
-#: wp-multisite-dashboard.php:47
+#: wp-multisite-dashboard.php:52
 msgid "WP Multisite Dashboard requires WordPress Multisite to be enabled."
-msgstr "WP 多站点仪表板需要启用 WordPress 多站点。"
+msgstr "文派多站点仪表板需要启用 WordPress 多站点。"
 
-#: wp-multisite-dashboard.php:55
+#: wp-multisite-dashboard.php:65
 msgid "This plugin requires WordPress Multisite to be enabled."
 msgstr "此插件需要启用 WordPress 多站点。"
 
-#: wp-multisite-dashboard.php:68
+#: wp-multisite-dashboard.php:84
 msgid "WP Multisite Dashboard has been activated successfully!"
-msgstr "WP 多站点仪表板已成功激活！"
+msgstr "文派多站点仪表板已成功激活！"
 
 #. Plugin Name of the plugin/theme
 msgid "WP Multisite Dashboard"
-msgstr "WP 多站点仪表板"
+msgstr "文派多站点仪表板"
 
 #. Plugin URI of the plugin/theme
 msgid "https://wpmultisite.com/plugins/wp-multisite-dashboard"
@@ -912,94 +1498,12 @@ msgstr "https://wpmultisite.com/plugins/wp-multisite-dashboard"
 
 #. Description of the plugin/theme
 msgid "Essential dashboard widgets for WordPress multisite administrators"
-msgstr "WordPress 多站点管理员的必备仪表板小工具"
+msgstr "文派 WordPress 多站点管理员的必备仪表板小工具"
 
 #. Author of the plugin/theme
 msgid "WPMultisite.com"
-msgstr "文派多站点"
+msgstr "WPMultisite.com"
 
 #. Author URI of the plugin/theme
 msgid "https://WPMultisite.com"
 msgstr "https://WPMultisite.com"
-
-#~ msgid ""
-#~ "Add custom links to frequently used pages or external tools. These will "
-#~ "appear as clickable tiles in your Quick Links widget. You can use "
-#~ "WordPress Dashicons or emojis for icons. Links can be reordered by "
-#~ "dragging and dropping."
-#~ msgstr ""
-#~ "添加常用页面或外部工具的自定义链接。这些将作为可点击的磁贴出现在您的快速链"
-#~ "接小部件中。您可以使用 WordPress Dashicons 图标或表情符号作为图标。链接可"
-#~ "以通过拖放重新排序。"
-
-#~ msgid "Home/Dashboard"
-#~ msgstr "首页/仪表板"
-
-#~ msgid "Users"
-#~ msgstr "用户"
-
-#~ msgid "Email"
-#~ msgstr "邮件"
-
-#~ msgid "External Link"
-#~ msgstr "外部链接"
-
-#~ msgid "Link"
-#~ msgstr "链接"
-
-#~ msgid "Drag & Drop Reordering"
-#~ msgstr "拖放重新排序"
-
-#~ msgid ""
-#~ "After saving your links, you can reorder them by dragging and dropping "
-#~ "the tiles in the Quick Links widget."
-#~ msgstr "保存链接后，您可以通过在快速链接小部件中拖放磁贴来重新排序。"
-
-#~ msgid "News Sources Configuration"
-#~ msgstr "新闻源配置"
-
-#~ msgid "Configure custom RSS news sources for the Network News widget."
-#~ msgstr "为网络新闻小部件配置自定义 RSS 新闻源。"
-
-#~ msgid "RSS URL"
-#~ msgstr "RSS 链接"
-
-#~ msgid "Disabled"
-#~ msgstr "已禁用"
-
-#~ msgid "No news sources configured."
-#~ msgstr "未配置新闻源。"
-
-#~ msgid "Manage News Sources"
-#~ msgstr "管理新闻源"
-
-#~ msgid ""
-#~ "You can add any valid RSS or Atom feed URL. The news widget will fetch "
-#~ "and display the latest articles from your configured sources."
-#~ msgstr ""
-#~ "您可以添加任何有效的 RSS 或 Atom 订阅链接。新闻小部件将从您配置的源获取并"
-#~ "显示最新文章。"
-
-#~ msgid "Are you sure you want to clear the cache?"
-#~ msgstr "您确定要清除缓存吗？"
-
-#~ msgid "Cache cleared successfully!"
-#~ msgstr "缓存清除成功！"
-
-#~ msgid "Failed to clear cache."
-#~ msgstr "清除缓存失败。"
-
-#~ msgid "Are you sure you want to clear the news cache?"
-#~ msgstr "您确定要清除新闻缓存吗？"
-
-#~ msgid "Failed to clear news cache."
-#~ msgstr "清除新闻缓存失败。"
-
-#~ msgid "Please go to the dashboard to configure news sources."
-#~ msgstr "请转到仪表板配置新闻源。"
-
-#~ msgid "News sources saved successfully!"
-#~ msgstr "新闻源保存成功！"
-
-#~ msgid "Failed to save news sources."
-#~ msgstr "保存新闻源失败。"

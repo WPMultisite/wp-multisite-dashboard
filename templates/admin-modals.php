@@ -1,36 +1,42 @@
 <?php
-if (!defined('ABSPATH')) {
-    exit;
+if (!defined("ABSPATH")) {
+    exit();
 }
 
-$contact_info = get_site_option('msd_contact_info', [
-    'name' => get_network_option(null, 'site_name'),
-    'email' => get_network_option(null, 'admin_email'),
-    'phone' => '',
-    'website' => network_home_url(),
-    'description' => 'Network Administrator Contact Information',
-    'qq' => '',
-    'wechat' => '',
-    'whatsapp' => '',
-    'telegram' => '',
-    'qr_code' => ''
+$contact_info = get_site_option("msd_contact_info", [
+    "name" => get_network_option(null, "site_name"),
+    "email" => get_network_option(null, "admin_email"),
+    "phone" => "",
+    "website" => network_home_url(),
+    "description" => __(
+        "Network Administrator Contact Information",
+        "wp-multisite-dashboard"
+    ),
+    "qq" => "",
+    "wechat" => "",
+    "whatsapp" => "",
+    "telegram" => "",
+    "qr_code" => "",
 ]);
 
-$news_sources = get_site_option('msd_news_sources', [
+$news_sources = get_site_option("msd_news_sources", [
     [
-        'name' => 'WordPress News',
-        'url' => 'https://wordpress.org/news/feed/',
-        'enabled' => true
-    ]
+        "name" => __("WordPress News", "wp-multisite-dashboard"),
+        "url" => "https://wordpress.org/news/feed/",
+        "enabled" => true,
+    ],
 ]);
 
-$quick_links = get_site_option('msd_quick_links', []);
+$quick_links = get_site_option("msd_quick_links", []);
 ?>
 
 <div id="msd-contact-info-modal" class="msd-modal" style="display: none;">
     <div class="msd-modal-content">
         <div class="msd-modal-header">
-            <h3><?php _e('Edit Contact Information', 'wp-multisite-dashboard'); ?></h3>
+            <h3><?php _e(
+                "Edit Contact Information",
+                "wp-multisite-dashboard"
+            ); ?></h3>
             <button type="button" class="msd-modal-close" onclick="MSD.hideContactInfoModal()">&times;</button>
         </div>
 
@@ -38,28 +44,59 @@ $quick_links = get_site_option('msd_quick_links', []);
             <div class="msd-contact-form">
                 <div class="msd-form-section">
                     <div class="msd-form-field">
-                        <label><?php _e('Organization Name:', 'wp-multisite-dashboard'); ?></label>
-                        <input type="text" id="msd-contact-name" value="<?php echo esc_attr($contact_info['name']); ?>" placeholder="<?php esc_attr_e('Network Administrator', 'wp-multisite-dashboard'); ?>">
+                        <label><?php _e(
+                            "Organization Name:",
+                            "wp-multisite-dashboard"
+                        ); ?></label>
+                        <input type="text" id="msd-contact-name" value="<?php echo esc_attr(
+                            $contact_info["name"]
+                        ); ?>" placeholder="<?php esc_attr_e(
+    "Network Administrator",
+    "wp-multisite-dashboard"
+); ?>">
                     </div>
 
                     <div class="msd-form-field">
-                        <label><?php _e('Email:', 'wp-multisite-dashboard'); ?></label>
-                        <input type="email" id="msd-contact-email" value="<?php echo esc_attr($contact_info['email']); ?>" placeholder="admin@example.com">
+                        <label><?php _e(
+                            "Email:",
+                            "wp-multisite-dashboard"
+                        ); ?></label>
+                        <input type="email" id="msd-contact-email" value="<?php echo esc_attr(
+                            $contact_info["email"]
+                        ); ?>" placeholder="admin@example.com">
                     </div>
 
                     <div class="msd-form-field">
-                        <label><?php _e('Phone:', 'wp-multisite-dashboard'); ?></label>
-                        <input type="text" id="msd-contact-phone" value="<?php echo esc_attr($contact_info['phone']); ?>" placeholder="+1 234 567 8900">
+                        <label><?php _e(
+                            "Phone:",
+                            "wp-multisite-dashboard"
+                        ); ?></label>
+                        <input type="text" id="msd-contact-phone" value="<?php echo esc_attr(
+                            $contact_info["phone"]
+                        ); ?>" placeholder="+1 234 567 8900">
                     </div>
 
                     <div class="msd-form-field">
-                        <label><?php _e('Website:', 'wp-multisite-dashboard'); ?></label>
-                        <input type="url" id="msd-contact-website" value="<?php echo esc_attr($contact_info['website']); ?>" placeholder="https://example.com">
+                        <label><?php _e(
+                            "Website:",
+                            "wp-multisite-dashboard"
+                        ); ?></label>
+                        <input type="url" id="msd-contact-website" value="<?php echo esc_attr(
+                            $contact_info["website"]
+                        ); ?>" placeholder="https://example.com">
                     </div>
 
                     <div class="msd-form-field">
-                        <label><?php _e('Description:', 'wp-multisite-dashboard'); ?></label>
-                        <textarea id="msd-contact-description" placeholder="<?php esc_attr_e('Brief description or role', 'wp-multisite-dashboard'); ?>"><?php echo esc_textarea($contact_info['description']); ?></textarea>
+                        <label><?php _e(
+                            "Description:",
+                            "wp-multisite-dashboard"
+                        ); ?></label>
+                        <textarea id="msd-contact-description" placeholder="<?php esc_attr_e(
+                            "Brief description or role",
+                            "wp-multisite-dashboard"
+                        ); ?>"><?php echo esc_textarea(
+    $contact_info["description"]
+); ?></textarea>
                     </div>
                 </div>
 
@@ -68,17 +105,27 @@ $quick_links = get_site_option('msd_quick_links', []);
                         <div class="msd-form-field">
                             <label>
                                 <span class="dashicons dashicons-admin-users"></span>
-                                <?php _e('QQ:', 'wp-multisite-dashboard'); ?>
+                                <?php _e("QQ:", "wp-multisite-dashboard"); ?>
                             </label>
-                            <input type="text" id="msd-contact-qq" value="<?php echo esc_attr($contact_info['qq']); ?>" placeholder="1234567890">
+                            <input type="text" id="msd-contact-qq" value="<?php echo esc_attr(
+                                $contact_info["qq"]
+                            ); ?>" placeholder="1234567890">
                         </div>
 
                         <div class="msd-form-field">
                             <label>
                                 <span class="dashicons dashicons-format-chat"></span>
-                                <?php _e('WeChat:', 'wp-multisite-dashboard'); ?>
+                                <?php _e(
+                                    "WeChat:",
+                                    "wp-multisite-dashboard"
+                                ); ?>
                             </label>
-                            <input type="text" id="msd-contact-wechat" value="<?php echo esc_attr($contact_info['wechat']); ?>" placeholder="WeChat_ID">
+                            <input type="text" id="msd-contact-wechat" value="<?php echo esc_attr(
+                                $contact_info["wechat"]
+                            ); ?>" placeholder="<?php esc_attr_e(
+    "WeChat ID",
+    "wp-multisite-dashboard"
+); ?>">
                         </div>
                     </div>
 
@@ -86,32 +133,62 @@ $quick_links = get_site_option('msd_quick_links', []);
                         <div class="msd-form-field">
                             <label>
                                 <span class="dashicons dashicons-smartphone"></span>
-                                <?php _e('WhatsApp:', 'wp-multisite-dashboard'); ?>
+                                <?php _e(
+                                    "WhatsApp:",
+                                    "wp-multisite-dashboard"
+                                ); ?>
                             </label>
-                            <input type="text" id="msd-contact-whatsapp" value="<?php echo esc_attr($contact_info['whatsapp']); ?>" placeholder="+1234567890">
+                            <input type="text" id="msd-contact-whatsapp" value="<?php echo esc_attr(
+                                $contact_info["whatsapp"]
+                            ); ?>" placeholder="+1234567890">
                         </div>
 
                         <div class="msd-form-field">
                             <label>
                                 <span class="dashicons dashicons-email-alt"></span>
-                                <?php _e('Telegram:', 'wp-multisite-dashboard'); ?>
+                                <?php _e(
+                                    "Telegram:",
+                                    "wp-multisite-dashboard"
+                                ); ?>
                             </label>
-                            <input type="text" id="msd-contact-telegram" value="<?php echo esc_attr($contact_info['telegram']); ?>" placeholder="@username">
+                            <input type="text" id="msd-contact-telegram" value="<?php echo esc_attr(
+                                $contact_info["telegram"]
+                            ); ?>" placeholder="@username">
                         </div>
                     </div>
                 </div>
 
                 <div class="msd-form-section">
                     <div class="msd-form-field">
-                        <label><?php _e('QR Code Image URL:', 'wp-multisite-dashboard'); ?></label>
+                        <label><?php _e(
+                            "QR Code Image URL:",
+                            "wp-multisite-dashboard"
+                        ); ?></label>
                         <div class="msd-qr-input-group">
-                            <input type="url" id="msd-contact-qr-code" value="<?php echo esc_attr($contact_info['qr_code']); ?>" placeholder="https://example.com/qr-code.png">
-                            <button type="button" class="button" onclick="MSD.selectQRImage()"><?php _e('Select Image', 'wp-multisite-dashboard'); ?></button>
+                            <input type="url" id="msd-contact-qr-code" value="<?php echo esc_attr(
+                                $contact_info["qr_code"]
+                            ); ?>" placeholder="https://example.com/qr-code.png">
+                            <button type="button" class="button" onclick="MSD.selectQRImage()"><?php _e(
+                                "Select Image",
+                                "wp-multisite-dashboard"
+                            ); ?></button>
                         </div>
-                        <p class="description"><?php _e('Upload or provide URL for a QR code image (WeChat, contact info, etc.)', 'wp-multisite-dashboard'); ?></p>
+                        <p class="description"><?php _e(
+                            "Upload or provide URL for a QR code image (WeChat, contact info, etc.)",
+                            "wp-multisite-dashboard"
+                        ); ?></p>
 
-                        <div id="msd-qr-preview" class="msd-qr-preview" style="<?php echo empty($contact_info['qr_code']) ? 'display: none;' : ''; ?>">
-                            <img src="<?php echo esc_url($contact_info['qr_code']); ?>" alt="QR Code Preview" class="msd-qr-preview-img">
+                        <div id="msd-qr-preview" class="msd-qr-preview" style="<?php echo empty(
+                            $contact_info["qr_code"]
+                        )
+                            ? "display: none;"
+                            : ""; ?>">
+                            <img src="<?php echo esc_url(
+                                $contact_info["qr_code"]
+                            ); ?>" alt="<?php esc_attr_e(
+    "QR Code Preview",
+    "wp-multisite-dashboard"
+); ?>" class="msd-qr-preview-img">
                             <button type="button" class="msd-qr-remove" onclick="MSD.removeQRCode()">×</button>
                         </div>
                     </div>
@@ -121,10 +198,10 @@ $quick_links = get_site_option('msd_quick_links', []);
 
         <div class="msd-modal-footer">
             <button type="button" class="button button-primary" onclick="MSD.saveContactInfo()">
-                <?php _e('Save Contact Info', 'wp-multisite-dashboard'); ?>
+                <?php _e("Save Contact Info", "wp-multisite-dashboard"); ?>
             </button>
             <button type="button" class="button" onclick="MSD.hideContactInfoModal()">
-                <?php _e('Cancel', 'wp-multisite-dashboard'); ?>
+                <?php _e("Cancel", "wp-multisite-dashboard"); ?>
             </button>
         </div>
     </div>
@@ -133,7 +210,10 @@ $quick_links = get_site_option('msd_quick_links', []);
 <div id="msd-news-sources-modal" class="msd-modal" style="display: none;">
     <div class="msd-modal-content">
         <div class="msd-modal-header">
-            <h3><?php _e('Configure News Sources', 'wp-multisite-dashboard'); ?></h3>
+            <h3><?php _e(
+                "Configure News Sources",
+                "wp-multisite-dashboard"
+            ); ?></h3>
             <button type="button" class="msd-modal-close" onclick="MSD.hideNewsSourcesModal()">&times;</button>
         </div>
 
@@ -144,13 +224,23 @@ $quick_links = get_site_option('msd_quick_links', []);
                         <div class="msd-news-source-item">
                             <div class="msd-source-row">
                                 <input type="text"
-                                       placeholder="<?php esc_attr_e('Source Name', 'wp-multisite-dashboard'); ?>"
-                                       value="<?php echo esc_attr($source['name']); ?>"
+                                       placeholder="<?php esc_attr_e(
+                                           "Source Name",
+                                           "wp-multisite-dashboard"
+                                       ); ?>"
+                                       value="<?php echo esc_attr(
+                                           $source["name"]
+                                       ); ?>"
                                        class="msd-news-name"
                                        required>
                                 <input type="url"
-                                       placeholder="<?php esc_attr_e('RSS Feed URL', 'wp-multisite-dashboard'); ?>"
-                                       value="<?php echo esc_url($source['url']); ?>"
+                                       placeholder="<?php esc_attr_e(
+                                           "RSS Feed URL",
+                                           "wp-multisite-dashboard"
+                                       ); ?>"
+                                       value="<?php echo esc_url(
+                                           $source["url"]
+                                       ); ?>"
                                        class="msd-news-url"
                                        required>
                             </div>
@@ -159,12 +249,20 @@ $quick_links = get_site_option('msd_quick_links', []);
                                 <label class="msd-checkbox-label">
                                     <input type="checkbox"
                                            class="msd-news-enabled"
-                                           <?php checked(!empty($source['enabled'])); ?>>
-                                    <?php _e('Enabled', 'wp-multisite-dashboard'); ?>
+                                           <?php checked(
+                                               !empty($source["enabled"])
+                                           ); ?>>
+                                    <?php _e(
+                                        "Enabled",
+                                        "wp-multisite-dashboard"
+                                    ); ?>
                                 </label>
 
                                 <button type="button" class="msd-remove-source">
-                                    <?php _e('Remove', 'wp-multisite-dashboard'); ?>
+                                    <?php _e(
+                                        "Remove",
+                                        "wp-multisite-dashboard"
+                                    ); ?>
                                 </button>
                             </div>
                         </div>
@@ -175,22 +273,37 @@ $quick_links = get_site_option('msd_quick_links', []);
             <div class="msd-add-source-section">
                 <button type="button" id="msd-add-news-source" class="button button-secondary">
                     <span class="dashicons dashicons-plus-alt"></span>
-                    <?php _e('Add News Source', 'wp-multisite-dashboard'); ?>
+                    <?php _e("Add News Source", "wp-multisite-dashboard"); ?>
                 </button>
             </div>
 
             <div class="msd-news-help">
-                <h4><?php _e('Popular RSS Feeds', 'wp-multisite-dashboard'); ?></h4>
+                <h4><?php _e(
+                    "Popular RSS Feeds",
+                    "wp-multisite-dashboard"
+                ); ?></h4>
                 <div class="msd-rss-suggestions">
                     <div class="msd-rss-suggestion">
-                        <strong>WenPai.org News</strong>
+                        <strong><?php _e(
+                            "WenPai.org News",
+                            "wp-multisite-dashboard"
+                        ); ?></strong>
                         <code>https://wenpai.org/news/feed/</code>
-                        <span class="msd-rss-desc">Official WenPai.org news and updates</span>
+                        <span class="msd-rss-desc"><?php _e(
+                            "Official WenPai.org news and updates",
+                            "wp-multisite-dashboard"
+                        ); ?></span>
                     </div>
                     <div class="msd-rss-suggestion">
-                        <strong>WP TEA</strong>
+                        <strong><?php _e(
+                            "WP TEA",
+                            "wp-multisite-dashboard"
+                        ); ?></strong>
                         <code>https://wptea.com/feed</code>
-                        <span class="msd-rss-desc">WordPress China community news and insights</span>
+                        <span class="msd-rss-desc"><?php _e(
+                            "WordPress China community news and insights",
+                            "wp-multisite-dashboard"
+                        ); ?></span>
                     </div>
                 </div>
             </div>
@@ -198,10 +311,10 @@ $quick_links = get_site_option('msd_quick_links', []);
 
         <div class="msd-modal-footer">
             <button type="button" class="button button-primary" onclick="MSD.saveNewsSources()">
-                <?php _e('Save News Sources', 'wp-multisite-dashboard'); ?>
+                <?php _e("Save News Sources", "wp-multisite-dashboard"); ?>
             </button>
             <button type="button" class="button" onclick="MSD.hideNewsSourcesModal()">
-                <?php _e('Cancel', 'wp-multisite-dashboard'); ?>
+                <?php _e("Cancel", "wp-multisite-dashboard"); ?>
             </button>
         </div>
     </div>
@@ -210,7 +323,10 @@ $quick_links = get_site_option('msd_quick_links', []);
 <div id="msd-quick-links-modal" class="msd-modal" style="display: none;">
     <div class="msd-modal-content">
         <div class="msd-modal-header">
-            <h3><?php _e('Configure Quick Links', 'wp-multisite-dashboard'); ?></h3>
+            <h3><?php _e(
+                "Configure Quick Links",
+                "wp-multisite-dashboard"
+            ); ?></h3>
             <button type="button" class="msd-modal-close" onclick="MSD.hideQuickLinksModal()">&times;</button>
         </div>
 
@@ -221,33 +337,56 @@ $quick_links = get_site_option('msd_quick_links', []);
                         <div class="msd-link-item">
                             <div class="msd-link-row">
                                 <input type="text"
-                                       placeholder="<?php esc_attr_e('Link Title', 'wp-multisite-dashboard'); ?>"
-                                       value="<?php echo esc_attr($link['title']); ?>"
+                                       placeholder="<?php esc_attr_e(
+                                           "Link Title",
+                                           "wp-multisite-dashboard"
+                                       ); ?>"
+                                       value="<?php echo esc_attr(
+                                           $link["title"]
+                                       ); ?>"
                                        class="msd-link-title"
                                        required>
                                 <input type="url"
                                        placeholder="https://example.com"
-                                       value="<?php echo esc_url($link['url']); ?>"
+                                       value="<?php echo esc_url(
+                                           $link["url"]
+                                       ); ?>"
                                        class="msd-link-url"
                                        required>
                             </div>
 
                             <div class="msd-link-options">
                                 <input type="text"
-                                       placeholder="<?php esc_attr_e('dashicons-admin-home or 🏠', 'wp-multisite-dashboard'); ?>"
-                                       value="<?php echo esc_attr($link['icon']); ?>"
+                                       placeholder="<?php esc_attr_e(
+                                           "dashicons-admin-home or 🏠",
+                                           "wp-multisite-dashboard"
+                                       ); ?>"
+                                       value="<?php echo esc_attr(
+                                           $link["icon"]
+                                       ); ?>"
                                        class="msd-link-icon"
-                                       title="<?php esc_attr_e('Icon (Dashicon class or emoji)', 'wp-multisite-dashboard'); ?>">
+                                       title="<?php esc_attr_e(
+                                           "Icon (Dashicon class or emoji)",
+                                           "wp-multisite-dashboard"
+                                       ); ?>">
 
                                 <label class="msd-checkbox-label">
                                     <input type="checkbox"
                                            class="msd-link-newtab"
-                                           <?php checked(!empty($link['new_tab'])); ?>>
-                                    <?php _e('Open in new tab', 'wp-multisite-dashboard'); ?>
+                                           <?php checked(
+                                               !empty($link["new_tab"])
+                                           ); ?>>
+                                    <?php _e(
+                                        "Open in new tab",
+                                        "wp-multisite-dashboard"
+                                    ); ?>
                                 </label>
 
                                 <button type="button" class="msd-remove-link">
-                                    <?php _e('Remove', 'wp-multisite-dashboard'); ?>
+                                    <?php _e(
+                                        "Remove",
+                                        "wp-multisite-dashboard"
+                                    ); ?>
                                 </button>
                             </div>
                         </div>
@@ -258,64 +397,100 @@ $quick_links = get_site_option('msd_quick_links', []);
             <div class="msd-add-link-section">
                 <button type="button" id="msd-add-link" class="button button-secondary">
                     <span class="dashicons dashicons-plus-alt"></span>
-                    <?php _e('Add Link', 'wp-multisite-dashboard'); ?>
+                    <?php _e("Add Link", "wp-multisite-dashboard"); ?>
                 </button>
             </div>
 
             <div class="msd-quick-links-help">
-                <h4><?php _e('Icon Options', 'wp-multisite-dashboard'); ?></h4>
+                <h4><?php _e("Icon Options", "wp-multisite-dashboard"); ?></h4>
 
                 <div class="msd-icon-types">
                     <div class="msd-icon-type-section">
-                        <h5><?php _e('WordPress Dashicons', 'wp-multisite-dashboard'); ?></h5>
+                        <h5><?php _e(
+                            "WordPress Dashicons",
+                            "wp-multisite-dashboard"
+                        ); ?></h5>
                         <div class="msd-icon-examples">
                             <div class="msd-icon-example">
                                 <span class="dashicons dashicons-admin-home"></span>
                                 <code>dashicons-admin-home</code>
-                                <span><?php _e('Home', 'wp-multisite-dashboard'); ?></span>
+                                <span><?php _e(
+                                    "Home",
+                                    "wp-multisite-dashboard"
+                                ); ?></span>
                             </div>
                             <div class="msd-icon-example">
                                 <span class="dashicons dashicons-chart-bar"></span>
                                 <code>dashicons-chart-bar</code>
-                                <span><?php _e('Analytics', 'wp-multisite-dashboard'); ?></span>
+                                <span><?php _e(
+                                    "Analytics",
+                                    "wp-multisite-dashboard"
+                                ); ?></span>
                             </div>
                         </div>
                     </div>
 
                     <div class="msd-icon-type-section">
-                        <h5><?php _e('Emojis', 'wp-multisite-dashboard'); ?></h5>
+                        <h5><?php _e(
+                            "Emojis",
+                            "wp-multisite-dashboard"
+                        ); ?></h5>
                         <div class="msd-icon-examples">
                             <div class="msd-icon-example">
                                 <span class="msd-emoji">🏠</span>
                                 <code>🏠</code>
-                                <span><?php _e('Home', 'wp-multisite-dashboard'); ?></span>
+                                <span><?php _e(
+                                    "Home",
+                                    "wp-multisite-dashboard"
+                                ); ?></span>
                             </div>
                             <div class="msd-icon-example">
                                 <span class="msd-emoji">⚙️</span>
                                 <code>⚙️</code>
-                                <span><?php _e('Settings', 'wp-multisite-dashboard'); ?></span>
+                                <span><?php _e(
+                                    "Settings",
+                                    "wp-multisite-dashboard"
+                                ); ?></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <p class="description">
-                    <strong><?php _e('Dashicons:', 'wp-multisite-dashboard'); ?></strong> <?php _e('Built into WordPress, always available. Use format:', 'wp-multisite-dashboard'); ?> <code>dashicons-icon-name</code><br>
-                    <strong><?php _e('Emojis:', 'wp-multisite-dashboard'); ?></strong> <?php _e('Copy and paste emoji directly. Works on all devices.', 'wp-multisite-dashboard'); ?>
+                    <strong><?php _e(
+                        "Dashicons:",
+                        "wp-multisite-dashboard"
+                    ); ?></strong> <?php _e(
+    "Built into WordPress, always available. Use format:",
+    "wp-multisite-dashboard"
+); ?> <code>dashicons-icon-name</code><br>
+                    <strong><?php _e(
+                        "Emojis:",
+                        "wp-multisite-dashboard"
+                    ); ?></strong> <?php _e(
+    "Copy and paste emoji directly. Works on all devices.",
+    "wp-multisite-dashboard"
+); ?>
                 </p>
 
                 <p class="description">
-                    <?php printf(__('Find more Dashicons at %s', 'wp-multisite-dashboard'), '<a href="https://developer.wordpress.org/resource/dashicons/" target="_blank">developer.wordpress.org/resource/dashicons/</a>'); ?>
+                    <?php printf(
+                        __(
+                            "Find more Dashicons at %s",
+                            "wp-multisite-dashboard"
+                        ),
+                        '<a href="https://developer.wordpress.org/resource/dashicons/" target="_blank">developer.wordpress.org/resource/dashicons/</a>'
+                    ); ?>
                 </p>
             </div>
         </div>
 
         <div class="msd-modal-footer">
             <button type="button" class="button button-primary" onclick="MSD.saveQuickLinks()">
-                <?php _e('Save Links', 'wp-multisite-dashboard'); ?>
+                <?php _e("Save Links", "wp-multisite-dashboard"); ?>
             </button>
             <button type="button" class="button" onclick="MSD.hideQuickLinksModal()">
-                <?php _e('Cancel', 'wp-multisite-dashboard'); ?>
+                <?php _e("Cancel", "wp-multisite-dashboard"); ?>
             </button>
         </div>
     </div>

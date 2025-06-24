@@ -1,36 +1,39 @@
 <?php
 
-if (!defined('ABSPATH')) {
-    exit;
+if (!defined("ABSPATH")) {
+    exit();
 }
 
-class WP_MSD_Network_Data {
-
+class WP_MSD_Network_Data
+{
     private $wpdb;
-    private $cache_group = 'msd_network_data';
+    private $cache_group = "msd_network_data";
     private $cache_timeout = 3600;
 
-    public function __construct() {
+    public function __construct()
+    {
         global $wpdb;
         $this->wpdb = $wpdb;
     }
 
-    public function get_total_sites() {
-        $cache_key = 'total_sites';
+    public function get_total_sites()
+    {
+        $cache_key = "total_sites";
         $cached = $this->get_cache($cache_key);
 
         if ($cached !== false) {
             return $cached;
         }
 
-        $count = get_sites(['count' => true]);
+        $count = get_sites(["count" => true]);
         $this->set_cache($cache_key, $count, 1800);
 
         return $count;
     }
 
-    public function get_total_users() {
-        $cache_key = 'total_users';
+    public function get_total_users()
+    {
+        $cache_key = "total_users";
         $cached = $this->get_cache($cache_key);
 
         if ($cached !== false) {
@@ -47,15 +50,16 @@ class WP_MSD_Network_Data {
         return $count;
     }
 
-    public function get_total_posts() {
-        $cache_key = 'total_posts';
+    public function get_total_posts()
+    {
+        $cache_key = "total_posts";
         $cached = $this->get_cache($cache_key);
 
         if ($cached !== false) {
             return $cached;
         }
 
-        $sites = get_sites(['number' => 100]);
+        $sites = get_sites(["number" => 100]);
         $total_posts = 0;
 
         foreach ($sites as $site) {
@@ -72,22 +76,23 @@ class WP_MSD_Network_Data {
         return $total_posts;
     }
 
-    public function get_total_pages() {
-        $cache_key = 'total_pages';
+    public function get_total_pages()
+    {
+        $cache_key = "total_pages";
         $cached = $this->get_cache($cache_key);
 
         if ($cached !== false) {
             return $cached;
         }
 
-        $sites = get_sites(['number' => 100]);
+        $sites = get_sites(["number" => 100]);
         $total_pages = 0;
 
         foreach ($sites as $site) {
             $blog_id = $site->blog_id;
             switch_to_blog($blog_id);
 
-            $pages_count = wp_count_posts('page');
+            $pages_count = wp_count_posts("page");
             $total_pages += $pages_count->publish;
 
             restore_current_blog();
@@ -97,8 +102,9 @@ class WP_MSD_Network_Data {
         return $total_pages;
     }
 
-    public function get_multisite_configuration() {
-        $cache_key = 'multisite_configuration';
+    public function get_multisite_configuration()
+    {
+        $cache_key = "multisite_configuration";
         $cached = $this->get_cache($cache_key);
 
         if ($cached !== false) {
@@ -106,24 +112,27 @@ class WP_MSD_Network_Data {
         }
 
         $config = [
-            'installation_type' => is_subdomain_install() ? 'subdomain' : 'subdirectory',
-            'installation_type_label' => is_subdomain_install() ?
-                __('Subdomain Installation', 'wp-multisite-dashboard') :
-                __('Subdirectory Installation', 'wp-multisite-dashboard'),
-            'domain_current_site' => DOMAIN_CURRENT_SITE,
-            'path_current_site' => PATH_CURRENT_SITE,
-            'site_id_current_site' => SITE_ID_CURRENT_SITE,
-            'blog_id_current_site' => BLOG_ID_CURRENT_SITE,
-            'multisite_enabled' => true,
-            'cookie_domain' => defined('COOKIE_DOMAIN') ? COOKIE_DOMAIN : '',
+            "installation_type" => is_subdomain_install()
+                ? "subdomain"
+                : "subdirectory",
+            "installation_type_label" => is_subdomain_install()
+                ? __("Subdomain Installation", "wp-multisite-dashboard")
+                : __("Subdirectory Installation", "wp-multisite-dashboard"),
+            "domain_current_site" => DOMAIN_CURRENT_SITE,
+            "path_current_site" => PATH_CURRENT_SITE,
+            "site_id_current_site" => SITE_ID_CURRENT_SITE,
+            "blog_id_current_site" => BLOG_ID_CURRENT_SITE,
+            "multisite_enabled" => true,
+            "cookie_domain" => defined("COOKIE_DOMAIN") ? COOKIE_DOMAIN : "",
         ];
 
         $this->set_cache($cache_key, $config, 7200);
         return $config;
     }
 
-    public function get_network_information() {
-        $cache_key = 'network_information';
+    public function get_network_information()
+    {
+        $cache_key = "network_information";
         $cached = $this->get_cache($cache_key);
 
         if ($cached !== false) {
@@ -133,45 +142,71 @@ class WP_MSD_Network_Data {
         global $wp_version;
 
         $info = [
-            'network_name' => get_network_option(null, 'site_name'),
-            'network_admin_email' => get_network_option(null, 'admin_email'),
-            'registration' => get_network_option(null, 'registration'),
-            'registration_label' => $this->get_registration_label(get_network_option(null, 'registration')),
-            'blog_upload_space' => get_space_allowed(),
-            'blog_upload_space_formatted' => get_space_allowed() . ' MB',
-            'fileupload_maxk' => get_network_option(null, 'fileupload_maxk'),
-            'fileupload_maxk_formatted' => size_format(get_network_option(null, 'fileupload_maxk') * 1024),
-            'illegal_names' => get_network_option(null, 'illegal_names'),
-            'limited_email_domains' => get_network_option(null, 'limited_email_domains'),
-            'banned_email_domains' => get_network_option(null, 'banned_email_domains'),
-            'welcome_email' => get_network_option(null, 'welcome_email'),
-            'first_post' => get_network_option(null, 'first_post'),
-            'first_page' => get_network_option(null, 'first_page'),
-            'first_comment' => get_network_option(null, 'first_comment'),
-            'first_comment_url' => get_network_option(null, 'first_comment_url'),
-            'first_comment_author' => get_network_option(null, 'first_comment_author'),
-            'welcome_user_email' => get_network_option(null, 'welcome_user_email'),
-            'default_language' => get_network_option(null, 'WPLANG') ?: 'en_US',
-            'wp_version' => $wp_version,
-            'active_sitewide_plugins_count' => count(get_site_option('active_sitewide_plugins', [])),
-            'allowed_themes_count' => count(get_site_option('allowedthemes', [])),
+            "network_name" => get_network_option(null, "site_name"),
+            "network_admin_email" => get_network_option(null, "admin_email"),
+            "registration" => get_network_option(null, "registration"),
+            "registration_label" => $this->get_registration_label(
+                get_network_option(null, "registration")
+            ),
+            "blog_upload_space" => get_space_allowed(),
+            "blog_upload_space_formatted" => get_space_allowed() . " MB",
+            "fileupload_maxk" => get_network_option(null, "fileupload_maxk"),
+            "fileupload_maxk_formatted" => size_format(
+                get_network_option(null, "fileupload_maxk") * 1024
+            ),
+            "illegal_names" => get_network_option(null, "illegal_names"),
+            "limited_email_domains" => get_network_option(
+                null,
+                "limited_email_domains"
+            ),
+            "banned_email_domains" => get_network_option(
+                null,
+                "banned_email_domains"
+            ),
+            "welcome_email" => get_network_option(null, "welcome_email"),
+            "first_post" => get_network_option(null, "first_post"),
+            "first_page" => get_network_option(null, "first_page"),
+            "first_comment" => get_network_option(null, "first_comment"),
+            "first_comment_url" => get_network_option(
+                null,
+                "first_comment_url"
+            ),
+            "first_comment_author" => get_network_option(
+                null,
+                "first_comment_author"
+            ),
+            "welcome_user_email" => get_network_option(
+                null,
+                "welcome_user_email"
+            ),
+            "default_language" => get_network_option(null, "WPLANG") ?: "en_US",
+            "wp_version" => $wp_version,
+            "active_sitewide_plugins_count" => count(
+                get_site_option("active_sitewide_plugins", [])
+            ),
+            "allowed_themes_count" => count(
+                get_site_option("allowedthemes", [])
+            ),
         ];
 
         $this->set_cache($cache_key, $info, 3600);
         return $info;
     }
 
-    private function get_registration_label($registration) {
+    private function get_registration_label($registration)
+    {
         $labels = [
-            'none' => __('Registration disabled', 'wp-multisite-dashboard'),
-            'user' => __('User registration only', 'wp-multisite-dashboard'),
-            'blog' => __('Site registration only', 'wp-multisite-dashboard'),
-            'all' => __('User and site registration', 'wp-multisite-dashboard')
+            "none" => __("Registration disabled", "wp-multisite-dashboard"),
+            "user" => __("User registration only", "wp-multisite-dashboard"),
+            "blog" => __("Site registration only", "wp-multisite-dashboard"),
+            "all" => __("User and site registration", "wp-multisite-dashboard"),
         ];
-        return $labels[$registration] ?? __('Unknown', 'wp-multisite-dashboard');
+        return $labels[$registration] ??
+            __("Unknown", "wp-multisite-dashboard");
     }
 
-    public function get_recent_network_activity($limit = 10) {
+    public function get_recent_network_activity($limit = 10)
+    {
         $cache_key = "recent_network_activity_{$limit}";
         $cached = $this->get_cache($cache_key);
 
@@ -179,7 +214,11 @@ class WP_MSD_Network_Data {
             return $cached;
         }
 
-        $sites = get_sites(['number' => 20, 'orderby' => 'last_updated', 'order' => 'DESC']);
+        $sites = get_sites([
+            "number" => 20,
+            "orderby" => "last_updated",
+            "order" => "DESC",
+        ]);
         $activities = [];
 
         foreach ($sites as $site) {
@@ -187,65 +226,85 @@ class WP_MSD_Network_Data {
             switch_to_blog($blog_id);
 
             $recent_posts = get_posts([
-                'numberposts' => 3,
-                'post_status' => 'publish',
-                'orderby' => 'date',
-                'order' => 'DESC'
+                "numberposts" => 3,
+                "post_status" => "publish",
+                "orderby" => "date",
+                "order" => "DESC",
             ]);
 
             $recent_pages = get_posts([
-                'numberposts' => 2,
-                'post_type' => 'page',
-                'post_status' => 'publish',
-                'orderby' => 'date',
-                'order' => 'DESC'
+                "numberposts" => 2,
+                "post_type" => "page",
+                "post_status" => "publish",
+                "orderby" => "date",
+                "order" => "DESC",
             ]);
 
-            $site_name = get_bloginfo('name');
+            $site_name = get_bloginfo("name");
             $site_url = get_site_url();
             $admin_url = get_admin_url();
 
             foreach ($recent_posts as $post) {
                 $activities[] = [
-                    'type' => 'post',
-                    'type_label' => __('Post', 'wp-multisite-dashboard'),
-                    'title' => $post->post_title,
-                    'content' => wp_trim_words($post->post_content, 15),
-                    'author' => get_the_author_meta('display_name', $post->post_author),
-                    'date' => $post->post_date,
-                    'date_human' => human_time_diff(strtotime($post->post_date)) . ' ago',
-                    'site_name' => $site_name,
-                    'site_url' => $site_url,
-                    'edit_url' => $admin_url . 'post.php?post=' . $post->ID . '&action=edit',
-                    'view_url' => get_permalink($post->ID),
-                    'blog_id' => $blog_id,
-                    'timestamp' => strtotime($post->post_date)
+                    "type" => "post",
+                    "type_label" => __("Post", "wp-multisite-dashboard"),
+                    "title" => $post->post_title,
+                    "content" => wp_trim_words($post->post_content, 15),
+                    "author" => get_the_author_meta(
+                        "display_name",
+                        $post->post_author
+                    ),
+                    "date" => $post->post_date,
+                    "date_human" =>
+                        human_time_diff(strtotime($post->post_date)) .
+                        " " .
+                        __("ago", "wp-multisite-dashboard"),
+                    "site_name" => $site_name,
+                    "site_url" => $site_url,
+                    "edit_url" =>
+                        $admin_url .
+                        "post.php?post=" .
+                        $post->ID .
+                        "&action=edit",
+                    "view_url" => get_permalink($post->ID),
+                    "blog_id" => $blog_id,
+                    "timestamp" => strtotime($post->post_date),
                 ];
             }
 
             foreach ($recent_pages as $page) {
                 $activities[] = [
-                    'type' => 'page',
-                    'type_label' => __('Page', 'wp-multisite-dashboard'),
-                    'title' => $page->post_title,
-                    'content' => wp_trim_words($page->post_content, 15),
-                    'author' => get_the_author_meta('display_name', $page->post_author),
-                    'date' => $page->post_date,
-                    'date_human' => human_time_diff(strtotime($page->post_date)) . ' ago',
-                    'site_name' => $site_name,
-                    'site_url' => $site_url,
-                    'edit_url' => $admin_url . 'post.php?post=' . $page->ID . '&action=edit',
-                    'view_url' => get_permalink($page->ID),
-                    'blog_id' => $blog_id,
-                    'timestamp' => strtotime($page->post_date)
+                    "type" => "page",
+                    "type_label" => __("Page", "wp-multisite-dashboard"),
+                    "title" => $page->post_title,
+                    "content" => wp_trim_words($page->post_content, 15),
+                    "author" => get_the_author_meta(
+                        "display_name",
+                        $page->post_author
+                    ),
+                    "date" => $page->post_date,
+                    "date_human" =>
+                        human_time_diff(strtotime($page->post_date)) .
+                        " " .
+                        __("ago", "wp-multisite-dashboard"),
+                    "site_name" => $site_name,
+                    "site_url" => $site_url,
+                    "edit_url" =>
+                        $admin_url .
+                        "post.php?post=" .
+                        $page->ID .
+                        "&action=edit",
+                    "view_url" => get_permalink($page->ID),
+                    "blog_id" => $blog_id,
+                    "timestamp" => strtotime($page->post_date),
                 ];
             }
 
             restore_current_blog();
         }
 
-        usort($activities, function($a, $b) {
-            return $b['timestamp'] - $a['timestamp'];
+        usort($activities, function ($a, $b) {
+            return $b["timestamp"] - $a["timestamp"];
         });
 
         $activities = array_slice($activities, 0, $limit);
@@ -254,8 +313,9 @@ class WP_MSD_Network_Data {
         return $activities;
     }
 
-    public function get_total_storage_used() {
-        $cache_key = 'total_storage';
+    public function get_total_storage_used()
+    {
+        $cache_key = "total_storage";
         $cached = $this->get_cache($cache_key);
 
         if ($cached !== false) {
@@ -265,8 +325,8 @@ class WP_MSD_Network_Data {
         $storage_data = $this->get_storage_usage_data();
         $total_bytes = 0;
 
-        foreach ($storage_data['sites'] as $site) {
-            $total_bytes += $site['storage_bytes'];
+        foreach ($storage_data["sites"] as $site) {
+            $total_bytes += $site["storage_bytes"];
         }
 
         $formatted_storage = size_format($total_bytes);
@@ -275,7 +335,8 @@ class WP_MSD_Network_Data {
         return $formatted_storage;
     }
 
-    public function get_storage_usage_data($limit = 10) {
+    public function get_storage_usage_data($limit = 10)
+    {
         $cache_key = "storage_usage_data_{$limit}";
         $cached = $this->get_cache($cache_key);
 
@@ -283,17 +344,17 @@ class WP_MSD_Network_Data {
             return $cached;
         }
 
-        $sites = get_sites(['number' => 100]);
+        $sites = get_sites(["number" => 100]);
         $storage_data = [
-            'total_bytes' => 0,
-            'total_formatted' => '0 B',
-            'sites' => [],
-            'summary' => [
-                'sites_analyzed' => 0,
-                'average_per_site' => 0,
-                'largest_site' => null,
-                'storage_limit' => get_space_allowed()
-            ]
+            "total_bytes" => 0,
+            "total_formatted" => "0 B",
+            "sites" => [],
+            "summary" => [
+                "sites_analyzed" => 0,
+                "average_per_site" => 0,
+                "largest_site" => null,
+                "storage_limit" => get_space_allowed(),
+            ],
         ];
 
         $site_storage = [];
@@ -305,18 +366,24 @@ class WP_MSD_Network_Data {
 
             if ($storage_bytes > 0) {
                 $storage_limit_mb = get_space_allowed();
-                $usage_percentage = $storage_limit_mb > 0 ? ($storage_bytes / (1024 * 1024)) / $storage_limit_mb * 100 : 0;
+                $usage_percentage =
+                    $storage_limit_mb > 0
+                        ? ($storage_bytes / (1024 * 1024) / $storage_limit_mb) *
+                            100
+                        : 0;
 
                 $site_info = [
-                    'blog_id' => $blog_id,
-                    'name' => $this->get_site_name($blog_id),
-                    'domain' => $site->domain . $site->path,
-                    'storage_bytes' => $storage_bytes,
-                    'storage_formatted' => size_format($storage_bytes),
-                    'storage_limit_mb' => $storage_limit_mb,
-                    'usage_percentage' => round($usage_percentage, 1),
-                    'status' => $this->get_storage_status_from_percentage($usage_percentage),
-                    'admin_url' => get_admin_url($blog_id)
+                    "blog_id" => $blog_id,
+                    "name" => $this->get_site_name($blog_id),
+                    "domain" => $site->domain . $site->path,
+                    "storage_bytes" => $storage_bytes,
+                    "storage_formatted" => size_format($storage_bytes),
+                    "storage_limit_mb" => $storage_limit_mb,
+                    "usage_percentage" => round($usage_percentage, 1),
+                    "status" => $this->get_storage_status_from_percentage(
+                        $usage_percentage
+                    ),
+                    "admin_url" => get_admin_url($blog_id),
                 ];
 
                 $site_storage[] = $site_info;
@@ -324,32 +391,37 @@ class WP_MSD_Network_Data {
             }
         }
 
-        usort($site_storage, function($a, $b) {
-            return $b['storage_bytes'] <=> $a['storage_bytes'];
+        usort($site_storage, function ($a, $b) {
+            return $b["storage_bytes"] <=> $a["storage_bytes"];
         });
 
-        $storage_data['sites'] = array_slice($site_storage, 0, $limit);
-        $storage_data['total_bytes'] = $total_bytes;
-        $storage_data['total_formatted'] = size_format($total_bytes);
-        $storage_data['summary']['sites_analyzed'] = count($site_storage);
-        $storage_data['summary']['average_per_site'] = count($site_storage) > 0 ? $total_bytes / count($site_storage) : 0;
-        $storage_data['summary']['largest_site'] = !empty($site_storage) ? $site_storage[0] : null;
+        $storage_data["sites"] = array_slice($site_storage, 0, $limit);
+        $storage_data["total_bytes"] = $total_bytes;
+        $storage_data["total_formatted"] = size_format($total_bytes);
+        $storage_data["summary"]["sites_analyzed"] = count($site_storage);
+        $storage_data["summary"]["average_per_site"] =
+            count($site_storage) > 0 ? $total_bytes / count($site_storage) : 0;
+        $storage_data["summary"]["largest_site"] = !empty($site_storage)
+            ? $site_storage[0]
+            : null;
 
         $this->set_cache($cache_key, $storage_data, 3600);
         return $storage_data;
     }
 
-    private function get_storage_status_from_percentage($percentage) {
+    private function get_storage_status_from_percentage($percentage)
+    {
         if ($percentage > 90) {
-            return 'critical';
+            return "critical";
         } elseif ($percentage > 75) {
-            return 'warning';
+            return "warning";
         }
-        return 'good';
+        return "good";
     }
 
-    public function get_overall_network_status() {
-        $cache_key = 'network_status';
+    public function get_overall_network_status()
+    {
+        $cache_key = "network_status";
         $cached = $this->get_cache($cache_key);
 
         if ($cached !== false) {
@@ -359,14 +431,17 @@ class WP_MSD_Network_Data {
         $total_sites = $this->get_total_sites();
 
         $status_data = [
-            'status' => 'healthy',
-            'message' => __('All systems operating normally', 'wp-multisite-dashboard')
+            "status" => "healthy",
+            "message" => __(
+                "All systems operating normally",
+                "wp-multisite-dashboard"
+            ),
         ];
 
         if ($total_sites == 0) {
             $status_data = [
-                'status' => 'warning',
-                'message' => __('No sites found', 'wp-multisite-dashboard')
+                "status" => "warning",
+                "message" => __("No sites found", "wp-multisite-dashboard"),
             ];
         }
 
@@ -374,7 +449,8 @@ class WP_MSD_Network_Data {
         return $status_data;
     }
 
-    public function get_recent_active_sites($limit = 5) {
+    public function get_recent_active_sites($limit = 5)
+    {
         $cache_key = "recent_sites_{$limit}";
         $cached = $this->get_cache($cache_key);
 
@@ -389,28 +465,35 @@ class WP_MSD_Network_Data {
             $blog_id = $site->blog_id;
 
             $site_info = [
-                'blog_id' => $blog_id,
-                'name' => $this->get_site_name($blog_id),
-                'domain' => $site->domain . $site->path,
-                'users' => $this->get_site_user_count($blog_id),
-                'last_activity' => $this->get_site_last_activity($blog_id),
-                'admin_url' => get_admin_url($blog_id),
-                'view_url' => get_site_url($blog_id),
-                'status' => $this->get_site_status($blog_id),
-                'favicon' => $this->get_site_favicon($blog_id)
+                "blog_id" => $blog_id,
+                "name" => $this->get_site_name($blog_id),
+                "domain" => $site->domain . $site->path,
+                "users" => $this->get_site_user_count($blog_id),
+                "last_activity" => $this->get_site_last_activity($blog_id),
+                "admin_url" => get_admin_url($blog_id),
+                "view_url" => get_site_url($blog_id),
+                "status" => $this->get_site_status($blog_id),
+                "favicon" => $this->get_site_favicon($blog_id),
             ];
 
-            $site_info['last_activity_human'] = $site_info['last_activity']
-                ? human_time_diff(strtotime($site_info['last_activity'])) . ' ago'
-                : __('No recent activity', 'wp-multisite-dashboard');
+            $site_info["last_activity_human"] = $site_info["last_activity"]
+                ? human_time_diff(strtotime($site_info["last_activity"])) .
+                    " " .
+                    __("ago", "wp-multisite-dashboard")
+                : __("No recent activity", "wp-multisite-dashboard");
 
             $site_data[] = $site_info;
         }
 
-        usort($site_data, function($a, $b) {
-            if (empty($a['last_activity'])) return 1;
-            if (empty($b['last_activity'])) return -1;
-            return strtotime($b['last_activity']) - strtotime($a['last_activity']);
+        usort($site_data, function ($a, $b) {
+            if (empty($a["last_activity"])) {
+                return 1;
+            }
+            if (empty($b["last_activity"])) {
+                return -1;
+            }
+            return strtotime($b["last_activity"]) -
+                strtotime($a["last_activity"]);
         });
 
         $recent_sites = array_slice($site_data, 0, $limit);
@@ -419,8 +502,9 @@ class WP_MSD_Network_Data {
         return $recent_sites;
     }
 
-    public function get_network_settings_overview() {
-        $cache_key = 'network_settings_overview';
+    public function get_network_settings_overview()
+    {
+        $cache_key = "network_settings_overview";
         $cached = $this->get_cache($cache_key);
 
         if ($cached !== false) {
@@ -430,58 +514,70 @@ class WP_MSD_Network_Data {
         global $wp_version;
 
         $settings_data = [
-            'network_info' => [
-                'network_name' => get_network_option(null, 'site_name'),
-                'network_admin_email' => get_network_option(null, 'admin_email'),
-                'registration_allowed' => get_network_option(null, 'registration'),
-                'subdomain_install' => is_subdomain_install(),
-                'max_upload_size' => size_format(wp_max_upload_size()),
-                'blog_upload_space' => get_space_allowed(),
-                'file_upload_max_size' => size_format(wp_max_upload_size()),
-                'max_execution_time' => ini_get('max_execution_time'),
-                'memory_limit' => ini_get('memory_limit')
+            "network_info" => [
+                "network_name" => get_network_option(null, "site_name"),
+                "network_admin_email" => get_network_option(
+                    null,
+                    "admin_email"
+                ),
+                "registration_allowed" => get_network_option(
+                    null,
+                    "registration"
+                ),
+                "subdomain_install" => is_subdomain_install(),
+                "max_upload_size" => size_format(wp_max_upload_size()),
+                "blog_upload_space" => get_space_allowed(),
+                "file_upload_max_size" => size_format(wp_max_upload_size()),
+                "max_execution_time" => ini_get("max_execution_time"),
+                "memory_limit" => ini_get("memory_limit"),
             ],
-            'theme_plugin_settings' => [
-                'network_active_plugins' => count(get_site_option('active_sitewide_plugins', [])),
-                'network_themes' => $this->count_network_themes(),
-                'plugin_auto_updates' => $this->check_plugin_auto_updates(),
-                'theme_auto_updates' => $this->check_theme_auto_updates()
+            "theme_plugin_settings" => [
+                "network_active_plugins" => count(
+                    get_site_option("active_sitewide_plugins", [])
+                ),
+                "network_themes" => $this->count_network_themes(),
+                "plugin_auto_updates" => $this->check_plugin_auto_updates(),
+                "theme_auto_updates" => $this->check_theme_auto_updates(),
             ],
-            'quick_actions' => [
-                'network_settings_url' => network_admin_url('settings.php'),
-                'network_sites_url' => network_admin_url('sites.php'),
-                'network_users_url' => network_admin_url('users.php'),
-                'network_themes_url' => network_admin_url('themes.php'),
-                'network_plugins_url' => network_admin_url('plugins.php'),
-                'network_updates_url' => network_admin_url('update-core.php')
+            "quick_actions" => [
+                "network_settings_url" => network_admin_url("settings.php"),
+                "network_sites_url" => network_admin_url("sites.php"),
+                "network_users_url" => network_admin_url("users.php"),
+                "network_themes_url" => network_admin_url("themes.php"),
+                "network_plugins_url" => network_admin_url("plugins.php"),
+                "network_updates_url" => network_admin_url("update-core.php"),
             ],
-            'system_status' => [
-                'wordpress_version' => $wp_version,
-                'php_version' => phpversion(),
-                'mysql_version' => $this->wpdb->db_version(),
-                'multisite_enabled' => true,
-                'last_updated' => current_time('mysql')
-            ]
+            "system_status" => [
+                "wordpress_version" => $wp_version,
+                "php_version" => phpversion(),
+                "mysql_version" => $this->wpdb->db_version(),
+                "multisite_enabled" => true,
+                "last_updated" => current_time("mysql"),
+            ],
         ];
 
         $this->set_cache($cache_key, $settings_data, 1800);
         return $settings_data;
     }
 
-    private function count_network_themes() {
-        $themes = wp_get_themes(['allowed' => 'network']);
+    private function count_network_themes()
+    {
+        $themes = wp_get_themes(["allowed" => "network"]);
         return count($themes);
     }
 
-    private function check_plugin_auto_updates() {
-        return get_site_option('auto_update_plugins', []);
+    private function check_plugin_auto_updates()
+    {
+        return get_site_option("auto_update_plugins", []);
     }
 
-    private function check_theme_auto_updates() {
-        return get_site_option('auto_update_themes', []);
+    private function check_theme_auto_updates()
+    {
+        return get_site_option("auto_update_themes", []);
     }
 
-    private function get_site_favicon($blog_id) {
+    private function get_site_favicon($blog_id)
+    {
         $cache_key = "site_favicon_{$blog_id}";
         $cached = wp_cache_get($cache_key, $this->cache_group);
 
@@ -491,15 +587,17 @@ class WP_MSD_Network_Data {
 
         switch_to_blog($blog_id);
 
-        $favicon_url = '';
+        $favicon_url = "";
 
-        $site_icon_id = get_option('site_icon');
+        $site_icon_id = get_option("site_icon");
         if ($site_icon_id) {
-            $favicon_url = wp_get_attachment_image_url($site_icon_id, 'full');
+            $favicon_url = wp_get_attachment_image_url($site_icon_id, "full");
         }
 
         if (empty($favicon_url)) {
-            $custom_favicon = get_option('blog_public') ? get_site_icon_url() : '';
+            $custom_favicon = get_option("blog_public")
+                ? get_site_icon_url()
+                : "";
             if ($custom_favicon) {
                 $favicon_url = $custom_favicon;
             }
@@ -507,15 +605,18 @@ class WP_MSD_Network_Data {
 
         if (empty($favicon_url)) {
             $site_url = get_site_url();
-            $favicon_url = $site_url . '/favicon.ico';
+            $favicon_url = $site_url . "/favicon.ico";
 
             $response = wp_remote_head($favicon_url, [
-                'timeout' => 5,
-                'sslverify' => false
+                "timeout" => 5,
+                "sslverify" => false,
             ]);
 
-            if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
-                $favicon_url = includes_url('images/w-logo-blue.png');
+            if (
+                is_wp_error($response) ||
+                wp_remote_retrieve_response_code($response) !== 200
+            ) {
+                $favicon_url = includes_url("images/w-logo-blue.png");
             }
         }
 
@@ -525,25 +626,28 @@ class WP_MSD_Network_Data {
         return $favicon_url;
     }
 
-    private function fetch_active_sites($limit) {
+    private function fetch_active_sites($limit)
+    {
         return get_sites([
-            'number' => $limit,
-            'orderby' => 'last_updated',
-            'order' => 'DESC',
-            'public' => null,
-            'archived' => 0,
-            'mature' => 0,
-            'spam' => 0,
-            'deleted' => 0
+            "number" => $limit,
+            "orderby" => "last_updated",
+            "order" => "DESC",
+            "public" => null,
+            "archived" => 0,
+            "mature" => 0,
+            "spam" => 0,
+            "deleted" => 0,
         ]);
     }
 
-    public function get_top_storage_sites($limit = 5) {
+    public function get_top_storage_sites($limit = 5)
+    {
         $storage_data = $this->get_storage_usage_data($limit);
-        return array_slice($storage_data['sites'], 0, $limit);
+        return array_slice($storage_data["sites"], 0, $limit);
     }
 
-    private function get_site_storage_usage($blog_id) {
+    private function get_site_storage_usage($blog_id)
+    {
         $cache_key = "storage_{$blog_id}";
         $cached = wp_cache_get($cache_key, $this->cache_group);
 
@@ -562,23 +666,25 @@ class WP_MSD_Network_Data {
         return $size_bytes;
     }
 
-    private function get_site_upload_dir($blog_id) {
+    private function get_site_upload_dir($blog_id)
+    {
         if ($blog_id == 1) {
             $upload_dir = wp_upload_dir();
-            return $upload_dir['basedir'];
+            return $upload_dir["basedir"];
         }
 
         $upload_dir = wp_upload_dir();
-        $base_dir = $upload_dir['basedir'];
+        $base_dir = $upload_dir["basedir"];
 
         if (is_subdomain_install()) {
-            return $base_dir . '/sites/' . $blog_id;
+            return $base_dir . "/sites/" . $blog_id;
         } else {
-            return str_replace('/sites/1/', "/sites/{$blog_id}/", $base_dir);
+            return str_replace("/sites/1/", "/sites/{$blog_id}/", $base_dir);
         }
     }
 
-    private function calculate_directory_size($directory) {
+    private function calculate_directory_size($directory)
+    {
         $size = 0;
         $file_count = 0;
         $max_files = 5000;
@@ -589,7 +695,10 @@ class WP_MSD_Network_Data {
             }
 
             $iterator = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS),
+                new RecursiveDirectoryIterator(
+                    $directory,
+                    RecursiveDirectoryIterator::SKIP_DOTS
+                ),
                 RecursiveIteratorIterator::LEAVES_ONLY
             );
 
@@ -604,14 +713,15 @@ class WP_MSD_Network_Data {
                 }
             }
         } catch (Exception $e) {
-            error_log('MSD Storage calculation error: ' . $e->getMessage());
+            error_log("MSD Storage calculation error: " . $e->getMessage());
             return 0;
         }
 
         return $size;
     }
 
-    private function get_site_name($blog_id) {
+    private function get_site_name($blog_id)
+    {
         $cache_key = "site_name_{$blog_id}";
         $cached = wp_cache_get($cache_key, $this->cache_group);
 
@@ -620,13 +730,16 @@ class WP_MSD_Network_Data {
         }
 
         $site_details = get_blog_details($blog_id);
-        $name = $site_details ? $site_details->blogname : __('Unknown Site', 'wp-multisite-dashboard');
+        $name = $site_details
+            ? $site_details->blogname
+            : __("Unknown Site", "wp-multisite-dashboard");
 
         wp_cache_set($cache_key, $name, $this->cache_group, 3600);
         return $name;
     }
 
-    private function get_site_user_count($blog_id) {
+    private function get_site_user_count($blog_id)
+    {
         $cache_key = "user_count_{$blog_id}";
         $cached = wp_cache_get($cache_key, $this->cache_group);
 
@@ -634,10 +747,10 @@ class WP_MSD_Network_Data {
             return $cached;
         }
 
-        $count = count_users()['total_users'];
+        $count = count_users()["total_users"];
 
         if ($blog_id > 1) {
-            $users = get_users(['blog_id' => $blog_id, 'fields' => 'ID']);
+            $users = get_users(["blog_id" => $blog_id, "fields" => "ID"]);
             $count = count($users);
         }
 
@@ -645,7 +758,8 @@ class WP_MSD_Network_Data {
         return $count;
     }
 
-    private function get_site_last_activity($blog_id) {
+    private function get_site_last_activity($blog_id)
+    {
         $cache_key = "last_activity_{$blog_id}";
         $cached = wp_cache_get($cache_key, $this->cache_group);
 
@@ -656,26 +770,26 @@ class WP_MSD_Network_Data {
         switch_to_blog($blog_id);
 
         $last_post = get_posts([
-            'numberposts' => 1,
-            'post_status' => 'publish',
-            'orderby' => 'date',
-            'order' => 'DESC',
-            'fields' => 'post_date'
+            "numberposts" => 1,
+            "post_status" => "publish",
+            "orderby" => "date",
+            "order" => "DESC",
+            "fields" => "post_date",
         ]);
 
         $last_comment = get_comments([
-            'number' => 1,
-            'status' => 'approve',
-            'orderby' => 'comment_date',
-            'order' => 'DESC',
-            'fields' => 'comment_date'
+            "number" => 1,
+            "status" => "approve",
+            "orderby" => "comment_date",
+            "order" => "DESC",
+            "fields" => "comment_date",
         ]);
 
         restore_current_blog();
 
         $dates = array_filter([
             $last_post ? $last_post[0]->post_date : null,
-            $last_comment ? $last_comment[0]->comment_date : null
+            $last_comment ? $last_comment[0]->comment_date : null,
         ]);
 
         $last_activity = empty($dates) ? null : max($dates);
@@ -684,40 +798,60 @@ class WP_MSD_Network_Data {
         return $last_activity;
     }
 
-    private function get_site_status($blog_id) {
+    private function get_site_status($blog_id)
+    {
         $last_activity = $this->get_site_last_activity($blog_id);
 
         if (empty($last_activity)) {
-            return 'inactive';
+            return "inactive";
         }
 
-        $days_inactive = (current_time('timestamp') - strtotime($last_activity)) / DAY_IN_SECONDS;
+        $days_inactive =
+            (current_time("timestamp") - strtotime($last_activity)) /
+            DAY_IN_SECONDS;
 
         if ($days_inactive > 90) {
-            return 'inactive';
+            return "inactive";
         } elseif ($days_inactive > 30) {
-            return 'warning';
+            return "warning";
         }
 
-        return 'active';
+        return "active";
     }
 
-    public function log_activity($site_id, $activity_type, $description, $severity = 'low', $user_id = null) {
-        $table_name = $this->wpdb->base_prefix . 'msd_activity_log';
+    public function log_activity(
+        $site_id,
+        $activity_type,
+        $description,
+        $severity = "low",
+        $user_id = null
+    ) {
+        $table_name = $this->wpdb->base_prefix . "msd_activity_log";
 
         $result = $this->wpdb->insert(
             $table_name,
             [
-                'site_id' => intval($site_id),
-                'user_id' => $user_id ?: get_current_user_id(),
-                'activity_type' => sanitize_text_field($activity_type),
-                'description' => sanitize_text_field($description),
-                'severity' => in_array($severity, ['low', 'medium', 'high', 'critical']) ? $severity : 'low',
-                'ip_address' => $this->get_client_ip(),
-                'user_agent' => substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 500),
-                'created_at' => current_time('mysql')
+                "site_id" => intval($site_id),
+                "user_id" => $user_id ?: get_current_user_id(),
+                "activity_type" => sanitize_text_field($activity_type),
+                "description" => sanitize_text_field($description),
+                "severity" => in_array($severity, [
+                    "low",
+                    "medium",
+                    "high",
+                    "critical",
+                ])
+                    ? $severity
+                    : "low",
+                "ip_address" => $this->get_client_ip(),
+                "user_agent" => substr(
+                    $_SERVER["HTTP_USER_AGENT"] ?? "",
+                    0,
+                    500
+                ),
+                "created_at" => current_time("mysql"),
             ],
-            ['%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s']
+            ["%d", "%d", "%s", "%s", "%s", "%s", "%s", "%s"]
         );
 
         if (mt_rand(1, 100) <= 5) {
@@ -727,44 +861,53 @@ class WP_MSD_Network_Data {
         return $result !== false;
     }
 
-    private function get_client_ip() {
+    private function get_client_ip()
+    {
         $ip_headers = [
-            'HTTP_CF_CONNECTING_IP',
-            'HTTP_CLIENT_IP',
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_FORWARDED',
-            'HTTP_X_CLUSTER_CLIENT_IP',
-            'HTTP_FORWARDED_FOR',
-            'HTTP_FORWARDED',
-            'REMOTE_ADDR'
+            "HTTP_CF_CONNECTING_IP",
+            "HTTP_CLIENT_IP",
+            "HTTP_X_FORWARDED_FOR",
+            "HTTP_X_FORWARDED",
+            "HTTP_X_CLUSTER_CLIENT_IP",
+            "HTTP_FORWARDED_FOR",
+            "HTTP_FORWARDED",
+            "REMOTE_ADDR",
         ];
 
         foreach ($ip_headers as $header) {
             if (isset($_SERVER[$header]) && !empty($_SERVER[$header])) {
-                $ips = explode(',', $_SERVER[$header]);
+                $ips = explode(",", $_SERVER[$header]);
                 $ip = trim($ips[0]);
 
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                if (
+                    filter_var(
+                        $ip,
+                        FILTER_VALIDATE_IP,
+                        FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+                    )
+                ) {
                     return $ip;
                 }
             }
         }
 
-        return $_SERVER['REMOTE_ADDR'] ?? '';
+        return $_SERVER["REMOTE_ADDR"] ?? "";
     }
 
-    private function cleanup_old_activity_logs() {
+    private function cleanup_old_activity_logs()
+    {
         $this->wpdb->query(
             $this->wpdb->prepare(
                 "DELETE FROM {$this->wpdb->base_prefix}msd_activity_log
                 WHERE created_at < %s",
-                date('Y-m-d H:i:s', strtotime('-60 days'))
+                date("Y-m-d H:i:s", strtotime("-60 days"))
             )
         );
     }
 
-    public function create_activity_log_table() {
-        $table_name = $this->wpdb->base_prefix . 'msd_activity_log';
+    public function create_activity_log_table()
+    {
+        $table_name = $this->wpdb->base_prefix . "msd_activity_log";
         $charset_collate = $this->wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE IF NOT EXISTS $table_name (
@@ -786,25 +929,26 @@ class WP_MSD_Network_Data {
             KEY site_activity (site_id, created_at)
         ) $charset_collate;";
 
-        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        require_once ABSPATH . "wp-admin/includes/upgrade.php";
         dbDelta($sql);
     }
 
-    public function clear_all_caches() {
+    public function clear_all_caches()
+    {
         wp_cache_flush_group($this->cache_group);
 
         $transients = [
-            'msd_total_sites',
-            'msd_total_users',
-            'msd_total_posts',
-            'msd_total_pages',
-            'msd_total_storage',
-            'msd_storage_usage_data',
-            'msd_network_status',
-            'msd_network_settings_overview',
-            'msd_multisite_configuration',
-            'msd_network_information',
-            'msd_recent_network_activity'
+            "msd_total_sites",
+            "msd_total_users",
+            "msd_total_posts",
+            "msd_total_pages",
+            "msd_total_storage",
+            "msd_storage_usage_data",
+            "msd_network_status",
+            "msd_network_settings_overview",
+            "msd_multisite_configuration",
+            "msd_network_information",
+            "msd_recent_network_activity",
         ];
 
         foreach ($transients as $transient) {
@@ -814,16 +958,23 @@ class WP_MSD_Network_Data {
         return true;
     }
 
-    public function clear_widget_cache($widget = null) {
+    public function clear_widget_cache($widget = null)
+    {
         if ($widget) {
             $cache_keys = [
-                'network_overview' => ['total_posts', 'total_pages', 'multisite_configuration', 'network_information', 'network_status'],
-                'site_list' => ['recent_sites_5'],
-                'storage_data' => ['storage_usage_data_5'],
-                'network_settings' => ['network_settings_overview'],
-                'user_management' => ['recent_users_data'],
-                'last_edits' => ['recent_network_activity_10'],
-                'contact_info' => ['contact_info']
+                "network_overview" => [
+                    "total_posts",
+                    "total_pages",
+                    "multisite_configuration",
+                    "network_information",
+                    "network_status",
+                ],
+                "site_list" => ["recent_sites_5"],
+                "storage_data" => ["storage_usage_data_5"],
+                "network_settings" => ["network_settings_overview"],
+                "user_management" => ["recent_users_data"],
+                "last_edits" => ["recent_network_activity_10"],
+                "contact_info" => ["contact_info"],
             ];
 
             if (isset($cache_keys[$widget])) {
@@ -838,27 +989,31 @@ class WP_MSD_Network_Data {
         return true;
     }
 
-    private function get_cache($key) {
+    private function get_cache($key)
+    {
         return get_site_transient("msd_{$key}");
     }
 
-    private function set_cache($key, $value, $expiration = null) {
+    private function set_cache($key, $value, $expiration = null)
+    {
         $expiration = $expiration ?: $this->cache_timeout;
         return set_site_transient("msd_{$key}", $value, $expiration);
     }
 
-    private function delete_cache($key) {
+    private function delete_cache($key)
+    {
         return delete_site_transient("msd_{$key}");
     }
 
-    public function get_network_stats_summary() {
+    public function get_network_stats_summary()
+    {
         return [
-            'total_sites' => $this->get_total_sites(),
-            'total_users' => $this->get_total_users(),
-            'total_posts' => $this->get_total_posts(),
-            'total_pages' => $this->get_total_pages(),
-            'total_storage' => $this->get_total_storage_used(),
-            'last_updated' => current_time('mysql')
+            "total_sites" => $this->get_total_sites(),
+            "total_users" => $this->get_total_users(),
+            "total_posts" => $this->get_total_posts(),
+            "total_pages" => $this->get_total_pages(),
+            "total_storage" => $this->get_total_storage_used(),
+            "last_updated" => current_time("mysql"),
         ];
     }
 }

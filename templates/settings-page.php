@@ -1,90 +1,159 @@
 <?php
-if (!defined('ABSPATH')) {
-    exit;
+if (!defined("ABSPATH")) {
+    exit();
 }
 
-if (isset($_GET['updated']) && $_GET['updated'] === 'true') {
-    echo '<div class="notice notice-success is-dismissible"><p>' . __('Settings saved successfully!', 'wp-multisite-dashboard') . '</p></div>';
+if (isset($_GET["updated"]) && $_GET["updated"] === "true") {
+    echo '<div class="notice notice-success is-dismissible"><p>' .
+        __("Settings saved successfully!", "wp-multisite-dashboard") .
+        "</p></div>";
 }
 
 $plugin_core = WP_MSD_Plugin_Core::get_instance();
 $enabled_widgets = $plugin_core->get_enabled_widgets();
 $settings_manager = new WP_MSD_Settings_Manager();
+
+$widget_options = [
+    "msd_network_overview" => __("Network Overview", "wp-multisite-dashboard"),
+    "msd_quick_site_management" => __(
+        "Quick Site Management",
+        "wp-multisite-dashboard"
+    ),
+    "msd_storage_performance" => __("Storage Usage", "wp-multisite-dashboard"),
+    "msd_server_info" => __("Server Information", "wp-multisite-dashboard"),
+    "msd_quick_links" => __("Quick Links", "wp-multisite-dashboard"),
+    "msd_version_info" => __("Version Information", "wp-multisite-dashboard"),
+    "msd_custom_news" => __("Network News", "wp-multisite-dashboard"),
+    "msd_user_management" => __("User Management", "wp-multisite-dashboard"),
+    "msd_contact_info" => __("Contact Information", "wp-multisite-dashboard"),
+    "msd_last_edits" => __("Recent Network Activity", "wp-multisite-dashboard"),
+    "msd_todo_widget" => __("Todo List", "wp-multisite-dashboard"),
+];
 ?>
 
 <div class="wrap">
-  <h1><?php echo esc_html( get_admin_page_title() ); ?>
+  <h1><?php echo esc_html(get_admin_page_title()); ?>
       <span style="font-size: 13px; padding-left: 10px;">
-          <?php printf( esc_html__( 'Version: %s', 'wp-multisite-dashboard' ), esc_html( WP_MSD_VERSION ) ); ?>
+          <?php printf(
+              esc_html__("Version: %s", "wp-multisite-dashboard"),
+              esc_html(WP_MSD_VERSION)
+          ); ?>
       </span>
       <a href="https://wpmultisite.com/document/wp-multisite-dashboard" target="_blank" class="button button-secondary" style="margin-left: 10px;">
-          <?php esc_html_e( 'Documentation', 'wp-multisite-dashboard' ); ?>
+          <?php esc_html_e("Documentation", "wp-multisite-dashboard"); ?>
       </a>
       <a href="https://wpmultisite.com/support/" target="_blank" class="button button-secondary">
-          <?php esc_html_e( 'Support', 'wp-multisite-dashboard' ); ?>
+          <?php esc_html_e("Support", "wp-multisite-dashboard"); ?>
       </a>
   </h1>
 
     <div class="msd-card">
-        <h2><?php _e('Plugin Widget Configuration', 'wp-multisite-dashboard'); ?></h2>
-        <p><?php _e('Enable or disable custom dashboard widgets provided by this plugin.', 'wp-multisite-dashboard'); ?></p>
+        <h2><?php _e(
+            "Plugin Widget Configuration",
+            "wp-multisite-dashboard"
+        ); ?></h2>
+        <p><?php _e(
+            "Enable or disable custom dashboard widgets provided by this plugin.",
+            "wp-multisite-dashboard"
+        ); ?></p>
 
         <form method="post" action="">
-            <?php wp_nonce_field('msd_settings', 'msd_settings_nonce'); ?>
+            <?php wp_nonce_field("msd_settings", "msd_settings_nonce"); ?>
 
             <div class="msd-settings-grid">
-                <?php foreach ($widget_options as $widget_id => $widget_name): ?>
+                <?php foreach (
+                    $widget_options
+                    as $widget_id => $widget_name
+                ): ?>
                     <div class="msd-widget-toggle">
                         <label>
                             <input
                                 type="checkbox"
-                                name="widgets[<?php echo esc_attr($widget_id); ?>]"
+                                name="widgets[<?php echo esc_attr(
+                                    $widget_id
+                                ); ?>]"
                                 value="1"
-                                <?php checked(!empty($enabled_widgets[$widget_id])); ?>
+                                <?php checked(
+                                    !empty($enabled_widgets[$widget_id])
+                                ); ?>
                             />
                             <?php echo esc_html($widget_name); ?>
                         </label>
                         <p class="description">
-                            <?php echo $settings_manager->get_widget_description($widget_id); ?>
+                            <?php echo $settings_manager->get_widget_description(
+                                $widget_id
+                            ); ?>
                         </p>
                     </div>
                 <?php endforeach; ?>
             </div>
 
-            <h3><?php _e('System & Third-Party Widgets', 'wp-multisite-dashboard'); ?></h3>
-            <p><?php _e('Control the display of WordPress system widgets and widgets from other plugins.', 'wp-multisite-dashboard'); ?></p>
+            <h3><?php _e(
+                "System & Third-Party Widgets",
+                "wp-multisite-dashboard"
+            ); ?></h3>
+            <p><?php _e(
+                "Control the display of WordPress system widgets and widgets from other plugins.",
+                "wp-multisite-dashboard"
+            ); ?></p>
 
             <?php
             $available_widgets = $settings_manager->get_available_system_widgets();
-            $disabled_widgets = get_site_option('msd_disabled_system_widgets', []);
+            $disabled_widgets = get_site_option(
+                "msd_disabled_system_widgets",
+                []
+            );
 
-            if (!empty($available_widgets)):
-            ?>
+            if (!empty($available_widgets)): ?>
                 <div class="msd-system-widgets-grid">
                     <?php
-                    $system_widgets = array_filter($available_widgets, function($widget) {
-                        return $widget['is_system'];
-                    });
+                    $system_widgets = array_filter(
+                        $available_widgets,
+                        function ($widget) {
+                            return $widget["is_system"] ?? false;
+                        }
+                    );
 
-                    $third_party_widgets = array_filter($available_widgets, function($widget) {
-                        return !$widget['is_system'] && !$widget['is_custom'];
-                    });
+                    $third_party_widgets = array_filter(
+                        $available_widgets,
+                        function ($widget) {
+                            return !($widget["is_system"] ?? false) &&
+                                !($widget["is_custom"] ?? false);
+                        }
+                    );
                     ?>
 
                     <?php if (!empty($system_widgets)): ?>
                         <div class="msd-widget-section">
-                            <h4><?php _e('WordPress System Widgets', 'wp-multisite-dashboard'); ?></h4>
-                            <?php foreach ($system_widgets as $widget_id => $widget_data): ?>
+                            <h4><?php _e(
+                                "WordPress System Widgets",
+                                "wp-multisite-dashboard"
+                            ); ?></h4>
+                            <?php foreach (
+                                $system_widgets
+                                as $widget_id => $widget_data
+                            ): ?>
                                 <div class="msd-widget-toggle">
                                     <label>
                                         <input
                                             type="checkbox"
-                                            name="system_widgets[<?php echo esc_attr($widget_id); ?>]"
+                                            name="system_widgets[<?php echo esc_attr(
+                                                $widget_id
+                                            ); ?>]"
                                             value="1"
-                                            <?php checked(!in_array($widget_id, $disabled_widgets)); ?>
+                                            <?php checked(
+                                                !in_array(
+                                                    $widget_id,
+                                                    $disabled_widgets
+                                                )
+                                            ); ?>
                                         />
-                                        <?php echo esc_html($widget_data['title']); ?>
-                                        <span class="msd-widget-meta">(<?php echo esc_html($widget_data['context']); ?>)</span>
+                                        <?php echo esc_html(
+                                            $widget_data["title"]
+                                        ); ?>
+                                        <span class="msd-widget-meta">(<?php echo esc_html(
+                                            $widget_data["context"]
+                                        ); ?>)</span>
                                     </label>
                                 </div>
                             <?php endforeach; ?>
@@ -93,86 +162,171 @@ $settings_manager = new WP_MSD_Settings_Manager();
 
                     <?php if (!empty($third_party_widgets)): ?>
                         <div class="msd-widget-section">
-                            <h4><?php _e('Third-Party Plugin Widgets', 'wp-multisite-dashboard'); ?></h4>
-                            <?php foreach ($third_party_widgets as $widget_id => $widget_data): ?>
+                            <h4><?php _e(
+                                "Third-Party Plugin Widgets",
+                                "wp-multisite-dashboard"
+                            ); ?></h4>
+                            <?php foreach (
+                                $third_party_widgets
+                                as $widget_id => $widget_data
+                            ): ?>
                                 <div class="msd-widget-toggle">
                                     <label>
                                         <input
                                             type="checkbox"
-                                            name="system_widgets[<?php echo esc_attr($widget_id); ?>]"
+                                            name="system_widgets[<?php echo esc_attr(
+                                                $widget_id
+                                            ); ?>]"
                                             value="1"
-                                            <?php checked(!in_array($widget_id, $disabled_widgets)); ?>
+                                            <?php checked(
+                                                !in_array(
+                                                    $widget_id,
+                                                    $disabled_widgets
+                                                )
+                                            ); ?>
                                         />
-                                        <?php echo esc_html($widget_data['title']); ?>
-                                        <span class="msd-widget-meta">(<?php echo esc_html($widget_data['context']); ?>)</span>
+                                        <?php echo esc_html(
+                                            $widget_data["title"]
+                                        ); ?>
+                                        <span class="msd-widget-meta">(<?php echo esc_html(
+                                            $widget_data["context"]
+                                        ); ?>)</span>
                                     </label>
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                    <?php else: ?>
+                    <?php endif; ?>
+
+                    <?php if (empty($third_party_widgets)): ?>
                         <div class="msd-widget-section">
-                            <h4><?php _e('Third-Party Plugin Widgets', 'wp-multisite-dashboard'); ?></h4>
+                            <h4><?php _e(
+                                "Third-Party Plugin Widgets",
+                                "wp-multisite-dashboard"
+                            ); ?></h4>
                             <div class="msd-no-third-party">
-                                <p><?php _e('No third-party widgets detected yet.', 'wp-multisite-dashboard'); ?></p>
-                                <p class="description"><?php _e('Third-party widgets are automatically detected when you visit the network dashboard. If you have plugins that add dashboard widgets, visit the dashboard first, then return here to see them.', 'wp-multisite-dashboard'); ?></p>
-                                <a href="<?php echo network_admin_url(); ?>" class="button button-secondary">
-                                    <?php _e('Visit Network Dashboard', 'wp-multisite-dashboard'); ?>
-                                </a>
+                                <p><?php _e(
+                                    "No third-party widgets detected yet.",
+                                    "wp-multisite-dashboard"
+                                ); ?></p>
+                                <p class="description"><?php _e(
+                                    "Third-party widgets are automatically detected when you visit the network dashboard. If you have plugins that add dashboard widgets, visit the dashboard first, then return here to see them.",
+                                    "wp-multisite-dashboard"
+                                ); ?></p>
+                                <div style="margin: 15px 0;">
+                                    <a href="<?php echo network_admin_url(); ?>" class="button button-secondary">
+                                        <?php _e(
+                                            "Visit Network Dashboard",
+                                            "wp-multisite-dashboard"
+                                        ); ?>
+                                    </a>
+                                    <button type="button" class="button" onclick="MSD.clearWidgetCache()">
+                                        <?php _e(
+                                            "Refresh Widget Detection",
+                                            "wp-multisite-dashboard"
+                                        ); ?>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     <?php endif; ?>
                 </div>
             <?php else: ?>
                 <div class="msd-no-widgets">
-                    <p><?php _e('No system widgets found.', 'wp-multisite-dashboard'); ?></p>
+                    <p><?php _e(
+                        "No system widgets found.",
+                        "wp-multisite-dashboard"
+                    ); ?></p>
+                    <p><?php _e(
+                        "Visit the network dashboard to detect available widgets.",
+                        "wp-multisite-dashboard"
+                    ); ?></p>
+                    <div style="margin: 15px 0;">
+                        <a href="<?php echo network_admin_url(); ?>" class="button button-secondary">
+                            <?php _e(
+                                "Visit Network Dashboard",
+                                "wp-multisite-dashboard"
+                            ); ?>
+                        </a>
+                        <button type="button" class="button" onclick="MSD.clearWidgetCache()">
+                            <?php _e(
+                                "Refresh Widget Detection",
+                                "wp-multisite-dashboard"
+                            ); ?>
+                        </button>
+                    </div>
                 </div>
-            <?php endif; ?>
+            <?php endif;
+            ?>
 
             <p class="submit">
-                <?php submit_button(__('Save Widget Settings', 'wp-multisite-dashboard'), 'primary', 'submit', false); ?>
+                <?php submit_button(
+                    __("Save Widget Settings", "wp-multisite-dashboard"),
+                    "primary",
+                    "submit",
+                    false
+                ); ?>
             </p>
         </form>
     </div>
 
     <div class="msd-card">
-        <h2><?php _e('Cache Management', 'wp-multisite-dashboard'); ?></h2>
-        <p><?php _e('Clear cached data to refresh dashboard widgets.', 'wp-multisite-dashboard'); ?></p>
+        <h2><?php _e("Cache Management", "wp-multisite-dashboard"); ?></h2>
+        <p><?php _e(
+            "Clear cached data to refresh dashboard widgets.",
+            "wp-multisite-dashboard"
+        ); ?></p>
 
         <div class="msd-cache-actions">
             <button type="button" class="button" onclick="MSD.clearCache('all')">
-                ↻
-                <?php _e('Clear All Caches', 'wp-multisite-dashboard'); ?>
+                <?php _e("Clear All Caches", "wp-multisite-dashboard"); ?>
             </button>
             <button type="button" class="button" onclick="MSD.clearCache('network')">
                 <span class="dashicons dashicons-admin-multisite"></span>
-                <?php _e('Clear Network Data', 'wp-multisite-dashboard'); ?>
+                <?php _e("Clear Network Data", "wp-multisite-dashboard"); ?>
             </button>
             <button type="button" class="button" onclick="MSD.clearWidgetCache()">
                 <span class="dashicons dashicons-dashboard"></span>
-                <?php _e('Clear Widget Cache', 'wp-multisite-dashboard'); ?>
+                <?php _e("Clear Widget Cache", "wp-multisite-dashboard"); ?>
             </button>
         </div>
 
         <p class="description">
-            <?php _e('Clearing caches will force the dashboard widgets to reload fresh data on the next page visit. Widget cache contains the list of detected third-party widgets.', 'wp-multisite-dashboard'); ?>
+            <?php _e(
+                "Clearing caches will force the dashboard widgets to reload fresh data on the next page visit. Widget cache contains the list of detected third-party widgets.",
+                "wp-multisite-dashboard"
+            ); ?>
         </p>
     </div>
 
     <div class="msd-card">
-        <h2><?php _e('Plugin Information', 'wp-multisite-dashboard'); ?></h2>
-        <p><?php _e('Current plugin status and update information.', 'wp-multisite-dashboard'); ?></p>
+        <h2><?php _e("Plugin Information", "wp-multisite-dashboard"); ?></h2>
+        <p><?php _e(
+            "Current plugin status and update information.",
+            "wp-multisite-dashboard"
+        ); ?></p>
 
         <div class="msd-plugin-info">
             <div class="msd-info-row">
-                <span class="msd-info-label"><?php _e('Current Version:', 'wp-multisite-dashboard'); ?></span>
-                <span class="msd-info-value"><?php echo esc_html(WP_MSD_VERSION); ?></span>
+                <span class="msd-info-label"><?php _e(
+                    "Current Version:",
+                    "wp-multisite-dashboard"
+                ); ?></span>
+                <span class="msd-info-value"><?php echo esc_html(
+                    WP_MSD_VERSION
+                ); ?></span>
             </div>
 
             <div class="msd-info-row">
-                <span class="msd-info-label"><?php _e('Update Status:', 'wp-multisite-dashboard'); ?></span>
+                <span class="msd-info-label"><?php _e(
+                    "Update Status:",
+                    "wp-multisite-dashboard"
+                ); ?></span>
                 <span class="msd-info-value" id="msd-update-status">
                     <button type="button" class="button button-small" onclick="MSD.checkForUpdates()">
-                        <?php _e('Check for Updates', 'wp-multisite-dashboard'); ?>
+                        <?php _e(
+                            "Check for Updates",
+                            "wp-multisite-dashboard"
+                        ); ?>
                     </button>
                 </span>
             </div>
@@ -375,89 +529,3 @@ $settings_manager = new WP_MSD_Settings_Manager();
     }
 }
 </style>
-
-<script>
-jQuery(document).ready(function($) {
-    'use strict';
-
-    // 确保全局 MSD 对象存在
-    window.MSD = window.MSD || {};
-
-    // 清除缓存功能
-    window.MSD.clearCache = function(type) {
-        if (!confirm('Are you sure you want to clear the cache?')) {
-            return;
-        }
-
-        $.post(msdAjax.ajaxurl, {
-            action: 'msd_clear_cache',
-            cache_type: type,
-            nonce: msdAjax.nonce
-        }, function(response) {
-            if (response.success) {
-                alert('Cache cleared successfully!');
-            } else {
-                alert('Failed to clear cache: ' + (response.data || 'Unknown error'));
-            }
-        }).fail(function() {
-            alert('Failed to clear cache due to network error.');
-        });
-    };
-
-    // 检查更新功能
-    window.MSD.checkForUpdates = function() {
-        var $status = $('#msd-update-status');
-        var $button = $status.find('button');
-
-        $button.prop('disabled', true).text('Checking...');
-
-        $.post(msdAjax.ajaxurl, {
-            action: 'msd_check_plugin_update',
-            nonce: msdAjax.nonce
-        }, function(response) {
-            if (response.success) {
-                if (response.data.version) {
-                    $status.html('<span class="msd-update-available">Version ' + response.data.version + ' available!</span>');
-                    if (response.data.details_url) {
-                        $status.append(' <a href="' + response.data.details_url + '" target="_blank">View Details</a>');
-                    }
-                } else {
-                    $status.html('<span class="msd-update-current">Up to date</span>');
-                }
-            } else {
-                $button.prop('disabled', false).text('Check for Updates');
-                alert('Failed to check for updates: ' + (response.data || 'Unknown error'));
-            }
-        }).fail(function() {
-            $button.prop('disabled', false).text('Check for Updates');
-            alert('Failed to check for updates due to network error.');
-        });
-    };
-
-    // 清除小部件缓存功能
-    window.MSD.clearWidgetCache = function() {
-        if (!confirm('Are you sure you want to clear the widget cache? This will refresh the list of detected widgets.')) {
-            return;
-        }
-
-        $.post(msdAjax.ajaxurl, {
-            action: 'msd_clear_widget_cache',
-            nonce: msdAjax.nonce
-        }, function(response) {
-            if (response.success) {
-                alert('Widget cache cleared successfully! Please reload the page to see updated widgets.');
-                location.reload();
-            } else {
-                alert('Failed to clear widget cache: ' + (response.data || 'Unknown error'));
-            }
-        }).fail(function() {
-            alert('Failed to clear widget cache due to network error.');
-        });
-    };
-
-    // 调试信息
-    console.log('MSD Settings loaded with functions:', Object.keys(window.MSD));
-    console.log('msdAjax object:', msdAjax);
-});
-
-</script>
