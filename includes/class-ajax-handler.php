@@ -24,6 +24,7 @@ class WP_MSD_Ajax_Handler
             "msd_get_user_management",
             "msd_get_last_edits",
             "msd_get_todo_items",
+            "msd_get_network_health",
             "msd_save_news_sources",
             "msd_save_quick_links",
             "msd_save_contact_info",
@@ -219,6 +220,23 @@ class WP_MSD_Ajax_Handler
         } catch (Exception $e) {
             wp_send_json_error(
                 __("Failed to load news", "wp-multisite-dashboard")
+            );
+        }
+    }
+
+    public function get_network_health()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            $network_data = new WP_MSD_Network_Data();
+            $health = $network_data->get_network_health_overview();
+            wp_send_json_success($health);
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __("Failed to load network health", "wp-multisite-dashboard")
             );
         }
     }

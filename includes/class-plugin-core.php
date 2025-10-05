@@ -70,6 +70,7 @@ class WP_MSD_Plugin_Core
             "msd_server_info" => 1,
             "msd_quick_links" => 1,
             "msd_version_info" => 1,
+            "msd_network_health" => 1,
             "msd_custom_news" => 1,
             "msd_network_settings" => 1,
             "msd_user_management" => 1,

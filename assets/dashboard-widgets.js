@@ -32,6 +32,7 @@ jQuery(document).ready(function ($) {
         "version_info",
         "custom_news",
         "network_settings",
+        "network_health",
         "user_management",
         "last_edits",
         "todo_items",
@@ -59,6 +60,7 @@ jQuery(document).ready(function ($) {
         version_info: "msd_get_version_info",
         custom_news: "msd_get_custom_news",
         network_settings: "msd_get_network_settings",
+        network_health: "msd_get_network_health",
         user_management: "msd_get_user_management",
         last_edits: "msd_get_last_edits",
         todo_items: "msd_get_todo_items",
@@ -92,6 +94,7 @@ jQuery(document).ready(function ($) {
         version_info: this.renderVersionInfo,
         custom_news: this.renderCustomNews,
         network_settings: this.renderNetworkSettings,
+        network_health: this.renderNetworkHealth,
         user_management: this.renderUserManagement,
         last_edits: this.renderLastEdits,
         todo_items: this.renderTodoItems,
@@ -301,6 +304,43 @@ jQuery(document).ready(function ($) {
                         <span class="msd-version-value ${data.database_status === "active" ? "msd-db-status-good" : "msd-db-status-warning"}">
                             ${data.database_status === "active" ? msdAjax.strings.check_mark : msdAjax.strings.warning_mark} ${data.database_status === "active" ? msdAjax.strings.activity_table_created : msdAjax.strings.activity_table_missing}
                         </span>
+                    </div>
+                </div>
+            `;
+
+      $container.html(html);
+    },
+
+    renderNetworkHealth($container, data) {
+      let html = `
+                <button class="msd-refresh-btn" title="${msdAjax.strings.refresh}" data-widget="network_health">
+                    ${msdAjax.strings.refresh_symbol || "↻"}
+                </button>
+
+                <div class="msd-config-list">
+                    <div class="msd-config-item">
+                        <span class="msd-config-key">${msdAjax.strings.updates || "Updates"}:</span>
+                        <span class="msd-config-value">${this.escapeHtml(String((data.plugin_updates || 0) + (data.theme_updates || 0)))} ${msdAjax.strings.updates || "updates"}</span>
+                    </div>
+                    <div class="msd-config-item">
+                        <span class="msd-config-key">${msdAjax.strings.plugins || "Plugins"}:</span>
+                        <span class="msd-config-value">${this.escapeHtml(String(data.plugin_updates || 0))}</span>
+                    </div>
+                    <div class="msd-config-item">
+                        <span class="msd-config-key">${msdAjax.strings.themes || "Themes"}:</span>
+                        <span class="msd-config-value">${this.escapeHtml(String(data.theme_updates || 0))}</span>
+                    </div>
+                    <div class="msd-config-item">
+                        <span class="msd-config-key">Cron:</span>
+                        <span class="msd-config-value">${data.cron_disabled ? (msdAjax.strings.warning_mark || "⚠") + " Disabled" : (msdAjax.strings.check_mark || "✓") + " Enabled"}</span>
+                    </div>
+                    <div class="msd-config-item">
+                        <span class="msd-config-key">Object Cache:</span>
+                        <span class="msd-config-value">${data.object_cache ? (msdAjax.strings.check_mark || "✓") + " Enabled" : (msdAjax.strings.warning_mark || "⚠") + " Disabled"}</span>
+                    </div>
+                    <div class="msd-config-item">
+                        <span class="msd-config-key">HTTPS:</span>
+                        <span class="msd-config-value">${data.https ? (msdAjax.strings.check_mark || "✓") + " Enabled" : (msdAjax.strings.warning_mark || "⚠") + " Disabled"}</span>
                     </div>
                 </div>
             `;

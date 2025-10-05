@@ -3,7 +3,7 @@
  * Plugin Name: WP Multisite Dashboard
  * Plugin URI: https://wpmultisite.com/plugins/wp-multisite-dashboard
  * Description: Essential dashboard widgets for WordPress multisite administrators
- * Version: 1.2.1
+ * Version: 1.3.0
  * Author: WPMultisite.com
  * Author URI: https://WPMultisite.com
  * License: GPLv2+
@@ -16,7 +16,7 @@ if (!defined("ABSPATH")) {
     exit();
 }
 
-define("WP_MSD_VERSION", "1.2.1");
+define("WP_MSD_VERSION", "1.3.0");
 define("WP_MSD_PLUGIN_DIR", plugin_dir_path(__FILE__));
 define("WP_MSD_PLUGIN_URL", plugin_dir_url(__FILE__));
 
