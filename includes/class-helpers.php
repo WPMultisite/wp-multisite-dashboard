@@ -24,7 +24,8 @@ class WP_MSD_Helpers {
         echo '<div class="msd-widget-header">';
 
         if ($show_refresh && $widget_id) {
-            echo '<button class="msd-refresh-btn" title="Refresh" data-widget="' . esc_attr($widget_id) . '">↻</button>';
+            $title_attr = esc_attr__('Refresh', 'wp-multisite-dashboard');
+            echo '<button class="msd-refresh-btn" title="' . $title_attr . '" data-widget="' . esc_attr($widget_id) . '">↻</button>';
         }
 
         if ($title) {
@@ -59,7 +60,8 @@ class WP_MSD_Helpers {
         echo '<p>' . esc_html($message) . '</p>';
 
         if ($retry_action) {
-            echo '<button class="button msd-retry-btn" onclick="' . esc_attr($retry_action) . '">Try Again</button>';
+            $label = esc_html__('Try Again', 'wp-multisite-dashboard');
+            echo '<button class="button msd-retry-btn" onclick="' . esc_attr($retry_action) . '">' . $label . '</button>';
         }
 
         echo '</div>';
@@ -67,9 +69,9 @@ class WP_MSD_Helpers {
 
     public static function get_priority_badge($priority) {
         $badges = [
-            'low' => ['Low Priority', 'msd-priority-low'],
-            'medium' => ['Medium Priority', 'msd-priority-medium'],
-            'high' => ['High Priority', 'msd-priority-high']
+            'low' => [__('Low Priority', 'wp-multisite-dashboard'), 'msd-priority-low'],
+            'medium' => [__('Medium Priority', 'wp-multisite-dashboard'), 'msd-priority-medium'],
+            'high' => [__('High Priority', 'wp-multisite-dashboard'), 'msd-priority-high']
         ];
 
         if (!isset($badges[$priority])) {
@@ -85,12 +87,12 @@ class WP_MSD_Helpers {
 
     public static function get_status_badge($status, $label = null) {
         $badges = [
-            'active' => ['Active', 'msd-status-good'],
-            'inactive' => ['Inactive', 'msd-status-warning'],
-            'critical' => ['Critical', 'msd-status-critical'],
-            'warning' => ['Warning', 'msd-status-warning'],
-            'good' => ['Good', 'msd-status-good'],
-            'neutral' => ['Neutral', 'msd-status-neutral']
+            'active' => [__('Active', 'wp-multisite-dashboard'), 'msd-status-good'],
+            'inactive' => [__('Inactive', 'wp-multisite-dashboard'), 'msd-status-warning'],
+            'critical' => [__('Critical', 'wp-multisite-dashboard'), 'msd-status-critical'],
+            'warning' => [__('Warning', 'wp-multisite-dashboard'), 'msd-status-warning'],
+            'good' => [__('Good', 'wp-multisite-dashboard'), 'msd-status-good'],
+            'neutral' => [__('Neutral', 'wp-multisite-dashboard'), 'msd-status-neutral']
         ];
 
         if (!isset($badges[$status])) {

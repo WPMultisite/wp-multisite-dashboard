@@ -59,10 +59,6 @@ class WP_MSD_Settings_Manager
 
     private function save_settings()
     {
-        if (!current_user_can('manage_network')) {
-            wp_die(__('Insufficient permissions', 'wp-multisite-dashboard'));
-        }
-
         $enabled_widgets = [];
         $widget_options = [
             "msd_network_overview",
@@ -89,22 +85,23 @@ class WP_MSD_Settings_Manager
         $disabled_system_widgets = [];
         $all_available_widgets = $this->get_all_possible_widgets();
 
-        // Sanitize and whitelist submitted system widgets
-        $submitted_system = [];
-        if (isset($_POST["system_widgets"]) && is_array($_POST["system_widgets"])) {
-            $allowed_ids = array_keys($all_available_widgets);
-            foreach (array_keys($_POST["system_widgets"]) as $id) {
-                $id = sanitize_text_field($id);
-                if (in_array($id, $allowed_ids, true)) {
-                    $submitted_system[$id] = 1;
+        if (
+            isset($_POST["system_widgets"]) &&
+            is_array($_POST["system_widgets"])
+        ) {
+            foreach ($all_available_widgets as $widget_id => $widget_data) {
+                if (
+                    !$widget_data["is_custom"] &&
+                    !isset($_POST["system_widgets"][$widget_id])
+                ) {
+                    $disabled_system_widgets[] = $widget_id;
                 }
             }
-        }
-
-        foreach ($all_available_widgets as $widget_id => $widget_data) {
-            $is_custom = $widget_data["is_custom"] ?? false;
-            if (!$is_custom && !isset($submitted_system[$widget_id])) {
-                $disabled_system_widgets[] = $widget_id;
+        } else {
+            foreach ($all_available_widgets as $widget_id => $widget_data) {
+                if (!$widget_data["is_custom"]) {
+                    $disabled_system_widgets[] = $widget_id;
+                }
             }
         }
 
@@ -112,16 +109,6 @@ class WP_MSD_Settings_Manager
             "msd_disabled_system_widgets",
             $disabled_system_widgets
         );
-
-        // Performance settings: storage scan site limit
-        $scan_limit = isset($_POST['storage_scan_site_limit']) ? intval($_POST['storage_scan_site_limit']) : 100;
-        if ($scan_limit < 10) { $scan_limit = 10; }
-        if ($scan_limit > 2000) { $scan_limit = 2000; }
-        update_site_option('msd_storage_scan_site_limit', $scan_limit);
-
-        // Clear storage widget cache to reflect new scanning configuration
-        $network_data = new WP_MSD_Network_Data();
-        $network_data->clear_widget_cache('storage_data');
 
         wp_safe_redirect(
             add_query_arg(

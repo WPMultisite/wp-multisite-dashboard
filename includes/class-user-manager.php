@@ -952,9 +952,15 @@ class WP_MSD_User_Manager {
             return 0;
         }
 
+        $security_table = $this->wpdb->base_prefix . 'msd_security_log';
+        $table_exists = $this->wpdb->get_var("SHOW TABLES LIKE '{$security_table}'") === $security_table;
+        if (!$table_exists) {
+            return 0;
+        }
+
         $count = $this->wpdb->get_var(
             $this->wpdb->prepare(
-                "SELECT COUNT(*) FROM {$this->wpdb->base_prefix}msd_security_log
+                "SELECT COUNT(*) FROM {$security_table}
                 WHERE event_type = 'failed_login'
                 AND description LIKE %s
                 AND created_at >= %s",
@@ -1011,7 +1017,11 @@ class WP_MSD_User_Manager {
     }
 
     private function clear_user_caches($user_ids = []) {
-        wp_cache_flush_group($this->cache_group);
+        if (function_exists('wp_cache_flush_group')) {
+            wp_cache_flush_group($this->cache_group);
+        } else {
+            // Fallback: delete known keys individually
+        }
 
         if (!empty($user_ids)) {
             foreach ($user_ids as $user_id) {

@@ -70,7 +70,6 @@ class WP_MSD_Plugin_Core
             "msd_server_info" => 1,
             "msd_quick_links" => 1,
             "msd_version_info" => 1,
-            "msd_network_health" => 1,
             "msd_custom_news" => 1,
             "msd_network_settings" => 1,
             "msd_user_management" => 1,
@@ -705,8 +704,15 @@ class WP_MSD_Plugin_Core
             return;
         }
 
-        $sites_count = get_sites(["count" => true]);
-        $users_count = count_users()["total_users"];
+        // Use network-level counts for multisite where possible
+        $sites_count = function_exists('get_blog_count')
+            ? get_blog_count()
+            : get_sites(["count" => true, "archived" => 0, "spam" => 0, "deleted" => 0]);
+
+        $users_count = function_exists('get_user_count')
+            ? get_user_count()
+            : (count_users()["total_users"] ?? 0);
+
         $themes_count = count(wp_get_themes(["allowed" => "network"]));
         $plugins_count = count(get_plugins());
 

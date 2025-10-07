@@ -706,7 +706,6 @@ div#network_dashboard_right_now .inside {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 90%;
 }
 
 .msd-site-meta {

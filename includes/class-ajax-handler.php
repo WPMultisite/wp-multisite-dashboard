@@ -24,7 +24,6 @@ class WP_MSD_Ajax_Handler
             "msd_get_user_management",
             "msd_get_last_edits",
             "msd_get_todo_items",
-            "msd_get_network_health",
             "msd_save_news_sources",
             "msd_save_quick_links",
             "msd_save_contact_info",
@@ -66,6 +65,7 @@ class WP_MSD_Ajax_Handler
                 "network_status" => $network_data->get_overall_network_status(),
                 "last_updated" => current_time("mysql"),
             ];
+
 
             wp_send_json_success($overview);
         } catch (Exception $e) {
@@ -139,6 +139,10 @@ class WP_MSD_Ajax_Handler
     {
         if (!$this->verify_ajax_request()) {
             return;
+        }
+
+        if (!function_exists('get_plugin_data')) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
 
         $plugin_data = get_plugin_data(
@@ -220,23 +224,6 @@ class WP_MSD_Ajax_Handler
         } catch (Exception $e) {
             wp_send_json_error(
                 __("Failed to load news", "wp-multisite-dashboard")
-            );
-        }
-    }
-
-    public function get_network_health()
-    {
-        if (!$this->verify_ajax_request()) {
-            return;
-        }
-
-        try {
-            $network_data = new WP_MSD_Network_Data();
-            $health = $network_data->get_network_health_overview();
-            wp_send_json_success($health);
-        } catch (Exception $e) {
-            wp_send_json_error(
-                __("Failed to load network health", "wp-multisite-dashboard")
             );
         }
     }
@@ -932,63 +919,34 @@ class WP_MSD_Ajax_Handler
             return $cached;
         }
 
-        $response = wp_remote_get($url, [
-            "timeout" => 15,
-            "headers" => [
-                "User-Agent" => "WP-Multisite-Dashboard/" . WP_MSD_VERSION,
-            ],
-        ]);
+        if (!function_exists('fetch_feed')) {
+            include_once ABSPATH . WPINC . '/feed.php';
+        }
 
-        if (is_wp_error($response)) {
+        $feed = fetch_feed($url);
+        if (is_wp_error($feed)) {
             return [];
         }
 
-        $body = wp_remote_retrieve_body($response);
+        $maxitems = $feed->get_item_quantity($limit);
+        $items = $feed->get_items(0, $maxitems);
         $feed_items = [];
 
-        try {
-            $xml = simplexml_load_string($body);
-            if ($xml === false) {
-                return [];
+        foreach ($items as $item) {
+            $title = html_entity_decode($item->get_title(), ENT_QUOTES, 'UTF-8');
+            $link = $item->get_link();
+            $description_raw = $item->get_description() ?: $item->get_content();
+            $description = wp_trim_words(strip_tags(html_entity_decode($description_raw, ENT_QUOTES, 'UTF-8')), 20);
+            $date = $item->get_date('Y-m-d H:i:s') ?: '';
+
+            if (!empty($title) && !empty($link)) {
+                $feed_items[] = [
+                    'title' => $title,
+                    'link' => $link,
+                    'description' => $description,
+                    'date' => $date,
+                ];
             }
-
-            $items = $xml->channel->item ?? ($xml->entry ?? []);
-            $count = 0;
-
-            foreach ($items as $item) {
-                if ($count >= $limit) {
-                    break;
-                }
-
-                $title = (string) ($item->title ?? "");
-                $link = (string) ($item->link ?? ($item->link["href"] ?? ""));
-                $description =
-                    (string) ($item->description ?? ($item->summary ?? ""));
-                $date = (string) ($item->pubDate ?? ($item->updated ?? ""));
-
-                if (!empty($title) && !empty($link)) {
-                    $description = html_entity_decode(
-                        $description,
-                        ENT_QUOTES,
-                        "UTF-8"
-                    );
-                    $description = wp_trim_words(strip_tags($description), 20);
-
-                    $feed_items[] = [
-                        "title" => html_entity_decode(
-                            $title,
-                            ENT_QUOTES,
-                            "UTF-8"
-                        ),
-                        "link" => $link,
-                        "description" => $description,
-                        "date" => $date,
-                    ];
-                    $count++;
-                }
-            }
-        } catch (Exception $e) {
-            return [];
         }
 
         set_site_transient($cache_key, $feed_items, 3600);

@@ -49,10 +49,6 @@ class WP_MSD_Admin_Interface
                 __("Version Information", "wp-multisite-dashboard"),
                 "render_version_info_widget",
             ],
-            "msd_network_health" => [
-                __("Network Health", "wp-multisite-dashboard"),
-                "render_network_health_widget",
-            ],
             "msd_custom_news" => [
                 __("Network News", "wp-multisite-dashboard"),
                 "render_custom_news_widget",
@@ -181,15 +177,6 @@ class WP_MSD_Admin_Interface
             echo '<span class="msd-spec-value">' . esc_html($value) . "</span>";
             echo "</div>";
         }
-        echo "</div>";
-    }
-
-    public function render_network_health_widget()
-    {
-        echo '<div id="msd-network-health" class="msd-widget-content" data-widget="network_health">';
-        echo '<div class="msd-loading"><span class="msd-spinner"></span>' .
-            __("Loading...", "wp-multisite-dashboard") .
-            "</div>";
         echo "</div>";
     }
 

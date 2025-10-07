@@ -335,28 +335,16 @@ class WP_MSD_Network_Data
         return $formatted_storage;
     }
 
-    private function get_storage_scan_limit()
-    {
-        $limit = intval(get_site_option('msd_storage_scan_site_limit', 100));
-        if ($limit < 10) {
-            $limit = 10;
-        } elseif ($limit > 2000) {
-            $limit = 2000;
-        }
-        return $limit;
-    }
-
     public function get_storage_usage_data($limit = 10)
     {
-        $scan_limit = $this->get_storage_scan_limit();
-        $cache_key = "storage_usage_data_{$limit}_L{$scan_limit}";
+        $cache_key = "storage_usage_data_{$limit}";
         $cached = $this->get_cache($cache_key);
 
         if ($cached !== false) {
             return $cached;
         }
 
-        $sites = get_sites(["number" => $scan_limit]);
+        $sites = get_sites(["number" => 100]);
         $storage_data = [
             "total_bytes" => 0,
             "total_formatted" => "0 B",
@@ -572,48 +560,6 @@ class WP_MSD_Network_Data
         return $settings_data;
     }
 
-    public function get_network_health_overview()
-    {
-        $cache_key = "network_health_overview";
-        $cached = $this->get_cache($cache_key);
-        if ($cached !== false) {
-            return $cached;
-        }
-
-        // Count plugin updates
-        $plugin_updates = 0;
-        $update_plugins = get_site_transient('update_plugins');
-        if (is_object($update_plugins) && !empty($update_plugins->response)) {
-            $plugin_updates = count($update_plugins->response);
-        }
-
-        // Count theme updates
-        $theme_updates = 0;
-        $update_themes = get_site_transient('update_themes');
-        if (is_object($update_themes) && !empty($update_themes->response)) {
-            $theme_updates = count($update_themes->response);
-        }
-
-        // Cron & cache status
-        $cron_disabled = defined('DISABLE_WP_CRON') && DISABLE_WP_CRON;
-        $object_cache = function_exists('wp_using_ext_object_cache') ? wp_using_ext_object_cache() : false;
-
-        // HTTPS status (admin or network URL)
-        $https = is_ssl() || (strpos(network_site_url('/', 'https'), 'https://') === 0);
-
-        $health = [
-            'plugin_updates' => $plugin_updates,
-            'theme_updates' => $theme_updates,
-            'cron_disabled' => (bool) $cron_disabled,
-            'object_cache' => (bool) $object_cache,
-            'https' => (bool) $https,
-            'last_updated' => current_time('mysql'),
-        ];
-
-        $this->set_cache($cache_key, $health, 600);
-        return $health;
-    }
-
     private function count_network_themes()
     {
         $themes = wp_get_themes(["allowed" => "network"]);
@@ -661,29 +607,15 @@ class WP_MSD_Network_Data
             $site_url = get_site_url();
             $favicon_url = $site_url . "/favicon.ico";
 
-            // Try HEAD first with safe defaults
             $response = wp_remote_head($favicon_url, [
                 "timeout" => 5,
-                "redirection" => 3,
             ]);
 
-            $code = !is_wp_error($response)
-                ? wp_remote_retrieve_response_code($response)
-                : 0;
-
-            if ($code !== 200) {
-                // Some servers don't support HEAD; fall back to GET
-                $get_response = wp_remote_get($favicon_url, [
-                    "timeout" => 5,
-                    "redirection" => 3,
-                ]);
-                $code = !is_wp_error($get_response)
-                    ? wp_remote_retrieve_response_code($get_response)
-                    : 0;
-
-                if ($code !== 200) {
-                    $favicon_url = includes_url("images/w-logo-blue.png");
-                }
+            if (
+                is_wp_error($response) ||
+                wp_remote_retrieve_response_code($response) !== 200
+            ) {
+                $favicon_url = includes_url("images/w-logo-blue.png");
             }
         }
 
@@ -735,14 +667,12 @@ class WP_MSD_Network_Data
 
     private function get_site_upload_dir($blog_id)
     {
-        // Resolve the correct uploads base directory for the specific blog by
-        // switching context. This works for both subdomain and subdirectory setups.
-        $current_blog_id = get_current_blog_id();
+        // Always switch to target blog to get its own uploads basedir reliably
+        // This avoids brittle string replacements and works for both subdomain and subdirectory installs
         switch_to_blog($blog_id);
         $upload_dir = wp_upload_dir();
-        $basedir = isset($upload_dir["basedir"]) ? $upload_dir["basedir"] : "";
-        // Restore original blog context
-        switch_to_blog($current_blog_id);
+        $basedir = isset($upload_dir['basedir']) ? $upload_dir['basedir'] : '';
+        restore_current_blog();
         return $basedir;
     }
 
@@ -998,9 +928,10 @@ class WP_MSD_Network_Data
 
     public function clear_all_caches()
     {
-        // Flush object cache group if the runtime supports it (not a WP core API).
         if (function_exists('wp_cache_flush_group')) {
             wp_cache_flush_group($this->cache_group);
+        } else {
+            // Fallback: best-effort cleanup without group flush
         }
 
         $transients = [
@@ -1015,8 +946,6 @@ class WP_MSD_Network_Data
             "msd_multisite_configuration",
             "msd_network_information",
             "msd_recent_network_activity",
-            // Also clear cached detected widgets list used in settings UI
-            "msd_detected_widgets",
         ];
 
         foreach ($transients as $transient) {
