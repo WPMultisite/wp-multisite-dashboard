@@ -1906,3 +1906,39 @@ body.modal-open {
 .msd-update-link:hover {
     text-decoration: underline;
 }
+
+
+.postbox-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+.postbox-header h2 {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* 通知样式 */
+.notice {
+    padding: 8px 12px;
+    border-radius: 3px;
+}
+
+.notice-success {
+    background-color: #dff0d8;
+    border-left: 4px solid #46b450;
+    padding: 1px 12px;
+}
+
+.notice-error {
+    background-color: #f2dede;
+    border-left: 4px solid #dc3232;
+}
