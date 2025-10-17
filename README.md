@@ -2,6 +2,8 @@
 
 Essential dashboard widgets for WordPress multisite administrators. This plugin provides a comprehensive set of monitoring and management tools specifically designed for WordPress multisite networks.
 
+![2025-06-26-123108](https://github.com/user-attachments/assets/f0ef7216-8ad1-4c70-9cc4-a2bf0376b28b)
+
 ## Features
 
 ### Core Dashboard Widgets
