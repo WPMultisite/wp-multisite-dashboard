@@ -270,9 +270,17 @@ class WP_MSD_Performance_Manager
      */
     public function optimize_site_queries($query)
     {
+        // 检查是否为 WP_Site_Query 对象
+        if (!($query instanceof WP_Site_Query)) {
+            return $query;
+        }
+
+        // 获取查询变量
+        $query_vars = $query->query_vars;
+        
         // 限制站点查询数量
-        if (!isset($query['number']) || $query['number'] > 100) {
-            $query['number'] = 100;
+        if (!isset($query_vars['number']) || $query_vars['number'] > 100 || $query_vars['number'] === '') {
+            $query->query_vars['number'] = 100;
         }
 
         return $query;

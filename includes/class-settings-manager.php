@@ -226,6 +226,13 @@ class WP_MSD_Settings_Manager
     private function perform_lightweight_detection()
     {
         try {
+            // 不在设置页面执行检测，因为wp_add_dashboard_widget()不可用
+            // 检测将在用户访问仪表板时自动进行
+            global $pagenow;
+            if (isset($pagenow) && $pagenow === 'settings.php') {
+                return;
+            }
+
             // 只检测网络级小工具，避免内存问题
             $plugin_core = WP_MSD_Plugin_Core::get_instance();
             $detected_widgets = $plugin_core->detect_network_widgets();

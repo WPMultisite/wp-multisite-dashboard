@@ -922,8 +922,13 @@ class WP_MSD_Plugin_Core
 
         // 确保网络仪表板已初始化
         if (!isset($wp_meta_boxes["dashboard-network"])) {
-            // Only trigger dashboard setup if not in AJAX context to avoid recursion
-            if (!wp_doing_ajax()) {
+            // 只在仪表板页面或AJAX请求中触发检测
+            // 避免在设置页面等其他地方触发，因为wp_add_dashboard_widget()可能不可用
+            if (!wp_doing_ajax() && $this->is_dashboard_page()) {
+                // 加载仪表板所需的函数
+                if (!function_exists('wp_add_dashboard_widget')) {
+                    require_once ABSPATH . 'wp-admin/includes/dashboard.php';
+                }
                 do_action('wp_network_dashboard_setup');
             }
         }
@@ -1178,5 +1183,18 @@ class WP_MSD_Plugin_Core
         if (isset($_POST['msd_import_settings'])) {
             $this->settings_manager->import_settings();
         }
+    }
+
+    /**
+     * 检查当前是否在仪表板页面
+     */
+    private function is_dashboard_page()
+    {
+        global $pagenow;
+        
+        // 检查是否在网络管理员仪表板
+        return is_network_admin() && 
+               isset($pagenow) && 
+               $pagenow === 'index.php';
     }
 }
