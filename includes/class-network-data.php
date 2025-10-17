@@ -355,22 +355,28 @@ class WP_MSD_Network_Data
         return $formatted_storage;
     }
 
-    public function get_storage_usage_data($limit = 10)
+    public function get_storage_usage_data($limit = 10, $search = '', $sort_by = 'storage')
     {
-        $cache_key = "storage_usage_data_{$limit}";
+        $cache_key = "storage_usage_data_{$limit}_{$search}_{$sort_by}";
         $cached = $this->get_cache($cache_key);
 
         if ($cached !== false) {
             return $cached;
         }
 
-        $sites = get_sites(["number" => 100]);
+        // Get all sites (increase limit for better analysis)
+        $sites = get_sites(["number" => 1000]);
         $storage_data = [
+            "total_files_bytes" => 0,
+            "total_db_bytes" => 0,
             "total_bytes" => 0,
             "total_formatted" => "0 B",
+            "total_files_formatted" => "0 B",
+            "total_db_formatted" => "0 B",
             "sites" => [],
             "summary" => [
                 "sites_analyzed" => 0,
+                "sites_total" => count($sites),
                 "average_per_site" => 0,
                 "largest_site" => null,
                 "storage_limit" => get_space_allowed(),
@@ -378,49 +384,91 @@ class WP_MSD_Network_Data
         ];
 
         $site_storage = [];
-        $total_bytes = 0;
+        $total_files_bytes = 0;
+        $total_db_bytes = 0;
 
         foreach ($sites as $site) {
             $blog_id = $site->blog_id;
-            $storage_bytes = $this->get_site_storage_usage($blog_id);
+            
+            // Get file storage with type breakdown
+            $file_storage = $this->get_site_storage_usage($blog_id);
+            $db_size = $this->get_site_database_size($blog_id);
+            $total_storage = $file_storage['total'] + $db_size;
 
-            if ($storage_bytes > 0) {
+            if ($total_storage > 0) {
                 $storage_limit_mb = get_space_allowed();
                 $usage_percentage =
                     $storage_limit_mb > 0
-                        ? ($storage_bytes / (1024 * 1024) / $storage_limit_mb) *
-                            100
+                        ? ($total_storage / (1024 * 1024) / $storage_limit_mb) * 100
                         : 0;
+
+                $site_name = $this->get_site_name($blog_id);
+                $site_domain = $site->domain . $site->path;
+                
+                // Apply search filter
+                if (!empty($search)) {
+                    $search_lower = strtolower($search);
+                    if (strpos(strtolower($site_name), $search_lower) === false && 
+                        strpos(strtolower($site_domain), $search_lower) === false) {
+                        continue;
+                    }
+                }
 
                 $site_info = [
                     "blog_id" => $blog_id,
-                    "name" => $this->get_site_name($blog_id),
-                    "domain" => $site->domain . $site->path,
-                    "storage_bytes" => $storage_bytes,
-                    "storage_formatted" => size_format($storage_bytes),
+                    "name" => $site_name,
+                    "domain" => $site_domain,
+                    "files_bytes" => $file_storage['total'],
+                    "files_formatted" => size_format($file_storage['total']),
+                    "db_bytes" => $db_size,
+                    "db_formatted" => size_format($db_size),
+                    "storage_bytes" => $total_storage,
+                    "storage_formatted" => size_format($total_storage),
                     "storage_limit_mb" => $storage_limit_mb,
                     "usage_percentage" => round($usage_percentage, 1),
-                    "status" => $this->get_storage_status_from_percentage(
-                        $usage_percentage
-                    ),
+                    "status" => $this->get_storage_status_from_percentage($usage_percentage),
                     "admin_url" => get_admin_url($blog_id),
+                    "file_types" => $file_storage['types'],
                 ];
 
                 $site_storage[] = $site_info;
-                $total_bytes += $storage_bytes;
+                $total_files_bytes += $file_storage['total'];
+                $total_db_bytes += $db_size;
             }
         }
 
-        usort($site_storage, function ($a, $b) {
-            return $b["storage_bytes"] <=> $a["storage_bytes"];
+        // Sort sites
+        usort($site_storage, function ($a, $b) use ($sort_by) {
+            switch ($sort_by) {
+                case 'name':
+                    return strcasecmp($a['name'], $b['name']);
+                case 'database':
+                    return $b['db_bytes'] <=> $a['db_bytes'];
+                case 'files':
+                    return $b['files_bytes'] <=> $a['files_bytes'];
+                case 'storage':
+                default:
+                    return $b['storage_bytes'] <=> $a['storage_bytes'];
+            }
         });
 
-        $storage_data["sites"] = array_slice($site_storage, 0, $limit);
+        // Apply limit (0 means all)
+        $filtered_sites = $limit > 0 ? array_slice($site_storage, 0, $limit) : $site_storage;
+        
+        $total_bytes = $total_files_bytes + $total_db_bytes;
+        
+        $storage_data["sites"] = $filtered_sites;
+        $storage_data["total_files_bytes"] = $total_files_bytes;
+        $storage_data["total_db_bytes"] = $total_db_bytes;
         $storage_data["total_bytes"] = $total_bytes;
         $storage_data["total_formatted"] = size_format($total_bytes);
+        $storage_data["total_files_formatted"] = size_format($total_files_bytes);
+        $storage_data["total_db_formatted"] = size_format($total_db_bytes);
         $storage_data["summary"]["sites_analyzed"] = count($site_storage);
         $storage_data["summary"]["average_per_site"] =
             count($site_storage) > 0 ? $total_bytes / count($site_storage) : 0;
+        $storage_data["summary"]["average_formatted"] = 
+            count($site_storage) > 0 ? size_format($total_bytes / count($site_storage)) : "0 B";
         $storage_data["summary"]["largest_site"] = !empty($site_storage)
             ? $site_storage[0]
             : null;
@@ -675,14 +723,22 @@ class WP_MSD_Network_Data
         }
 
         $upload_dir = $this->get_site_upload_dir($blog_id);
-        $size_bytes = 0;
+        $storage_data = [
+            'total' => 0,
+            'types' => [
+                'images' => 0,
+                'videos' => 0,
+                'documents' => 0,
+                'other' => 0,
+            ]
+        ];
 
         if (is_dir($upload_dir)) {
-            $size_bytes = $this->calculate_directory_size($upload_dir);
+            $storage_data = $this->calculate_directory_size($upload_dir);
         }
 
-        wp_cache_set($cache_key, $size_bytes, $this->cache_group, 3600);
-        return $size_bytes;
+        wp_cache_set($cache_key, $storage_data, $this->cache_group, 3600);
+        return $storage_data;
     }
 
     private function get_site_upload_dir($blog_id)
@@ -696,15 +752,69 @@ class WP_MSD_Network_Data
         return $basedir;
     }
 
+    /**
+     * Get database size for a specific site
+     */
+    private function get_site_database_size($blog_id)
+    {
+        $cache_key = "db_size_{$blog_id}";
+        $cached = wp_cache_get($cache_key, $this->cache_group);
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        global $wpdb;
+        
+        // Get table prefix for this blog
+        $prefix = $wpdb->get_blog_prefix($blog_id);
+        $size = 0;
+
+        try {
+            // Query to get total size of all tables for this blog
+            $query = $wpdb->prepare(
+                "SELECT SUM(data_length + index_length) as size 
+                FROM information_schema.TABLES 
+                WHERE table_schema = %s 
+                AND table_name LIKE %s",
+                DB_NAME,
+                $wpdb->esc_like($prefix) . '%'
+            );
+
+            $result = $wpdb->get_var($query);
+            $size = $result ? intval($result) : 0;
+        } catch (Exception $e) {
+            error_log("MSD Database size calculation error: " . $e->getMessage());
+            $size = 0;
+        }
+
+        wp_cache_set($cache_key, $size, $this->cache_group, 3600);
+        return $size;
+    }
+
     private function calculate_directory_size($directory)
     {
-        $size = 0;
+        $storage_data = [
+            'total' => 0,
+            'types' => [
+                'images' => 0,
+                'videos' => 0,
+                'documents' => 0,
+                'other' => 0,
+            ]
+        ];
+        
         $file_count = 0;
-        $max_files = 5000;
+        $max_files = 10000; // Increased limit
+
+        // File type mappings
+        $image_exts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
+        $video_exts = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv', 'm4v'];
+        $doc_exts = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv', 'zip', 'rar'];
 
         try {
             if (!is_readable($directory)) {
-                return 0;
+                return $storage_data;
             }
 
             $iterator = new RecursiveIteratorIterator(
@@ -717,7 +827,21 @@ class WP_MSD_Network_Data
 
             foreach ($iterator as $file) {
                 if ($file->isFile() && $file->isReadable()) {
-                    $size += $file->getSize();
+                    $file_size = $file->getSize();
+                    $storage_data['total'] += $file_size;
+                    
+                    // Categorize by file type
+                    $ext = strtolower($file->getExtension());
+                    if (in_array($ext, $image_exts)) {
+                        $storage_data['types']['images'] += $file_size;
+                    } elseif (in_array($ext, $video_exts)) {
+                        $storage_data['types']['videos'] += $file_size;
+                    } elseif (in_array($ext, $doc_exts)) {
+                        $storage_data['types']['documents'] += $file_size;
+                    } else {
+                        $storage_data['types']['other'] += $file_size;
+                    }
+                    
                     $file_count++;
 
                     if ($file_count > $max_files) {
@@ -727,10 +851,10 @@ class WP_MSD_Network_Data
             }
         } catch (Exception $e) {
             error_log("MSD Storage calculation error: " . $e->getMessage());
-            return 0;
+            return $storage_data;
         }
 
-        return $size;
+        return $storage_data;
     }
 
     private function get_site_name($blog_id)

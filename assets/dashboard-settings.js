@@ -797,6 +797,46 @@ jQuery(document).ready(function ($) {
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
   }
 
+  // Export diagnostics function
+  window.MSD.exportDiagnostics = function() {
+    if (!window.MSD_Core) {
+      alert(msdAjax.strings.error_occurred || 'Error occurred');
+      return;
+    }
+
+    window.MSD_Core.makeAjaxRequest(
+      'msd_export_diagnostics',
+      {},
+      function(response) {
+        if (response.data) {
+          // Create a blob and download
+          const dataStr = JSON.stringify(response.data, null, 2);
+          const dataBlob = new Blob([dataStr], { type: 'application/json' });
+          const url = URL.createObjectURL(dataBlob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'msd-diagnostics-' + new Date().getTime() + '.json';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          
+          window.MSD_Core.showNotice(
+            msdAjax.strings.export_success || 'Diagnostics exported successfully',
+            'success',
+            3000
+          );
+        }
+      },
+      function() {
+        window.MSD_Core.showNotice(
+          msdAjax.strings.export_failed || 'Failed to export diagnostics',
+          'error'
+        );
+      }
+    );
+  };
+
   console.log(
     msdAjax.strings.msd_settings_loaded + ":",
     Object.keys(window.MSD),

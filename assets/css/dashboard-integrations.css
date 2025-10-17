@@ -1,0 +1,1072 @@
+/**
+ * WP Multisite Dashboard - Integration Styles
+ *
+ * Integration features including:
+ * - Domain Mapping integration
+ * - Integration widgets management
+ * - Widget configuration page
+ * - Plugin status indicators
+ *
+ * @package WP_Multisite_Dashboard
+ * @version 1.0.0
+ */
+
+/* ============================================
+   Domain Mapping Integration Styles
+   ============================================ */
+
+/* Domain Mapping Widget Container */
+#msd-domain-mapping {
+    padding: 0;
+}
+
+#msd-domain-mapping .msd-refresh-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+}
+
+/* Domain Mapping Stats */
+.msd-dm-stats {
+    margin-bottom: var(--msd-spacing);
+    padding: var(--msd-spacing);
+    background: var(--msd-bg-light);
+}
+
+.msd-dm-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.msd-dm-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--msd-bg);
+    border: 1px solid var(--msd-border);
+    border-radius: var(--msd-radius-small);
+    transition: all 0.2s ease;
+}
+
+.msd-dm-stat-item:hover {
+    border-color: var(--msd-primary);
+    background: #f0f6fc;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--msd-shadow);
+}
+
+.msd-dm-stat-icon {
+    font-size: 28px;
+    color: var(--msd-primary);
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+}
+
+.msd-dm-stat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.msd-dm-stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--msd-text);
+    line-height: 1;
+}
+
+.msd-dm-stat-label {
+    font-size: 12px;
+    color: var(--msd-text-light);
+    font-weight: 500;
+}
+
+/* Health Status */
+.msd-dm-health {
+    padding: var(--msd-spacing);
+    background: var(--msd-bg-light);
+    border-top: 1px solid var(--msd-border);
+}
+
+.msd-dm-health h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--msd-text);
+}
+
+.msd-dm-health-bars {
+    margin-top: 12px;
+}
+
+.msd-dm-health-bar {
+    display: flex;
+    height: 24px;
+    border-radius: var(--msd-radius-small);
+    overflow: hidden;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px var(--msd-shadow);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.msd-dm-health-segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.msd-dm-health-segment:hover {
+    filter: brightness(1.1);
+    cursor: help;
+}
+
+.msd-dm-health-good {
+    background-color: var(--msd-success);
+}
+
+.msd-dm-health-warning {
+    background-color: var(--msd-warning);
+}
+
+.msd-dm-health-error {
+    background-color: var(--msd-danger);
+}
+
+.msd-dm-health-unchecked {
+    background-color: #8c8f94;
+}
+
+.msd-dm-health-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 13px;
+}
+
+.msd-dm-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--msd-text-light);
+}
+
+.msd-dm-legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px var(--msd-shadow);
+}
+
+/* Domain List */
+.msd-dm-recent,
+.msd-dm-activity {
+    padding: var(--msd-spacing);
+    background: var(--msd-bg-light);
+    border-top: 1px solid var(--msd-border);
+}
+
+.msd-dm-recent h4,
+.msd-dm-activity h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--msd-text);
+}
+
+.msd-dm-domain-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.msd-dm-domain-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--msd-border);
+    transition: background 0.2s ease;
+}
+
+.msd-dm-domain-item:last-child {
+    border-bottom: none;
+}
+
+.msd-dm-domain-item:hover {
+    background: var(--msd-bg);
+}
+
+.msd-dm-domain-item .dashicons {
+    color: var(--msd-text-light);
+    flex-shrink: 0;
+    font-size: 18px;
+}
+
+.msd-dm-domain-link {
+    text-decoration: none;
+    color: var(--msd-primary);
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.msd-dm-domain-link:hover {
+    color: var(--msd-primary-hover);
+    text-decoration: underline;
+}
+
+.msd-dm-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: var(--msd-radius-small);
+    font-size: 11px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.msd-dm-badge-primary {
+    background-color: var(--msd-primary);
+    color: #fff;
+}
+
+.msd-dm-site-info {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--msd-text-light);
+}
+
+/* Activity List */
+.msd-dm-activity-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.msd-dm-activity-item {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--msd-border);
+    font-size: 13px;
+    transition: background 0.2s ease;
+}
+
+.msd-dm-activity-item:last-child {
+    border-bottom: none;
+}
+
+.msd-dm-activity-item:hover {
+    background: var(--msd-bg);
+}
+
+.msd-dm-activity-action {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: var(--msd-radius-small);
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.msd-dm-action-add {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.msd-dm-action-edit {
+    background-color: #d9edf7;
+    color: #31708f;
+}
+
+.msd-dm-action-delete {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
+.msd-dm-action-import {
+    background-color: #fcf8e3;
+    color: #8a6d3b;
+}
+
+.msd-dm-activity-domain {
+    font-weight: 500;
+    color: var(--msd-text);
+}
+
+.msd-dm-activity-meta {
+    display: block;
+    color: var(--msd-text-light);
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+/* Actions */
+.msd-dm-actions {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    padding: var(--msd-spacing);
+    background: var(--msd-bg);
+    border-top: 1px solid var(--msd-border);
+}
+
+.msd-dm-actions .button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 11px;
+}
+
+.msd-dm-actions .button-primary {
+    background: var(--msd-primary);
+    border-color: var(--msd-primary);
+}
+
+.msd-dm-actions .button-primary:hover {
+    background: var(--msd-primary-hover);
+    border-color: var(--msd-primary-hover);
+}
+
+/* Integration Suggestion */
+.msd-integration-suggestion {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.msd-integration-icon {
+    flex-shrink: 0;
+}
+
+.msd-integration-icon .dashicons {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #2271b1;
+}
+
+.msd-integration-content h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: #1d2327;
+}
+
+.msd-integration-content p {
+    margin: 0 0 15px 0;
+    color: #50575e;
+    line-height: 1.6;
+}
+
+.msd-integration-features ul {
+    margin: 15px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.msd-integration-features li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    color: #50575e;
+}
+
+.msd-integration-features .dashicons {
+    color: #46b450;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.msd-integration-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* Widget Notice */
+.msd-widget-notice {
+    padding: 32px 24px;
+    text-align: center;
+    background: var(--msd-bg);
+    border-radius: var(--msd-radius-small);
+    border: 1px dashed var(--msd-border);
+}
+
+.msd-widget-notice p {
+    margin: 0 0 16px 0;
+    color: var(--msd-text-light);
+    font-size: 14px;
+}
+
+.msd-widget-notice .button {
+    min-width: 160px;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 1200px) {
+    .msd-dm-stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 782px) {
+    .msd-dm-stat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .msd-dm-actions {
+        flex-direction: column;
+    }
+
+    .msd-integration-suggestion {
+        flex-direction: column;
+    }
+
+    .msd-dm-health-legend {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .msd-dm-stat-item {
+        padding: 10px;
+    }
+
+    .msd-dm-stat-icon {
+        font-size: 20px;
+    }
+
+    .msd-dm-stat-value {
+        font-size: 20px;
+    }
+
+    .msd-dm-site-info {
+        display: block;
+        margin-left: 0;
+        margin-top: 4px;
+    }
+}
+
+/* ============================================
+   Integration Widgets Management Styles
+   ============================================ */
+
+/* Integration Widgets List */
+.msd-integration-widgets-list {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Integration Widget Card */
+.msd-integration-widget-card {
+    background: var(--msd-bg-light);
+    border: 2px solid var(--msd-border);
+    border-radius: var(--msd-radius);
+    padding: 24px;
+    transition: all 0.3s ease;
+}
+
+.msd-integration-widget-card:hover {
+    box-shadow: 0 4px 12px var(--msd-shadow);
+}
+
+.msd-integration-widget-card.msd-status-active {
+    border-color: var(--msd-success);
+    background: #f0f9f4;
+}
+
+.msd-integration-widget-card.msd-status-installed {
+    border-color: var(--msd-warning);
+    background: #fffbf0;
+}
+
+.msd-integration-widget-card.msd-status-not_installed {
+    border-color: var(--msd-border);
+}
+
+/* Widget Header */
+.msd-integration-widget-header {
+    margin-bottom: 20px;
+}
+
+.msd-integration-widget-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.msd-integration-widget-title h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--msd-text);
+}
+
+/* Status Badge */
+.msd-integration-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--msd-radius-small);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.msd-integration-status.msd-status-active {
+    background: var(--msd-success);
+    color: #fff;
+}
+
+.msd-integration-status.msd-status-installed {
+    background: var(--msd-warning);
+    color: #fff;
+}
+
+.msd-integration-status.msd-status-not_installed {
+    background: #8c8f94;
+    color: #fff;
+}
+
+.msd-integration-status .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Widget Description */
+.msd-integration-widget-desc {
+    margin: 0 0 12px 0;
+    color: var(--msd-text-light);
+    line-height: 1.6;
+}
+
+.msd-integration-widget-required {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--msd-text-light);
+    font-size: 13px;
+}
+
+.msd-integration-widget-required .dashicons {
+    color: var(--msd-primary);
+}
+
+/* Widget Actions */
+.msd-integration-widget-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid var(--msd-border);
+}
+
+.msd-integration-widget-actions .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.msd-integration-widget-actions .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Toggle Switch */
+.msd-toggle-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.msd-toggle-switch input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.msd-toggle-slider {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+    background-color: #8c8f94;
+    border-radius: 24px;
+    transition: background-color 0.3s ease;
+}
+
+.msd-toggle-slider::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 2px;
+    top: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.msd-toggle-switch input[type="checkbox"]:checked + .msd-toggle-slider {
+    background-color: var(--msd-success);
+}
+
+.msd-toggle-switch input[type="checkbox"]:checked + .msd-toggle-slider::before {
+    transform: translateX(24px);
+}
+
+.msd-toggle-label {
+    font-weight: 600;
+    color: var(--msd-text);
+}
+
+/* Integration Help Section */
+.msd-integration-help {
+    background: var(--msd-bg);
+    border: 1px solid var(--msd-border);
+    border-radius: var(--msd-radius);
+    padding: 24px;
+    margin-top: 30px;
+}
+
+.msd-integration-help h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    color: var(--msd-text);
+}
+
+.msd-integration-help p {
+    margin: 0 0 16px 0;
+    color: var(--msd-text-light);
+    line-height: 1.6;
+}
+
+.msd-integration-help ul {
+    margin: 0;
+    padding-left: 24px;
+    color: var(--msd-text-light);
+}
+
+.msd-integration-help li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+/* Integration Suggestion Updates */
+.msd-integration-suggestion.msd-integration-installed {
+    border-color: var(--msd-warning);
+    background: #fffbf0;
+}
+
+.msd-integration-actions .button .dashicons {
+    margin-right: 4px;
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+    .msd-integration-widget-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .msd-integration-widget-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .msd-integration-widget-actions .button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ============================================
+   Widget Configuration Styles
+   ============================================ */
+
+/* Page Description */
+.msd-page-description {
+    margin: 0 0 30px 0;
+    color: var(--msd-text-light);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Widget Config Section */
+.msd-widget-config-section {
+    margin-bottom: 40px;
+    padding-bottom: 40px;
+    border-bottom: 2px solid var(--msd-border);
+}
+
+.msd-widget-config-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Section Header */
+.msd-section-header {
+    margin-bottom: 24px;
+}
+
+.msd-section-header h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: var(--msd-text);
+    font-weight: 600;
+}
+
+.msd-section-header .msd-section-desc {
+    margin: 0;
+    color: var(--msd-text-light);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Built-in Widgets - Keep existing grid */
+.msd-widget-toggle label {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.msd-widget-toggle .msd-widget-label {
+    font-weight: 500;
+    color: var(--msd-text);
+}
+
+/* Integration Widgets Section */
+.msd-integration-widgets-section {
+    background: var(--msd-bg);
+    padding: 24px;
+    border-radius: var(--msd-radius);
+    border: 1px solid var(--msd-border);
+}
+
+/* Integration Widgets Grid */
+.msd-integration-widgets-grid {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+/* Integration Widget Box */
+.msd-integration-widget-box {
+    background: var(--msd-bg-light);
+    border: 2px solid var(--msd-border);
+    border-radius: var(--msd-radius-small);
+    padding: 20px;
+    transition: all 0.2s ease;
+}
+
+.msd-integration-widget-box:hover {
+    box-shadow: 0 2px 8px var(--msd-shadow);
+}
+
+.msd-integration-widget-box.msd-plugin-status-active {
+    border-color: var(--msd-success);
+    background: #f0f9f4;
+}
+
+.msd-integration-widget-box.msd-plugin-status-installed {
+    border-color: var(--msd-warning);
+    background: #fffbf0;
+}
+
+.msd-integration-widget-box.msd-plugin-status-not_installed {
+    border-color: #ddd;
+    background: #f9f9f9;
+}
+
+/* Widget Main Section */
+.msd-integration-widget-main {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+/* Checkbox Wrapper */
+.msd-widget-checkbox-wrapper label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.msd-widget-checkbox-wrapper label.msd-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.msd-widget-checkbox-wrapper input[type="checkbox"] {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.msd-widget-checkbox-wrapper input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+}
+
+.msd-widget-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--msd-text);
+    line-height: 1.4;
+}
+
+/* Plugin Status Badge */
+.msd-plugin-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--msd-radius-small);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.msd-plugin-status-badge.msd-status-active {
+    background: var(--msd-success);
+    color: #fff;
+}
+
+.msd-plugin-status-badge.msd-status-installed {
+    background: var(--msd-warning);
+    color: #fff;
+}
+
+.msd-plugin-status-badge.msd-status-not_installed {
+    background: #8c8f94;
+    color: #fff;
+}
+
+.msd-plugin-status-badge .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+/* Widget Description */
+.msd-widget-description {
+    margin: 0 0 16px 0;
+    color: var(--msd-text-light);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* Widget Footer */
+.msd-integration-widget-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--msd-border);
+}
+
+/* Required Plugin Info */
+.msd-required-plugin-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--msd-text-light);
+    font-size: 13px;
+}
+
+.msd-required-plugin-info .dashicons {
+    color: var(--msd-primary);
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+/* Plugin Actions */
+.msd-plugin-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.msd-plugin-actions .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    height: auto;
+    line-height: 1.4;
+    font-size: 13px;
+}
+
+.msd-plugin-actions .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+    .msd-integration-widget-main {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .msd-plugin-status-badge {
+        align-self: flex-start;
+    }
+
+    .msd-integration-widget-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .msd-plugin-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .msd-plugin-actions .button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Version Info Widget Enhancements */
+.msd-version-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--msd-border);
+}
+
+.msd-version-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.msd-plugin-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: var(--msd-radius);
+}
+
+.msd-version-title-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--msd-text);
+}
+
+.msd-last-modified {
+    display: block;
+    font-size: 11px;
+    color: var(--msd-text-light);
+    font-style: italic;
+}
+
+.msd-version-quick-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--msd-border);
+}
+
+.msd-version-quick-actions h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--msd-text);
+    letter-spacing: 0.5px;
+}
+
+.msd-quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.msd-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 12px;
+    font-size: 11px;
+    background: transparent;
+    border: 1px solid var(--msd-border);
+    border-radius: var(--msd-radius-small);
+    color: var(--msd-text-light);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.msd-action-btn:hover {
+    background: var(--msd-primary);
+    border-color: var(--msd-primary);
+    color: white;
+    transform: none;
+    box-shadow: none;
+}
+
+.msd-action-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.msd-action-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 782px) {
+    .msd-version-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .msd-version-title-wrapper {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .msd-quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .msd-plugin-icon {
+        width: 48px;
+        height: 48px;
+    }
+}

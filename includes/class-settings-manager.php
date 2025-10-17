@@ -55,6 +55,11 @@ class WP_MSD_Settings_Manager
             "msd_todo_widget" => __("Todo List", "wp-multisite-dashboard"),
             "msd_error_logs" => __("PHP Error Logs", "wp-multisite-dashboard"),
             "msd_404_monitor" => __("404 Monitor", "wp-multisite-dashboard"),
+            // Integration widgets
+            "msd_domain_mapping_overview" => __(
+                "Domain Mapping Overview",
+                "wp-multisite-dashboard"
+            ),
         ];
 
         include WP_MSD_PLUGIN_DIR . "templates/settings-page.php";
@@ -89,6 +94,7 @@ class WP_MSD_Settings_Manager
                 "msd_todo_widget",
                 "msd_error_logs",
                 "msd_404_monitor",
+                "msd_domain_mapping_overview",
             ];
 
             foreach ($widget_options as $widget_id) {
@@ -98,6 +104,28 @@ class WP_MSD_Settings_Manager
             }
 
             update_site_option('msd_enabled_widgets', $enabled_widgets);
+        }
+
+        // Handle integration widgets when saving from the Integrations tab
+        if ($form_type === 'integrations') {
+            $current_enabled = get_site_option('msd_enabled_widgets', []);
+            
+            // Integration widget IDs
+            $integration_widget_ids = [
+                'msd_domain_mapping_overview',
+                // Future integration widgets can be added here
+            ];
+            
+            // Update only integration widgets, preserve other widgets
+            foreach ($integration_widget_ids as $widget_id) {
+                if (isset($_POST['integration_widgets'][$widget_id])) {
+                    $current_enabled[$widget_id] = 1;
+                } else {
+                    unset($current_enabled[$widget_id]);
+                }
+            }
+            
+            update_site_option('msd_enabled_widgets', $current_enabled);
         }
 
         // Handle system/third-party widgets when saving from the System tab
@@ -415,6 +443,10 @@ class WP_MSD_Settings_Manager
             ),
             "msd_404_monitor" => __(
                 "Track 404 errors to identify broken links and improve SEO",
+                "wp-multisite-dashboard"
+            ),
+            "msd_domain_mapping_overview" => __(
+                "Network-wide domain mapping statistics, health monitoring, and quick access to domain management (requires WP Domain Mapping plugin)",
                 "wp-multisite-dashboard"
             ),
         ];

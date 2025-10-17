@@ -78,6 +78,11 @@ class WP_MSD_Admin_Interface
                 __("404 Monitor", "wp-multisite-dashboard"),
                 "render_404_monitor_widget",
             ],
+            // Integration widgets
+            "msd_domain_mapping_overview" => [
+                __("Domain Mapping Overview", "wp-multisite-dashboard"),
+                "render_domain_mapping_widget",
+            ],
         ];
 
         foreach ($widgets as $widget_id => $widget_data) {
@@ -330,7 +335,8 @@ class WP_MSD_Admin_Interface
         echo "</div>";
 
         echo '<div class="msd-contact-actions">';
-        echo '<button class="button button-small" onclick="MSD.showContactInfoModal()">' .
+        echo '<button class="msd-settings-link" onclick="MSD.showContactInfoModal()">' .
+            '<span class="dashicons dashicons-admin-generic"></span>' .
             __("Edit Contact Info", "wp-multisite-dashboard") .
             "</button>";
         echo "</div>";
@@ -424,5 +430,26 @@ class WP_MSD_Admin_Interface
         echo '<div id="msd-404-monitor" class="msd-widget-content" data-widget="monitor_404">';
         echo '<div class="msd-loading"><span class="msd-spinner"></span>' . __("Loading...", "wp-multisite-dashboard") . '</div>';
         echo '</div>';
+    }
+
+    /**
+     * Render Domain Mapping Overview widget
+     */
+    public function render_domain_mapping_widget()
+    {
+        $integration = WP_MSD_Domain_Mapping_Integration::get_instance();
+        
+        // Check if Domain Mapping is active
+        if (!$integration->is_domain_mapping_active()) {
+            echo '<div class="msd-widget-notice">';
+            echo '<p>' . __('WP Domain Mapping plugin is not active.', 'wp-multisite-dashboard') . '</p>';
+            echo '<a href="' . network_admin_url('plugin-install.php?s=wp+domain+mapping&tab=search') . '" class="button">';
+            echo __('Install Plugin', 'wp-multisite-dashboard');
+            echo '</a>';
+            echo '</div>';
+            return;
+        }
+        
+        $integration->render_widget();
     }
 }

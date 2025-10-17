@@ -124,6 +124,7 @@ class WP_MSD_Ajax_Handler
             "msd_get_404_stats",
             "msd_toggle_404_monitoring",
             "msd_clear_404_logs",
+            "msd_export_diagnostics",
         ];
 
         foreach ($ajax_actions as $action) {
@@ -204,7 +205,17 @@ class WP_MSD_Ajax_Handler
 
         try {
             $network_data = new WP_MSD_Network_Data();
-            $storage_data = $network_data->get_storage_usage_data(5);
+            
+            // Get parameters from request
+            $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 5;
+            $search = isset($_POST['search']) ? sanitize_text_field($_POST['search']) : '';
+            $sort_by = isset($_POST['sort_by']) ? sanitize_text_field($_POST['sort_by']) : 'storage';
+            
+            // Validate limit
+            if ($limit < 1) $limit = 5;
+            if ($limit > 1000) $limit = 1000; // Max safety limit
+            
+            $storage_data = $network_data->get_storage_usage_data($limit, $search, $sort_by);
             wp_send_json_success($storage_data);
         } catch (Exception $e) {
             wp_send_json_error(
@@ -276,6 +287,10 @@ class WP_MSD_Ajax_Handler
             }
         }
 
+        // Get plugin file modification time
+        $plugin_file = WP_MSD_PLUGIN_DIR . "wp-multisite-dashboard.php";
+        $last_modified = file_exists($plugin_file) ? filemtime($plugin_file) : null;
+        
         $version_info = [
             "plugin_name" => $plugin_data["Name"],
             "plugin_version" => $plugin_data["Version"],
@@ -284,6 +299,7 @@ class WP_MSD_Ajax_Handler
             "text_domain" => $plugin_data["TextDomain"],
             "required_php" => $plugin_data["RequiresPHP"],
             "description" => strip_tags($plugin_data["Description"]),
+            "last_modified" => $last_modified ? date_i18n(get_option('date_format'), $last_modified) : null,
             "database_status" => $activity_exists ? "active" : "missing",
             "database_message" => $activity_exists
                 ? __("Activity table created", "wp-multisite-dashboard")
@@ -395,6 +411,8 @@ class WP_MSD_Ajax_Handler
                 $todos = [];
             }
 
+            $today = current_time('Y-m-d');
+            
             foreach ($todos as &$todo) {
                 if (isset($todo["created_at"])) {
                     $todo["created_at_human"] =
@@ -407,6 +425,40 @@ class WP_MSD_Ajax_Handler
                         human_time_diff(strtotime($todo["updated_at"])) .
                         " " .
                         __("ago", "wp-multisite-dashboard");
+                }
+                
+                // Calculate due date status
+                if (!empty($todo["due_date"])) {
+                    $due_date = $todo["due_date"];
+                    $todo["due_date_formatted"] = date_i18n(get_option('date_format'), strtotime($due_date));
+                    
+                    $days_diff = (strtotime($due_date) - strtotime($today)) / (60 * 60 * 24);
+                    $todo["days_remaining"] = (int)$days_diff;
+                    
+                    if ($days_diff < 0) {
+                        $todo["due_status"] = "overdue";
+                        $todo["due_status_text"] = sprintf(
+                            __("Overdue by %d days", "wp-multisite-dashboard"),
+                            abs((int)$days_diff)
+                        );
+                    } elseif ($days_diff == 0) {
+                        $todo["due_status"] = "due-today";
+                        $todo["due_status_text"] = __("Due today", "wp-multisite-dashboard");
+                    } elseif ($days_diff <= 3) {
+                        $todo["due_status"] = "due-soon";
+                        $todo["due_status_text"] = sprintf(
+                            __("%d days remaining", "wp-multisite-dashboard"),
+                            (int)$days_diff
+                        );
+                    } else {
+                        $todo["due_status"] = "normal";
+                        $todo["due_status_text"] = sprintf(
+                            __("%d days remaining", "wp-multisite-dashboard"),
+                            (int)$days_diff
+                        );
+                    }
+                } else {
+                    $todo["due_status"] = "none";
                 }
             }
 
@@ -537,6 +589,8 @@ class WP_MSD_Ajax_Handler
                 $todos = [];
             }
 
+            $due_date = !empty($_POST["due_date"]) ? sanitize_text_field($_POST["due_date"]) : null;
+            
             $new_todo = [
                 "id" => uniqid(),
                 "title" => $title,
@@ -545,6 +599,7 @@ class WP_MSD_Ajax_Handler
                 "priority" => sanitize_text_field(
                     $_POST["priority"] ?? "medium"
                 ),
+                "due_date" => $due_date,
                 "created_at" => current_time("mysql"),
                 "updated_at" => current_time("mysql"),
             ];
@@ -611,6 +666,9 @@ class WP_MSD_Ajax_Handler
                         $todo["priority"] = sanitize_text_field(
                             $_POST["priority"]
                         );
+                    }
+                    if (isset($_POST["due_date"])) {
+                        $todo["due_date"] = !empty($_POST["due_date"]) ? sanitize_text_field($_POST["due_date"]) : null;
                     }
                     $todo["updated_at"] = current_time("mysql");
                     $updated = true;
@@ -1738,6 +1796,82 @@ class WP_MSD_Ajax_Handler
         } catch (Exception $e) {
             wp_send_json_error(
                 __('Failed to clear 404 logs', 'wp-multisite-dashboard')
+            );
+        }
+    }
+
+    public function export_diagnostics()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            global $wpdb, $wp_version;
+
+            if (!function_exists('get_plugin_data')) {
+                require_once ABSPATH . 'wp-admin/includes/plugin.php';
+            }
+
+            $plugin_data = get_plugin_data(
+                WP_MSD_PLUGIN_DIR . "wp-multisite-dashboard.php"
+            );
+
+            // Collect diagnostics data
+            $diagnostics = [
+                'export_date' => current_time('mysql'),
+                'site_info' => [
+                    'site_url' => network_site_url(),
+                    'home_url' => network_home_url(),
+                    'multisite' => is_multisite(),
+                    'network_count' => get_sites(['count' => true]),
+                ],
+                'wordpress' => [
+                    'version' => $wp_version,
+                    'language' => get_locale(),
+                    'timezone' => wp_timezone_string(),
+                    'debug_mode' => defined('WP_DEBUG') && WP_DEBUG,
+                ],
+                'server' => [
+                    'php_version' => PHP_VERSION,
+                    'mysql_version' => $wpdb->db_version(),
+                    'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown',
+                    'memory_limit' => ini_get('memory_limit'),
+                    'max_execution_time' => ini_get('max_execution_time'),
+                    'upload_max_filesize' => ini_get('upload_max_filesize'),
+                    'post_max_size' => ini_get('post_max_size'),
+                ],
+                'plugin' => [
+                    'name' => $plugin_data['Name'],
+                    'version' => $plugin_data['Version'],
+                    'author' => $plugin_data['Author'],
+                    'text_domain' => $plugin_data['TextDomain'],
+                    'required_php' => $plugin_data['RequiresPHP'],
+                ],
+                'enabled_widgets' => get_site_option('msd_enabled_widgets', []),
+                'disabled_system_widgets' => get_site_option('msd_disabled_system_widgets', []),
+                'database_tables' => [
+                    'activity_log' => $wpdb->get_var(
+                        "SHOW TABLES LIKE '{$wpdb->base_prefix}msd_activity_log'"
+                    ) ? 'exists' : 'missing',
+                    'error_logs' => $wpdb->get_var(
+                        "SHOW TABLES LIKE '{$wpdb->base_prefix}msd_error_logs'"
+                    ) ? 'exists' : 'missing',
+                    '404_logs' => $wpdb->get_var(
+                        "SHOW TABLES LIKE '{$wpdb->base_prefix}msd_404_logs'"
+                    ) ? 'exists' : 'missing',
+                ],
+                'active_plugins' => get_site_option('active_sitewide_plugins', []),
+                'theme' => [
+                    'name' => wp_get_theme()->get('Name'),
+                    'version' => wp_get_theme()->get('Version'),
+                ],
+            ];
+
+            wp_send_json_success($diagnostics);
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __('Failed to export diagnostics', 'wp-multisite-dashboard')
             );
         }
     }

@@ -3,7 +3,7 @@
  * Plugin Name: WP Multisite Dashboard
  * Plugin URI: https://wpmultisite.com/plugins/wp-multisite-dashboard
  * Description: Essential dashboard widgets for WordPress multisite administrators
- * Version: 1.4.2
+ * Version: 1.5.0
  * Author: WPMultisite.com
  * Author URI: https://WPMultisite.com
  * License: GPLv2+
@@ -50,7 +50,7 @@ if (isset($_POST['submit']) && isset($_POST['msd_settings_nonce'])) {
     }, 1);
 }
 
-define("WP_MSD_VERSION", "1.4.2");
+define("WP_MSD_VERSION", "1.5.0");
 define("WP_MSD_PLUGIN_DIR", plugin_dir_path(__FILE__));
 define("WP_MSD_PLUGIN_URL", plugin_dir_url(__FILE__));
 
@@ -66,6 +66,9 @@ require_once WP_MSD_PLUGIN_DIR . "includes/class-settings-manager.php";
 require_once WP_MSD_PLUGIN_DIR . "includes/class-error-log-manager.php";
 require_once WP_MSD_PLUGIN_DIR . "includes/class-404-monitor.php";
 require_once WP_MSD_PLUGIN_DIR . "includes/class-plugin-core.php";
+
+// Load integrations
+require_once WP_MSD_PLUGIN_DIR . "includes/integrations/class-domain-mapping-integration.php";
 
 function wp_msd_init()
 {

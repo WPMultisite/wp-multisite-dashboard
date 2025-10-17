@@ -12,6 +12,7 @@ class WP_MSD_Plugin_Core
     private $ajax_handler = null;
     private $admin_interface = null;
     private $settings_manager = null;
+    private $domain_mapping_integration = null;
 
     public static function get_instance()
     {
@@ -41,6 +42,9 @@ class WP_MSD_Plugin_Core
         $this->ajax_handler = new WP_MSD_Ajax_Handler();
         $this->admin_interface = new WP_MSD_Admin_Interface();
         $this->settings_manager = new WP_MSD_Settings_Manager();
+        
+        // Initialize Domain Mapping integration
+        $this->domain_mapping_integration = WP_MSD_Domain_Mapping_Integration::get_instance();
     }
 
     private function init_update_checker()
@@ -85,6 +89,8 @@ class WP_MSD_Plugin_Core
             // New monitoring widgets
             "msd_error_logs" => 1,
             "msd_404_monitor" => 1,
+            // Integration widgets
+            "msd_domain_mapping_overview" => 1,
         ];
         $enabled = get_site_option("msd_enabled_widgets", null);
         if (!is_array($enabled) || empty($enabled)) {
@@ -142,8 +148,8 @@ class WP_MSD_Plugin_Core
     {
         add_submenu_page(
             "settings.php",
-            __("Dashboard Settings", "wp-multisite-dashboard"),
-            __("Dashboard Settings", "wp-multisite-dashboard"),
+            __("Multisite Settings", "wp-multisite-dashboard"),
+            __("Multisite Settings", "wp-multisite-dashboard"),
             "manage_network",
             "msd-settings",
             [$this->settings_manager, "render_settings_page"]
@@ -196,12 +202,38 @@ class WP_MSD_Plugin_Core
             );
         }
 
+        // Load core CSS (always needed)
         wp_enqueue_style(
-            "msd-dashboard",
-            WP_MSD_PLUGIN_URL . "assets/dashboard.css",
+            "msd-dashboard-core",
+            WP_MSD_PLUGIN_URL . "assets/css/dashboard-core.css",
             [],
             WP_MSD_VERSION
         );
+
+        if ($hook === "settings_page_msd-settings") {
+            // Settings page only needs core + settings CSS
+            wp_enqueue_style(
+                "msd-settings",
+                WP_MSD_PLUGIN_URL . "assets/css/settings.css",
+                ["msd-dashboard-core"],
+                WP_MSD_VERSION
+            );
+        } else {
+            // Dashboard pages need monitoring and integrations CSS
+            wp_enqueue_style(
+                "msd-dashboard-monitoring",
+                WP_MSD_PLUGIN_URL . "assets/css/dashboard-monitoring.css",
+                ["msd-dashboard-core"],
+                WP_MSD_VERSION
+            );
+            
+            wp_enqueue_style(
+                "msd-dashboard-integrations",
+                WP_MSD_PLUGIN_URL . "assets/css/dashboard-integrations.css",
+                ["msd-dashboard-core"],
+                WP_MSD_VERSION
+            );
+        }
 
         wp_localize_script("msd-dashboard-core", "msdAjax", [
             "ajaxurl" => admin_url("admin-ajax.php"),
@@ -280,6 +312,19 @@ class WP_MSD_Plugin_Core
                     "No storage data available.",
                     "wp-multisite-dashboard"
                 ),
+                "total_storage" => __("Total Storage", "wp-multisite-dashboard"),
+                "files" => __("Files", "wp-multisite-dashboard"),
+                "database" => __("Database", "wp-multisite-dashboard"),
+                "show" => __("Show", "wp-multisite-dashboard"),
+                "all_sites" => __("All", "wp-multisite-dashboard"),
+                "sort_by" => __("Sort by", "wp-multisite-dashboard"),
+                "site_name" => __("Site Name", "wp-multisite-dashboard"),
+                "search_sites" => __("Search sites...", "wp-multisite-dashboard"),
+                "sites_analyzed" => __("Sites", "wp-multisite-dashboard"),
+                "images" => __("Images", "wp-multisite-dashboard"),
+                "videos" => __("Videos", "wp-multisite-dashboard"),
+                "documents" => __("Documents", "wp-multisite-dashboard"),
+                "other" => __("Other", "wp-multisite-dashboard"),
                 "no_recent_activity" => __(
                     "No recent network activity found.",
                     "wp-multisite-dashboard"
@@ -711,6 +756,8 @@ class WP_MSD_Plugin_Core
                     "wp-multisite-dashboard"
                 ),
                 "priority" => __("Priority", "wp-multisite-dashboard"),
+                "due_date" => __("Due Date", "wp-multisite-dashboard"),
+                "optional" => __("optional", "wp-multisite-dashboard"),
                 "save" => __("Save", "wp-multisite-dashboard"),
                 "cancel" => __("Cancel", "wp-multisite-dashboard"),
                 "delete" => __("Delete", "wp-multisite-dashboard"),
@@ -725,7 +772,18 @@ class WP_MSD_Plugin_Core
                     "MSD Settings loaded with functions",
                     "wp-multisite-dashboard"
                 ),
+
+                // Version Info Widget
+                "last_updated" => __("Last Updated", "wp-multisite-dashboard"),
+                "quick_actions" => __("Quick Actions", "wp-multisite-dashboard"),
+                "check_updates" => __("Check Updates", "wp-multisite-dashboard"),
+                "clear_cache" => __("Clear Cache", "wp-multisite-dashboard"),
+                "export_diagnostics" => __("Export Info", "wp-multisite-dashboard"),
+                "plugin_settings" => __("Settings", "wp-multisite-dashboard"),
+                "export_success" => __("Diagnostics exported successfully", "wp-multisite-dashboard"),
+                "export_failed" => __("Failed to export diagnostics", "wp-multisite-dashboard"),
             ],
+            "pluginUrl" => WP_MSD_PLUGIN_URL,
         ]);
     }
 

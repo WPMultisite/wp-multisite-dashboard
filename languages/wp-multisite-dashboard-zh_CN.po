@@ -605,8 +605,8 @@ msgid "Unknown Site"
 msgstr "未知站点"
 
 #: includes/class-plugin-core.php:111 includes/class-plugin-core.php:112
-msgid "Dashboard Settings"
-msgstr "仪表板设置"
+msgid "Multisite Settings"
+msgstr "多站点设置"
 
 #: includes/class-plugin-core.php:177
 msgid "Are you sure?"
@@ -1507,3 +1507,291 @@ msgstr "WPMultisite.com"
 #. Author URI of the plugin/theme
 msgid "https://WPMultisite.com"
 msgstr "https://WPMultisite.com"
+
+# Domain Mapping Integration Translations
+#: includes/integrations/class-domain-mapping-integration.php
+#: includes/class-admin-interface.php
+msgid "Domain Mapping Overview"
+msgstr "域名映射概览"
+
+msgid "Total Domains"
+msgstr "域名总数"
+
+msgid "Active Sites"
+msgstr "活跃站点"
+
+msgid "Primary"
+msgstr "主域名"
+
+msgid "Secondary"
+msgstr "次域名"
+
+msgid "Health Status"
+msgstr "健康状态"
+
+#, php-format
+msgid "%d Healthy"
+msgstr "%d 健康"
+
+#, php-format
+msgid "%d Warnings"
+msgstr "%d 警告"
+
+#, php-format
+msgid "%d Errors"
+msgstr "%d 错误"
+
+#, php-format
+msgid "%d Unchecked"
+msgstr "%d 未检查"
+
+msgid "Recently Added Domains"
+msgstr "最近添加的域名"
+
+msgid "Recent Activity"
+msgstr "最近活动"
+
+#, php-format
+msgid "by %s %s ago"
+msgstr "由 %s 于 %s 前"
+
+msgid "Manage All Domains"
+msgstr "管理所有域名"
+
+msgid "Refresh Health"
+msgstr "刷新健康状态"
+
+msgid "Health check completed"
+msgstr "健康检查已完成"
+
+msgid "WP Domain Mapping Integration"
+msgstr "WP 域名映射集成"
+
+msgid "Install WP Domain Mapping plugin to enable the Domain Mapping Overview widget. This widget provides network-wide domain mapping statistics, health monitoring, and quick access to domain management."
+msgstr "安装 WP 域名映射插件以启用域名映射概览小工具。此小工具提供网络级域名映射统计、健康监控和快速域名管理访问。"
+
+msgid "Network-wide domain statistics"
+msgstr "网络级域名统计"
+
+msgid "Domain health monitoring"
+msgstr "域名健康监控"
+
+msgid "Recent activity tracking"
+msgstr "最近活动跟踪"
+
+msgid "Quick domain management access"
+msgstr "快速域名管理访问"
+
+msgid "Install WP Domain Mapping"
+msgstr "安装 WP 域名映射"
+
+msgid "Learn More"
+msgstr "了解更多"
+
+msgid "WP Domain Mapping plugin is not active."
+msgstr "WP 域名映射插件未激活。"
+
+msgid "Install Plugin"
+msgstr "安装插件"
+
+msgid "Available Integrations"
+msgstr "可用集成"
+
+msgid "Network-wide domain mapping statistics, health monitoring, and quick access to domain management (requires WP Domain Mapping plugin)"
+msgstr "网络级域名映射统计、健康监控和快速域名管理访问（需要 WP 域名映射插件）"
+
+msgid "Unknown"
+msgstr "未知"
+
+# Integration Widgets Management Translations
+msgid "Integration Widgets"
+msgstr "集成小工具"
+
+msgid "Manage widgets that integrate with other plugins. These widgets are only available when the required plugins are installed and activated."
+msgstr "管理与其他插件集成的小工具。这些小工具仅在安装并激活所需插件后可用。"
+
+msgid "Active"
+msgstr "已激活"
+
+msgid "Installed (Not Activated)"
+msgstr "已安装（未激活）"
+
+msgid "Not Installed"
+msgstr "未安装"
+
+#, php-format
+msgid "Requires: %s"
+msgstr "需要：%s"
+
+msgid "Enabled"
+msgstr "已启用"
+
+msgid "Disabled"
+msgstr "已禁用"
+
+msgid "Activate Plugin"
+msgstr "激活插件"
+
+msgid "About Integration Widgets"
+msgstr "关于集成小工具"
+
+msgid "Integration widgets extend the functionality of WP Multisite Dashboard by connecting with other plugins. Each integration widget requires its corresponding plugin to be installed and activated."
+msgstr "集成小工具通过连接其他插件来扩展 WP 多站点仪表板的功能。每个集成小工具都需要安装并激活其对应的插件。"
+
+msgid "Install the required plugin from the WordPress plugin directory"
+msgstr "从 WordPress 插件目录安装所需插件"
+
+msgid "Activate the plugin on your network"
+msgstr "在您的网络上激活插件"
+
+msgid "Enable the integration widget from this page"
+msgstr "从此页面启用集成小工具"
+
+msgid "The widget will appear on your network dashboard"
+msgstr "小工具将出现在您的网络仪表板上"
+
+msgid "WP Domain Mapping plugin is installed but not activated. Activate it to enable the Domain Mapping Overview widget with network-wide domain mapping statistics, health monitoring, and quick access to domain management."
+msgstr "WP 域名映射插件已安装但未激活。激活它以启用域名映射概览小工具，包括网络级域名映射统计、健康监控和快速域名管理访问。"
+
+# Merged Widgets Tab Translations
+msgid "Widgets"
+msgstr "小工具"
+
+msgid "Widget Configuration"
+msgstr "小工具配置"
+
+msgid "Enable or disable dashboard widgets. Integration widgets require their corresponding plugins to be installed and activated."
+msgstr "启用或禁用仪表板小工具。集成小工具需要安装并激活其对应的插件。"
+
+msgid "Built-in Widgets"
+msgstr "内置小工具"
+
+msgid "Core dashboard widgets provided by WP Multisite Dashboard."
+msgstr "由 WP 多站点仪表板提供的核心仪表板小工具。"
+
+msgid "Widgets that integrate with other plugins. These widgets are only available when the required plugins are installed and activated."
+msgstr "与其他插件集成的小工具。这些小工具仅在安装并激活所需插件后可用。"
+
+# Simplified Integration Widgets Translations
+msgid "Plugin Active"
+msgstr "插件已激活"
+
+msgid "Plugin Not Activated"
+msgstr "插件未激活"
+
+msgid "Plugin Not Installed"
+msgstr "插件未安装"
+
+msgid "Activate"
+msgstr "激活"
+
+msgid "Install"
+msgstr "安装"
+
+#: includes/class-plugin-core.php
+msgid "Last Updated"
+msgstr "最后更新"
+
+#: includes/class-plugin-core.php
+msgid "Quick Actions"
+msgstr "快速操作"
+
+#: includes/class-plugin-core.php
+msgid "Check Updates"
+msgstr "检查更新"
+
+#: includes/class-plugin-core.php
+msgid "Clear Cache"
+msgstr "清除缓存"
+
+#: includes/class-plugin-core.php
+msgid "Export Info"
+msgstr "导出信息"
+
+#: includes/class-plugin-core.php
+msgid "Settings"
+msgstr "设置"
+
+#: includes/class-plugin-core.php
+msgid "Diagnostics exported successfully"
+msgstr "诊断信息导出成功"
+
+#: includes/class-plugin-core.php
+msgid "Failed to export diagnostics"
+msgstr "导出诊断信息失败"
+
+#: includes/class-ajax-handler.php
+msgid "Failed to clear 404 logs"
+msgstr "清除 404 日志失败"
+
+#: includes/class-plugin-core.php
+msgid "Due Date"
+msgstr "截止日期"
+
+#: includes/class-plugin-core.php
+msgid "optional"
+msgstr "可选"
+
+#: includes/class-ajax-handler.php
+msgid "Overdue by %d days"
+msgstr "已过期 %d 天"
+
+#: includes/class-ajax-handler.php
+msgid "Due today"
+msgstr "今天到期"
+
+#: includes/class-ajax-handler.php
+msgid "%d days remaining"
+msgstr "还有 %d 天"
+
+#: includes/class-plugin-core.php
+msgid "Total Storage"
+msgstr "总存储"
+
+#: includes/class-plugin-core.php
+msgid "Files"
+msgstr "文件"
+
+#: includes/class-plugin-core.php
+msgid "Database"
+msgstr "数据库"
+
+#: includes/class-plugin-core.php
+msgid "Show"
+msgstr "显示"
+
+#: includes/class-plugin-core.php
+msgid "All"
+msgstr "全部"
+
+#: includes/class-plugin-core.php
+msgid "Sort by"
+msgstr "排序方式"
+
+#: includes/class-plugin-core.php
+msgid "Site Name"
+msgstr "站点名称"
+
+#: includes/class-plugin-core.php
+msgid "Search sites..."
+msgstr "搜索站点..."
+
+#: includes/class-plugin-core.php
+msgid "Sites"
+msgstr "站点"
+
+#: includes/class-plugin-core.php
+msgid "Images"
+msgstr "图片"
+
+#: includes/class-plugin-core.php
+msgid "Videos"
+msgstr "视频"
+
+#: includes/class-plugin-core.php
+msgid "Documents"
+msgstr "文档"
+
+#: includes/class-plugin-core.php
+msgid "Other"
+msgstr "其他"
