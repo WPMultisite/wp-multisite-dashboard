@@ -69,6 +69,15 @@ class WP_MSD_Admin_Interface
                 __("Todo List", "wp-multisite-dashboard"),
                 "render_todo_widget",
             ],
+            // New monitoring widgets
+            "msd_error_logs" => [
+                __("PHP Error Logs", "wp-multisite-dashboard"),
+                "render_error_logs_widget",
+            ],
+            "msd_404_monitor" => [
+                __("404 Monitor", "wp-multisite-dashboard"),
+                "render_404_monitor_widget",
+            ],
         ];
 
         foreach ($widgets as $widget_id => $widget_data) {
@@ -401,5 +410,19 @@ class WP_MSD_Admin_Interface
             __("Loading...", "wp-multisite-dashboard") .
             "</div>";
         echo "</div>";
+    }
+
+    public function render_error_logs_widget()
+    {
+        echo '<div id="msd-error-logs" class="msd-widget-content" data-widget="error_logs">';
+        echo '<div class="msd-loading"><span class="msd-spinner"></span>' . __("Loading...", "wp-multisite-dashboard") . '</div>';
+        echo '</div>';
+    }
+
+    public function render_404_monitor_widget()
+    {
+        echo '<div id="msd-404-monitor" class="msd-widget-content" data-widget="monitor_404">';
+        echo '<div class="msd-loading"><span class="msd-spinner"></span>' . __("Loading...", "wp-multisite-dashboard") . '</div>';
+        echo '</div>';
     }
 }

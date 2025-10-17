@@ -3,7 +3,7 @@
  * Plugin Name: WP Multisite Dashboard
  * Plugin URI: https://wpmultisite.com/plugins/wp-multisite-dashboard
  * Description: Essential dashboard widgets for WordPress multisite administrators
- * Version: 1.2.1
+ * Version: 1.3
  * Author: WPMultisite.com
  * Author URI: https://WPMultisite.com
  * License: GPLv2+
@@ -16,20 +16,66 @@ if (!defined("ABSPATH")) {
     exit();
 }
 
-define("WP_MSD_VERSION", "1.2.1");
+// AJAX output management - aggressive cleanup for MSD requests
+if (defined('DOING_AJAX') && DOING_AJAX && isset($_POST['action']) && strpos($_POST['action'], 'msd_') === 0) {
+    // Ultra-early cleanup
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+    ob_start();
+    
+    // Additional cleanup hooks as backup
+    add_action('init', function() {
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        ob_start();
+    }, 1);
+    
+    add_action('admin_init', function() {
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        ob_start();
+    }, 1);
+}
+
+// Also handle regular form submissions for settings
+if (isset($_POST['submit']) && isset($_POST['msd_settings_nonce'])) {
+    add_action('init', function() {
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        ob_start();
+    }, 1);
+}
+
+define("WP_MSD_VERSION", "1.3");
 define("WP_MSD_PLUGIN_DIR", plugin_dir_path(__FILE__));
 define("WP_MSD_PLUGIN_URL", plugin_dir_url(__FILE__));
 
+require_once WP_MSD_PLUGIN_DIR . "includes/class-error-handler.php";
+require_once WP_MSD_PLUGIN_DIR . "includes/class-performance-manager.php";
 require_once WP_MSD_PLUGIN_DIR . "includes/class-helpers.php";
 require_once WP_MSD_PLUGIN_DIR . "includes/class-network-data.php";
 require_once WP_MSD_PLUGIN_DIR . "includes/class-user-manager.php";
 require_once WP_MSD_PLUGIN_DIR . "includes/class-ajax-handler.php";
 require_once WP_MSD_PLUGIN_DIR . "includes/class-admin-interface.php";
 require_once WP_MSD_PLUGIN_DIR . "includes/class-settings-manager.php";
+require_once WP_MSD_PLUGIN_DIR . "includes/class-error-log-manager.php";
+require_once WP_MSD_PLUGIN_DIR . "includes/class-404-monitor.php";
 require_once WP_MSD_PLUGIN_DIR . "includes/class-plugin-core.php";
 
 function wp_msd_init()
 {
+    // Clean any output that might have been generated during plugin loading
+    if (is_admin() && (defined('DOING_AJAX') && DOING_AJAX || isset($_POST['submit']))) {
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        ob_start();
+    }
+    
     if (!is_multisite()) {
         add_action("admin_notices", "wp_msd_multisite_required_notice");
         return;
@@ -70,6 +116,9 @@ function wp_msd_activation()
 
     $network_data = new WP_MSD_Network_Data();
     $network_data->create_activity_log_table();
+    
+    // Create 404 monitor table
+    WP_MSD_404_Monitor::create_table();
 
     set_site_transient("msd_activation_notice", true, 30);
 }

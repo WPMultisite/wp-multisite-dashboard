@@ -15,7 +15,21 @@ jQuery(document).ready(function ($) {
         .on("click", ".msd-todo-edit", this.editTodo.bind(this))
         .on("click", ".msd-todo-delete", this.deleteTodo.bind(this))
         .on("click", ".msd-todo-save", this.saveTodo.bind(this))
-        .on("click", ".msd-todo-cancel", this.cancelTodoForm.bind(this));
+        .on("click", ".msd-todo-cancel", this.cancelTodoForm.bind(this))
+        // Error log monitoring
+        .on(
+          "change keyup",
+          ".msd-log-type, .msd-log-search, .msd-log-limit",
+          () => this.loadWidget("error_logs"),
+        )
+        .on("click", ".msd-clear-error-log", this.clearErrorLogs.bind(this))
+        .on("click", ".msd-log-toggle", this.toggleLogEntry.bind(this))
+        // 404 monitoring
+        .on("change", ".msd-404-limit, .msd-404-days", () =>
+          this.loadWidget("monitor_404"),
+        )
+        .on("click", ".msd-toggle-404", this.toggle404Monitoring.bind(this))
+        .on("click", ".msd-clear-404", this.clear404Logs.bind(this));
     },
 
     loadAllWidgets() {
@@ -35,6 +49,8 @@ jQuery(document).ready(function ($) {
         "user_management",
         "last_edits",
         "todo_items",
+        "error_logs",
+        "monitor_404",
       ];
 
       widgets.forEach((widget) => {
@@ -62,15 +78,39 @@ jQuery(document).ready(function ($) {
         user_management: "msd_get_user_management",
         last_edits: "msd_get_last_edits",
         todo_items: "msd_get_todo_items",
+        error_logs: "msd_get_error_logs",
+        monitor_404: "msd_get_404_stats",
       };
 
       const action = actionMap[widgetType];
       if (!action) return;
 
+      // Build payload from UI controls if available
+      let payload = {};
+      if (widgetType === "error_logs") {
+        const limit = parseInt(
+          $container.find(".msd-log-limit").val() || 100,
+          10,
+        );
+        const type = $container.find(".msd-log-type").val() || "all";
+        const search = ($container.find(".msd-log-search").val() || "").trim();
+        payload = {
+          limit,
+          filters: { type, search },
+        };
+      } else if (widgetType === "monitor_404") {
+        const limit = parseInt(
+          $container.find(".msd-404-limit").val() || 20,
+          10,
+        );
+        const days = parseInt($container.find(".msd-404-days").val() || 30, 10);
+        payload = { limit, days };
+      }
+
       if (window.MSD_Core) {
         window.MSD_Core.makeAjaxRequest(
           action,
-          {},
+          payload,
           (response) => {
             this.renderWidget(widgetType, $container, response.data);
             if (window.MSD_Core) {
@@ -95,6 +135,8 @@ jQuery(document).ready(function ($) {
         user_management: this.renderUserManagement,
         last_edits: this.renderLastEdits,
         todo_items: this.renderTodoItems,
+        error_logs: this.renderErrorLogs,
+        monitor_404: this.render404Stats,
       };
 
       const renderer = renderers[widgetType];
@@ -855,6 +897,378 @@ jQuery(document).ready(function ($) {
       : function (status) {
           return status;
         },
+
+    // Error log monitoring methods
+    renderErrorLogs($container, data) {
+      const stats = data || {};
+      const logs = stats.logs || [];
+      const fileSize = stats.file_size || "";
+      const logEnabled = stats.log_enabled !== false;
+
+      let html = `
+      <div class="msd-monitoring-header">
+        <div class="msd-header-title">
+          <span>PHP Error Logs</span>
+          ${logEnabled ? '<span class="msd-status-badge enabled">Active</span>' : '<span class="msd-status-badge disabled">Disabled</span>'}
+        </div>
+        <a href="${msdAjax.settingsUrl}&tab=monitoring" class="msd-settings-link">
+          <span class="dashicons dashicons-admin-generic"></span>
+          Configure monitoring
+        </a>
+        <button class="msd-refresh-btn" title="${msdAjax.strings.refresh}" data-widget="error_logs">
+          ${msdAjax.strings.refresh_symbol || "↻"}
+        </button>
+      </div>
+      <div class="msd-log-controls">
+        <div class="msd-control-group">
+          <label>Type</label>
+          <select class="msd-log-type">
+            <option value="all">All Types</option>
+            <option value="fatal">Fatal</option>
+            <option value="warning">Warning</option>
+            <option value="notice">Notice</option>
+            <option value="deprecated">Deprecated</option>
+            <option value="parse">Parse</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="msd-control-group msd-control-search">
+          <label>Search</label>
+          <input type="text" class="msd-log-search" placeholder="Search errors..." />
+        </div>
+        <div class="msd-control-group">
+          <label>Show</label>
+          <select class="msd-log-limit">
+            <option value="50">50</option>
+            <option value="100" selected>100</option>
+            <option value="200">200</option>
+          </select>
+        </div>
+        <button class="button button-small msd-clear-error-log" title="Clear logs">
+          <span class="dashicons dashicons-trash"></span> Clear
+        </button>
+      </div>
+    `;
+
+      if (!logEnabled) {
+        html += `
+        <div class="msd-alert msd-alert-warning">
+          <span class="dashicons dashicons-warning"></span>
+          <div>
+            Debug logging is not enabled.
+          </div>
+        </div>
+      `;
+      }
+
+      if (!logs.length) {
+        html += `<div class="msd-empty-state"><span class="dashicons dashicons-yes-alt"></span><p>${msdAjax.strings.no_logs || "No log entries found."}</p></div>`;
+      } else {
+        html += `
+        <div class="msd-log-summary">
+          <div class="msd-summary-item">
+            <strong>${stats.displayed_count || logs.length}</strong> entries displayed • ${fileSize}
+          </div>
+        </div>
+      `;
+        html += '<div class="msd-errorlog-list">';
+        logs.forEach((log, idx) => {
+          const type = log.type || "other";
+          const time = this.escapeHtml(log.timestamp || "");
+          const messagePreview = this.truncateText(log.message || "", 80);
+          const messageFull = this.escapeHtml(log.message || "");
+          const typeIcons = {
+            fatal:
+              '<span class="dashicons dashicons-dismiss" style="color:#d63638"></span>',
+            warning:
+              '<span class="dashicons dashicons-warning" style="color:#dba617"></span>',
+            notice:
+              '<span class="dashicons dashicons-info" style="color:#2271b1"></span>',
+            deprecated:
+              '<span class="dashicons dashicons-editor-help" style="color:#9b59b6"></span>',
+            parse:
+              '<span class="dashicons dashicons-code-standards" style="color:#e67e22"></span>',
+            other:
+              '<span class="dashicons dashicons-marker" style="color:#95a5a6"></span>',
+          };
+          const icon = typeIcons[type] || typeIcons.other;
+          html += `
+          <div class="msd-log-item msd-log-${type}">
+            <div class="msd-log-head">
+              <span class="msd-log-icon">${icon}</span>
+              <span class="msd-log-time">${time}</span>
+              <span class="msd-log-type-badge msd-badge-${type}">${type.toUpperCase()}</span>
+              <button class="msd-log-toggle" aria-expanded="false"><span class="dashicons dashicons-arrow-down-alt2"></span></button>
+            </div>
+            <div class="msd-log-preview">${this.escapeHtml(messagePreview)}</div>
+            <pre class="msd-log-body" style="display:none;">${messageFull}</pre>
+          </div>
+        `;
+        });
+        html += "</div>";
+      }
+
+      $container.html(html);
+    },
+
+    toggleLogEntry(e) {
+      const $btn = $(e.currentTarget);
+      const $item = $btn.closest(".msd-log-item");
+      const $preview = $item.find(".msd-log-preview");
+      const $body = $item.find(".msd-log-body");
+      const expanded = $btn.attr("aria-expanded") === "true";
+
+      if (expanded) {
+        $body.slideUp(200);
+        $preview.show();
+        $btn
+          .find(".dashicons")
+          .removeClass("dashicons-arrow-up-alt2")
+          .addClass("dashicons-arrow-down-alt2");
+      } else {
+        $body.slideDown(200);
+        $preview.hide();
+        $btn
+          .find(".dashicons")
+          .removeClass("dashicons-arrow-down-alt2")
+          .addClass("dashicons-arrow-up-alt2");
+      }
+
+      $btn.attr("aria-expanded", expanded ? "false" : "true");
+    },
+
+    clearErrorLogs(e) {
+      e.preventDefault();
+      if (!confirm(msdAjax.strings.confirm_action)) return;
+      if (window.MSD_Core) {
+        window.MSD_Core.makeAjaxRequest(
+          "msd_clear_error_logs",
+          {},
+          (response) => {
+            window.MSD_Core.showNotice(
+              response.data.message || "Cleared",
+              "success",
+            );
+            this.loadWidget("error_logs");
+          },
+          (error) => {
+            window.MSD_Core.showNotice(error || "Failed", "error");
+          },
+        );
+      }
+    },
+
+    // 404 monitoring methods
+    render404Stats($container, data) {
+      const stats = data || {};
+      const top = stats.top_urls || [];
+      const trend = stats.daily_trend || [];
+      const monitoring = !!stats.monitoring_enabled;
+      const totalCount = stats.total_count || 0;
+
+      let html = `
+      <div class="msd-monitoring-header">
+        <div class="msd-header-title">
+          <span>404 Monitor</span>
+          <label class="msd-toggle-switch">
+            <input type="checkbox" class="msd-toggle-404" ${monitoring ? "checked" : ""} />
+            <span class="msd-toggle-slider"></span>
+            <span class="msd-toggle-label">${monitoring ? "ON" : "OFF"}</span>
+          </label>
+        </div>
+        <a href="${msdAjax.settingsUrl}&tab=monitoring" class="msd-settings-link">
+          <span class="dashicons dashicons-admin-generic"></span>
+          Configure monitoring
+        </a>
+        <button class="msd-refresh-btn" title="${msdAjax.strings.refresh}" data-widget="monitor_404">
+          ${msdAjax.strings.refresh_symbol || "↻"}
+        </button>
+      </div>
+      <div class="msd-404-controls">
+        <div class="msd-control-group">
+          <label>Period</label>
+          <select class="msd-404-days">
+            <option value="7">7 days</option>
+            <option value="14">14 days</option>
+            <option value="30" selected>30 days</option>
+          </select>
+        </div>
+        <div class="msd-control-group">
+          <label>Show</label>
+          <select class="msd-404-limit">
+            <option value="10">Top 10</option>
+            <option value="20" selected>Top 20</option>
+            <option value="50">Top 50</option>
+          </select>
+        </div>
+        <button class="button button-small msd-clear-404" title="Clear logs">
+          <span class="dashicons dashicons-trash"></span> Clear
+        </button>
+      </div>
+    `;
+
+      // Show monitoring status alert
+      if (!monitoring) {
+        html += `
+        <div class="msd-alert msd-alert-info">
+          <span class="dashicons dashicons-info"></span>
+            404 Monitoring is disabled.
+          </div>
+        </div>
+      `;
+      }
+
+      html += `
+      <div class="msd-404-stats-row">
+        <div class="msd-stat-card">
+          <div class="msd-stat-content">
+            <div class="msd-stat-value">${totalCount}</div>
+            <div class="msd-stat-label">Total 404s</div>
+          </div>
+        </div>
+        <div class="msd-stat-card">
+          <div class="msd-stat-content">
+            <div class="msd-stat-value">${top.length}</div>
+            <div class="msd-stat-label">Unique URLs</div>
+          </div>
+        </div>
+        <div class="msd-stat-card ${monitoring ? "active" : "inactive"}">
+          <div class="msd-stat-content">
+            <div class="msd-stat-value">${monitoring ? "ON" : "OFF"}</div>
+            <div class="msd-stat-label">Monitoring</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+      if (trend.length) {
+        html += '<div class="msd-404-trend-container">';
+        html +=
+          '<h4 class="msd-trend-title"><span class="dashicons dashicons-chart-line"></span> Daily Trend</h4>';
+        html += '<div class="msd-404-trend">';
+        const maxCount = Math.max(
+          ...trend.map((d) => parseInt(d.count || 0, 10)),
+          1,
+        );
+        trend.forEach((d) => {
+          const count = parseInt(d.count || 0, 10);
+          const height = Math.max(5, (count / maxCount) * 100);
+          const dateShort = d.date ? d.date.substring(5) : "";
+          html += `
+          <div class="msd-404-bar-wrapper" title="${this.escapeHtml(d.date)}: ${count} errors">
+            <div class="msd-404-bar" style="height:${height}%"></div>
+            <div class="msd-404-bar-label">${dateShort}</div>
+          </div>
+        `;
+        });
+        html += "</div></div>";
+      }
+
+      // Widget footer (for additional controls if needed)
+      html += `
+      <div class="msd-widget-footer">
+
+      </div>
+    `;
+
+      if (!top.length) {
+        html += `<div class="msd-empty-state"><span class="dashicons dashicons-yes-alt"></span><p>${msdAjax.strings.no_404s || "No 404 errors found."}</p></div>`;
+      } else {
+        html += '<div class="msd-404-section">';
+        html += '<h4 class="msd-section-title">Top 404 Errors</h4>';
+        html += '<div class="msd-404-list">';
+        top.forEach((row, idx) => {
+          const severity =
+            row.count > 50 ? "critical" : row.count > 20 ? "warning" : "normal";
+          const severityLabel =
+            row.count > 50 ? "HIGH" : row.count > 20 ? "MED" : "LOW";
+          html += `
+          <div class="msd-404-item msd-severity-${severity}">
+            <div class="msd-404-rank">#${idx + 1}</div>
+            <div class="msd-404-info">
+              <div class="msd-404-url-row">
+                <span class="msd-404-url" title="${this.escapeHtml(row.url)}">${this.escapeHtml(this.truncateText(row.url, 60))}</span>
+                <span class="msd-severity-label msd-severity-${severity}">${severityLabel}</span>
+              </div>
+              <div class="msd-404-meta">
+                <span class="msd-meta-item">${row.count}× hits</span>
+                <span>•</span>
+                <span class="msd-meta-item">Last: ${this.escapeHtml(row.last_seen)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        });
+        html += "</div></div>";
+      }
+
+      $container.html(html);
+    },
+
+    toggle404Monitoring(e) {
+      const $checkbox = $(e.currentTarget);
+      const enabled = $checkbox.is(":checked");
+
+      // Show confirmation for disabling
+      if (
+        !enabled &&
+        !confirm(
+          "Are you sure you want to disable 404 monitoring? This will stop tracking new 404 errors.",
+        )
+      ) {
+        $checkbox.prop("checked", true);
+        return;
+      }
+
+      if (window.MSD_Core) {
+        // Disable checkbox during request
+        $checkbox.prop("disabled", true);
+
+        window.MSD_Core.makeAjaxRequest(
+          "msd_toggle_404_monitoring",
+          { enabled: enabled ? "true" : "false" },
+          (response) => {
+            window.MSD_Core.showNotice(
+              response.data.message ||
+                (enabled ? "Monitoring enabled" : "Monitoring disabled"),
+              "success",
+            );
+            this.loadWidget("monitor_404");
+          },
+          (error) => {
+            window.MSD_Core.showNotice(
+              error || "Failed to update monitoring status",
+              "error",
+            );
+            // Revert checkbox on error
+            $checkbox.prop("checked", !enabled);
+          },
+        ).always(() => {
+          $checkbox.prop("disabled", false);
+        });
+      }
+    },
+
+    clear404Logs(e) {
+      e.preventDefault();
+      if (!confirm(msdAjax.strings.confirm_action)) return;
+      if (window.MSD_Core) {
+        window.MSD_Core.makeAjaxRequest(
+          "msd_clear_404_logs",
+          {},
+          (response) => {
+            window.MSD_Core.showNotice(
+              response.data.message || "Cleared",
+              "success",
+            );
+            this.loadWidget("monitor_404");
+          },
+          (error) => {
+            window.MSD_Core.showNotice(error || "Failed", "error");
+          },
+        );
+      }
+    },
   };
 
   window.MSD_Widgets = MSD_Widgets;

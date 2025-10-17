@@ -27,6 +27,11 @@ class WP_MSD_Plugin_Core
         add_action("admin_init", [$this, "admin_init"]);
         add_action("network_admin_menu", [$this, "add_admin_menu"]);
 
+        // Add automatic cache invalidation hooks
+        add_action("activated_plugin", [$this, "invalidate_widget_cache"]);
+        add_action("deactivated_plugin", [$this, "invalidate_widget_cache"]);
+        add_action("switch_theme", [$this, "invalidate_widget_cache"]);
+
         $this->init_update_checker();
         $this->init_components();
     }
@@ -63,7 +68,8 @@ class WP_MSD_Plugin_Core
 
     public function init()
     {
-        $this->enabled_widgets = get_site_option("msd_enabled_widgets", [
+        // Load enabled widgets with robust normalization
+        $default_enabled = [
             "msd_network_overview" => 1,
             "msd_quick_site_management" => 1,
             "msd_storage_performance" => 1,
@@ -76,9 +82,34 @@ class WP_MSD_Plugin_Core
             "msd_contact_info" => 1,
             "msd_last_edits" => 1,
             "msd_todo_widget" => 1,
-        ]);
+            // New monitoring widgets
+            "msd_error_logs" => 1,
+            "msd_404_monitor" => 1,
+        ];
+        $enabled = get_site_option("msd_enabled_widgets", null);
+        if (!is_array($enabled) || empty($enabled)) {
+            // Fall back to defaults if option missing or corrupted
+            $enabled = $default_enabled;
+        } else {
+            // Merge new default widgets with existing enabled widgets
+            // This ensures new widgets are auto-enabled on plugin update
+            foreach ($default_enabled as $widget_id => $status) {
+                if (!isset($enabled[$widget_id])) {
+                    $enabled[$widget_id] = $status;
+                }
+            }
+            // Update option if new widgets were added
+            if (count($enabled) > count(get_site_option("msd_enabled_widgets", []))) {
+                update_site_option("msd_enabled_widgets", $enabled);
+            }
+        }
+        $this->enabled_widgets = $enabled;
 
         $this->enhance_network_dashboard();
+        
+        // Initialize 404 monitor
+        $monitor_404 = WP_MSD_404_Monitor::get_instance();
+        $monitor_404->init();
     }
 
     public function admin_init()
@@ -86,6 +117,9 @@ class WP_MSD_Plugin_Core
         if (!current_user_can("manage_network")) {
             return;
         }
+
+        // Handle import/export actions
+        $this->handle_import_export_actions();
 
         add_action("wp_network_dashboard_setup", [
             $this->admin_interface,
@@ -172,6 +206,7 @@ class WP_MSD_Plugin_Core
         wp_localize_script("msd-dashboard-core", "msdAjax", [
             "ajaxurl" => admin_url("admin-ajax.php"),
             "nonce" => wp_create_nonce("msd_ajax_nonce"),
+            "settingsUrl" => network_admin_url('settings.php?page=msd-settings&tab=monitoring'),
             "strings" => [
                 "confirm_action" => __(
                     "Are you sure?",
@@ -410,6 +445,50 @@ class WP_MSD_Plugin_Core
                 ),
                 "failed_clear_news_cache" => __(
                     "Failed to clear news cache",
+                    "wp-multisite-dashboard"
+                ),
+                "failed_detect_widgets" => __(
+                    "Failed to detect widgets",
+                    "wp-multisite-dashboard"
+                ),
+                "import_export" => __(
+                    "Import & Export",
+                    "wp-multisite-dashboard"
+                ),
+                "export_settings" => __(
+                    "Export Settings",
+                    "wp-multisite-dashboard"
+                ),
+                "import_settings" => __(
+                    "Import Settings",
+                    "wp-multisite-dashboard"
+                ),
+                "choose_file" => __(
+                    "Choose File",
+                    "wp-multisite-dashboard"
+                ),
+                "validate_file" => __(
+                    "Validate File",
+                    "wp-multisite-dashboard"
+                ),
+                "file_valid" => __(
+                    "File is valid and ready to import",
+                    "wp-multisite-dashboard"
+                ),
+                "widget_settings" => __(
+                    "Widget Settings",
+                    "wp-multisite-dashboard"
+                ),
+                "system_widgets" => __(
+                    "System Widgets",
+                    "wp-multisite-dashboard"
+                ),
+                "cache_management" => __(
+                    "Cache Management",
+                    "wp-multisite-dashboard"
+                ),
+                "plugin_info" => __(
+                    "Plugin Info",
                     "wp-multisite-dashboard"
                 ),
 
@@ -776,62 +855,39 @@ class WP_MSD_Plugin_Core
 
         $disabled_widgets = get_site_option("msd_disabled_system_widgets", []);
 
-        if (
-            !empty($disabled_widgets) &&
-            isset($wp_meta_boxes["dashboard-network"])
-        ) {
-            foreach ($disabled_widgets as $widget_id) {
-                if (
-                    isset(
-                        $wp_meta_boxes["dashboard-network"]["normal"]["core"][
-                            $widget_id
-                        ]
-                    )
-                ) {
-                    unset(
-                        $wp_meta_boxes["dashboard-network"]["normal"]["core"][
-                            $widget_id
-                        ]
-                    );
+        if (empty($disabled_widgets)) {
+            return;
+        }
+
+        // Handle network dashboard widgets
+        $this->remove_widgets_from_dashboard("dashboard-network", $disabled_widgets);
+        
+        // Also handle regular dashboard widgets that might appear in network context
+        $this->remove_widgets_from_dashboard("dashboard", $disabled_widgets);
+    }
+
+    private function remove_widgets_from_dashboard($dashboard_type, $disabled_widgets)
+    {
+        global $wp_meta_boxes;
+
+        if (!isset($wp_meta_boxes[$dashboard_type])) {
+            return;
+        }
+
+        foreach ($disabled_widgets as $widget_id) {
+            // Remove from all possible contexts and priorities
+            $contexts = ['normal', 'side', 'column3', 'column4'];
+            $priorities = ['high', 'core', 'default', 'low'];
+
+            foreach ($contexts as $context) {
+                if (!isset($wp_meta_boxes[$dashboard_type][$context])) {
+                    continue;
                 }
-                if (
-                    isset(
-                        $wp_meta_boxes["dashboard-network"]["side"]["core"][
-                            $widget_id
-                        ]
-                    )
-                ) {
-                    unset(
-                        $wp_meta_boxes["dashboard-network"]["side"]["core"][
-                            $widget_id
-                        ]
-                    );
-                }
-                if (
-                    isset(
-                        $wp_meta_boxes["dashboard-network"]["normal"]["high"][
-                            $widget_id
-                        ]
-                    )
-                ) {
-                    unset(
-                        $wp_meta_boxes["dashboard-network"]["normal"]["high"][
-                            $widget_id
-                        ]
-                    );
-                }
-                if (
-                    isset(
-                        $wp_meta_boxes["dashboard-network"]["side"]["high"][
-                            $widget_id
-                        ]
-                    )
-                ) {
-                    unset(
-                        $wp_meta_boxes["dashboard-network"]["side"]["high"][
-                            $widget_id
-                        ]
-                    );
+
+                foreach ($priorities as $priority) {
+                    if (isset($wp_meta_boxes[$dashboard_type][$context][$priority][$widget_id])) {
+                        unset($wp_meta_boxes[$dashboard_type][$context][$priority][$widget_id]);
+                    }
                 }
             }
         }
@@ -841,8 +897,40 @@ class WP_MSD_Plugin_Core
     {
         global $wp_meta_boxes;
 
+        // Detect network dashboard widgets only for now to avoid memory issues
+        $detected_widgets = $this->detect_network_widgets();
+        
+        // Only detect child site widgets if explicitly requested and memory allows
+        if (defined('MSD_ENABLE_CHILD_SITE_DETECTION') && MSD_ENABLE_CHILD_SITE_DETECTION) {
+            $child_site_widgets = $this->detect_child_site_widgets_safe();
+            $detected_widgets = array_merge($detected_widgets, $child_site_widgets);
+        }
+
+        // 记录检测时间
+        update_site_option('msd_last_widget_detection', time());
+
+        set_site_transient(
+            "msd_detected_widgets",
+            $detected_widgets,
+            12 * HOUR_IN_SECONDS
+        );
+    }
+
+    public function detect_network_widgets()
+    {
+        global $wp_meta_boxes;
+
+        // 确保网络仪表板已初始化
         if (!isset($wp_meta_boxes["dashboard-network"])) {
-            return;
+            // Only trigger dashboard setup if not in AJAX context to avoid recursion
+            if (!wp_doing_ajax()) {
+                do_action('wp_network_dashboard_setup');
+            }
+        }
+
+        if (!isset($wp_meta_boxes["dashboard-network"])) {
+            // Return empty array - widgets will be detected on next dashboard visit
+            return [];
         }
 
         $detected_widgets = [];
@@ -861,36 +949,189 @@ class WP_MSD_Plugin_Core
                 }
 
                 foreach ($widgets as $widget_id => $widget_data) {
-                    if (strpos($widget_id, "msd_") !== 0) {
-                        $widget_title = $widget_data["title"] ?? $widget_id;
-                        if (is_callable($widget_title)) {
-                            $widget_title = $widget_id;
-                        }
-
-                        $detected_widgets[$widget_id] = [
-                            "id" => $widget_id,
-                            "title" => $widget_title,
-                            "context" => $context,
-                            "priority" => $priority,
-                            "is_custom" => false,
-                            "is_system" => in_array($widget_id, [
-                                "network_dashboard_right_now",
-                                "dashboard_activity",
-                                "dashboard_plugins",
-                                "dashboard_primary",
-                                "dashboard_secondary",
-                            ]),
-                        ];
+                    // 跳过我们自己的小工具
+                    if (strpos($widget_id, "msd_") === 0) {
+                        continue;
                     }
+
+                    $widget_title = $widget_data["title"] ?? $widget_id;
+                    if (is_callable($widget_title)) {
+                        $widget_title = $this->extract_callable_title($widget_title) ?: $widget_id;
+                    }
+
+                    // 确保标题是字符串
+                    if (!is_string($widget_title)) {
+                        $widget_title = $widget_id;
+                    }
+
+                    $detected_widgets[$widget_id] = [
+                        "id" => $widget_id,
+                        "title" => $widget_title,
+                        "context" => $context,
+                        "priority" => $priority,
+                        "is_custom" => false,
+                        "is_system" => $this->is_system_widget($widget_id),
+                        "source" => "network",
+                        "detected_at" => time(),
+                    ];
                 }
             }
         }
 
-        set_site_transient(
-            "msd_detected_widgets",
-            $detected_widgets,
-            12 * HOUR_IN_SECONDS
-        );
+        return $detected_widgets;
+    }
+
+    private function detect_child_site_widgets_safe()
+    {
+        // Check memory usage before proceeding
+        $memory_limit = $this->get_memory_limit_bytes();
+        $current_memory = memory_get_usage(true);
+        
+        // Only proceed if we have at least 64MB of memory available
+        if (($memory_limit - $current_memory) < (64 * 1024 * 1024)) {
+            return [];
+        }
+
+        $child_widgets = [];
+        $current_blog_id = get_current_blog_id();
+        
+        // Get only 3 most recent sites to avoid memory issues
+        $sites = get_sites([
+            'number' => 3,
+            'orderby' => 'last_updated',
+            'order' => 'DESC',
+            'public' => 1,
+            'archived' => 0,
+            'spam' => 0,
+            'deleted' => 0
+        ]);
+
+        foreach ($sites as $site) {
+            // Skip if this is the current site to avoid recursion
+            if ($site->blog_id == $current_blog_id) {
+                continue;
+            }
+
+            try {
+                switch_to_blog($site->blog_id);
+                
+                // Use a simpler approach - just check for known third-party widgets
+                $known_third_party_widgets = $this->get_known_third_party_widgets();
+                
+                foreach ($known_third_party_widgets as $widget_id => $widget_info) {
+                    if (!isset($child_widgets[$widget_id])) {
+                        $child_widgets[$widget_id] = array_merge($widget_info, [
+                            "source" => "child_site",
+                            "detected_on_site" => $site->blog_id,
+                        ]);
+                    }
+                }
+                
+            } catch (Exception $e) {
+                // Silently continue on error
+            } finally {
+                restore_current_blog();
+            }
+        }
+
+        return $child_widgets;
+    }
+
+    private function get_known_third_party_widgets()
+    {
+        // Return a list of commonly known third-party dashboard widgets
+        return [
+            'woocommerce_dashboard_status' => [
+                'id' => 'woocommerce_dashboard_status',
+                'title' => __('WooCommerce Status', 'wp-multisite-dashboard'),
+                'context' => 'normal',
+                'priority' => 'high',
+                'is_custom' => false,
+                'is_system' => false,
+            ],
+            'yoast_db_widget' => [
+                'id' => 'yoast_db_widget',
+                'title' => __('Yoast SEO Posts Overview', 'wp-multisite-dashboard'),
+                'context' => 'normal',
+                'priority' => 'core',
+                'is_custom' => false,
+                'is_system' => false,
+            ],
+            'jetpack_summary_widget' => [
+                'id' => 'jetpack_summary_widget',
+                'title' => __('Site Stats', 'wp-multisite-dashboard'),
+                'context' => 'normal',
+                'priority' => 'core',
+                'is_custom' => false,
+                'is_system' => false,
+            ],
+            'bbp-dashboard-right-now' => [
+                'id' => 'bbp-dashboard-right-now',
+                'title' => __('bbPress Forum Summary', 'wp-multisite-dashboard'),
+                'context' => 'normal',
+                'priority' => 'core',
+                'is_custom' => false,
+                'is_system' => false,
+            ],
+        ];
+    }
+
+    private function get_memory_limit_bytes()
+    {
+        $memory_limit = ini_get('memory_limit');
+        
+        if ($memory_limit == -1) {
+            return PHP_INT_MAX;
+        }
+        
+        $unit = strtolower(substr($memory_limit, -1));
+        $value = (int) $memory_limit;
+        
+        switch ($unit) {
+            case 'g':
+                return $value * 1024 * 1024 * 1024;
+            case 'm':
+                return $value * 1024 * 1024;
+            case 'k':
+                return $value * 1024;
+            default:
+                return $value;
+        }
+    }
+
+    // Removed setup_temporary_dashboard to prevent memory issues
+
+    private function extract_callable_title($callable)
+    {
+        if (is_string($callable)) {
+            return $callable;
+        }
+        
+        if (is_array($callable) && count($callable) >= 2) {
+            $method = $callable[1];
+            // Try to extract meaningful name from method
+            return ucwords(str_replace(['_', 'widget', 'dashboard'], [' ', '', ''], $method));
+        }
+        
+        return null;
+    }
+
+    private function is_system_widget($widget_id)
+    {
+        $system_widgets = [
+            'dashboard_right_now',
+            'dashboard_activity',
+            'dashboard_quick_press',
+            'dashboard_recent_drafts',
+            'dashboard_recent_comments',
+            'dashboard_incoming_links',
+            'dashboard_plugins',
+            'dashboard_primary',
+            'dashboard_secondary',
+            'network_dashboard_right_now',
+        ];
+        
+        return in_array($widget_id, $system_widgets);
     }
 
     public function get_enabled_widgets()
@@ -901,5 +1142,41 @@ class WP_MSD_Plugin_Core
     public function get_update_checker()
     {
         return $this->update_checker;
+    }
+
+    public function invalidate_widget_cache()
+    {
+        delete_site_transient("msd_detected_widgets");
+    }
+
+    public function force_widget_detection($enable_child_sites = false)
+    {
+        // Clear existing cache
+        $this->invalidate_widget_cache();
+        
+        // Temporarily enable child site detection if requested
+        if ($enable_child_sites) {
+            if (!defined('MSD_ENABLE_CHILD_SITE_DETECTION')) {
+                define('MSD_ENABLE_CHILD_SITE_DETECTION', true);
+            }
+        }
+        
+        // Force immediate detection
+        $this->cache_detected_widgets();
+        
+        return get_site_transient("msd_detected_widgets");
+    }
+
+    private function handle_import_export_actions()
+    {
+        // Handle export
+        if (isset($_GET['msd_action']) && $_GET['msd_action'] === 'export_settings') {
+            $this->settings_manager->export_settings();
+        }
+
+        // Handle import
+        if (isset($_POST['msd_import_settings'])) {
+            $this->settings_manager->import_settings();
+        }
     }
 }

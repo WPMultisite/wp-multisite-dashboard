@@ -9,6 +9,76 @@ class WP_MSD_Ajax_Handler
     public function __construct()
     {
         $this->register_ajax_actions();
+        
+        // Ultra-aggressive output cleaning for MSD AJAX requests
+        if (isset($_POST['action']) && strpos($_POST['action'], 'msd_') === 0) {
+            // Immediate cleanup
+            $this->force_clean_output();
+            
+            // Hook into multiple early actions
+            add_action('init', [$this, 'clean_output_buffer'], 1);
+            add_action('wp_loaded', [$this, 'clean_output_buffer'], 1);
+            add_action('admin_init', [$this, 'clean_output_buffer'], 1);
+            
+            // Also clean before each AJAX action
+            add_action('wp_ajax_' . $_POST['action'], [$this, 'force_clean_output'], 1);
+        }
+    }
+
+    /**
+     * Clean output buffer before sending AJAX response
+     */
+    public function clean_output_buffer()
+    {
+        // Aggressive output buffer cleaning
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        
+        // Start fresh output buffering if we're in an AJAX request
+        if (defined('DOING_AJAX') && DOING_AJAX) {
+            ob_start();
+        }
+    }
+
+    /**
+     * Force clean all output - ultra-aggressive method
+     */
+    public function force_clean_output()
+    {
+        // Clean all output buffers aggressively
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        
+        // Capture any remaining output
+        ob_start();
+        
+        // Use output control to prevent any unwanted output
+        if (function_exists('ob_implicit_flush')) {
+            ob_implicit_flush(false);
+        }
+    }
+
+    /**
+     * Send clean JSON response
+     */
+    public function send_clean_json_response($success, $data = null)
+    {
+        // Clean output one more time
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        
+        // Start fresh for JSON output
+        ob_start();
+        
+        // Send response and exit (headers already set in method)
+        if ($success) {
+            wp_send_json_success($data);
+        } else {
+            wp_send_json_error($data);
+        }
     }
 
     private function register_ajax_actions()
@@ -38,6 +108,22 @@ class WP_MSD_Ajax_Handler
             "msd_manage_user_action",
             "msd_check_plugin_update",
             "msd_clear_widget_cache",
+            "msd_force_widget_detection",
+            "msd_validate_import_file",
+            "msd_get_cache_status",
+            "msd_get_performance_stats",
+            "msd_get_memory_stats",
+            "msd_optimize_cache",
+            "msd_analyze_database",
+            "msd_optimize_database",
+            "msd_get_widget_list",
+            "msd_get_error_log",
+            "msd_clear_error_log",
+            "msd_get_error_logs",
+            "msd_clear_error_logs",
+            "msd_get_404_stats",
+            "msd_toggle_404_monitoring",
+            "msd_clear_404_logs",
         ];
 
         foreach ($ajax_actions as $action) {
@@ -45,6 +131,24 @@ class WP_MSD_Ajax_Handler
                 $this,
                 str_replace("msd_", "", $action),
             ]);
+        }
+        
+        // Add early hook to clean output buffer for critical AJAX requests
+        add_action('wp_ajax_msd_toggle_widget', [$this, 'prepare_ajax_response'], 1);
+        add_action('wp_ajax_msd_get_widget_list', [$this, 'prepare_ajax_response'], 1);
+    }
+    
+    /**
+     * Prepare AJAX response by cleaning output buffer
+     */
+    public function prepare_ajax_response()
+    {
+        // Clean any output that might have been generated
+        $this->clean_output_buffer();
+        
+        // Start fresh output buffering
+        if (ob_get_level() == 0) {
+            ob_start();
         }
     }
 
@@ -710,6 +814,20 @@ class WP_MSD_Ajax_Handler
 
     public function toggle_widget()
     {
+        // IMMEDIATELY clean output and set headers
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        
+        // Start fresh output buffering
+        ob_start();
+        
+        // Set headers immediately if not already sent
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=utf-8');
+            header('Cache-Control: no-cache, must-revalidate');
+        }
+        
         if (!$this->verify_ajax_request()) {
             return;
         }
@@ -727,7 +845,8 @@ class WP_MSD_Ajax_Handler
         $enabled_widgets[$widget_id] = $enabled ? 1 : 0;
         update_site_option("msd_enabled_widgets", $enabled_widgets);
 
-        wp_send_json_success([
+        // Send clean JSON response
+        $this->send_clean_json_response(true, [
             "message" => __(
                 "Widget settings updated",
                 "wp-multisite-dashboard"
@@ -893,6 +1012,527 @@ class WP_MSD_Ajax_Handler
         ]);
     }
 
+    public function force_widget_detection()
+    {
+        if (!current_user_can("manage_network")) {
+            wp_send_json_error(
+                __("Insufficient permissions", "wp-multisite-dashboard")
+            );
+            return;
+        }
+
+        $nonce = $_POST["nonce"] ?? "";
+        if (!wp_verify_nonce($nonce, "msd_ajax_nonce")) {
+            wp_send_json_error(__("Invalid nonce", "wp-multisite-dashboard"));
+            return;
+        }
+
+        try {
+            // Increase time limit for detection
+            @set_time_limit(120);
+            
+            // Check if child site detection is requested
+            $enable_child_sites = !empty($_POST["include_child_sites"]);
+            
+            // Clear existing cache first
+            delete_site_transient("msd_detected_widgets");
+            
+            // For AJAX context, we need to simulate dashboard initialization
+            global $wp_meta_boxes;
+            
+            // Initialize dashboard widgets if not already done
+            if (!isset($wp_meta_boxes["dashboard-network"])) {
+                // Manually trigger the dashboard setup actions
+                require_once ABSPATH . 'wp-admin/includes/dashboard.php';
+                
+                // Set up network dashboard widgets
+                do_action('wp_network_dashboard_setup');
+            }
+            
+            $plugin_core = WP_MSD_Plugin_Core::get_instance();
+            $detected_widgets = $plugin_core->force_widget_detection($enable_child_sites);
+            
+            if ($detected_widgets === false || !is_array($detected_widgets)) {
+                wp_send_json_error(
+                    __("Widget detection failed. Please visit the network dashboard first to initialize widgets.", "wp-multisite-dashboard")
+                );
+                return;
+            }
+            
+            $widget_count = count($detected_widgets);
+            
+            $message = $enable_child_sites 
+                ? __("Deep widget detection completed. Found %d widgets including child sites.", "wp-multisite-dashboard")
+                : __("Widget detection completed. Found %d widgets.", "wp-multisite-dashboard");
+            
+            wp_send_json_success([
+                "message" => sprintf($message, $widget_count),
+                "widget_count" => $widget_count,
+            ]);
+        } catch (Exception $e) {
+            wp_send_json_error(
+                sprintf(
+                    __("Failed to detect widgets: %s", "wp-multisite-dashboard"),
+                    $e->getMessage()
+                )
+            );
+        }
+    }
+
+    public function validate_import_file()
+    {
+        if (!current_user_can("manage_network")) {
+            wp_send_json_error(
+                __("Insufficient permissions", "wp-multisite-dashboard")
+            );
+            return;
+        }
+
+        $nonce = $_POST["nonce"] ?? "";
+        if (!wp_verify_nonce($nonce, "msd_ajax_nonce")) {
+            wp_send_json_error(__("Invalid nonce", "wp-multisite-dashboard"));
+            return;
+        }
+
+        if (!isset($_FILES['import_file']) || $_FILES['import_file']['error'] !== UPLOAD_ERR_OK) {
+            wp_send_json_error(
+                __("File upload error", "wp-multisite-dashboard")
+            );
+            return;
+        }
+
+        // 验证文件类型和大小
+        $file_info = $_FILES['import_file'];
+        $file_extension = strtolower(pathinfo($file_info['name'], PATHINFO_EXTENSION));
+        
+        if ($file_extension !== 'json') {
+            wp_send_json_error(
+                __("Invalid file type. Only JSON files are allowed.", "wp-multisite-dashboard")
+            );
+            return;
+        }
+        
+        if ($file_info['size'] > 1024 * 1024) { // 1MB limit
+            wp_send_json_error(
+                __("File too large. Maximum size is 1MB.", "wp-multisite-dashboard")
+            );
+            return;
+        }
+
+        $file_content = file_get_contents($file_info['tmp_name']);
+        
+        if ($file_content === false) {
+            wp_send_json_error(
+                __("Unable to read file content.", "wp-multisite-dashboard")
+            );
+            return;
+        }
+        
+        $import_data = json_decode($file_content, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error(
+                sprintf(
+                    __("Invalid JSON format: %s", "wp-multisite-dashboard"),
+                    json_last_error_msg()
+                )
+            );
+            return;
+        }
+
+        $settings_manager = new WP_MSD_Settings_Manager();
+        $reflection = new ReflectionClass($settings_manager);
+        $validate_method = $reflection->getMethod('validate_import_data');
+        $validate_method->setAccessible(true);
+        
+        if (!$validate_method->invoke($settings_manager, $import_data)) {
+            wp_send_json_error(
+                __("Invalid file format", "wp-multisite-dashboard")
+            );
+            return;
+        }
+
+        wp_send_json_success([
+            "message" => __("File is valid and ready to import", "wp-multisite-dashboard"),
+            "export_date" => $import_data['export_date'] ?? '',
+            "version" => $import_data['version'] ?? '',
+            "site_url" => $import_data['site_url'] ?? ''
+        ]);
+    }
+
+    public function get_cache_status()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            $widget_cache = get_site_transient('msd_detected_widgets');
+            $network_data = new WP_MSD_Network_Data();
+            
+            // Get transient count (approximate)
+            global $wpdb;
+            $transient_count = $wpdb->get_var(
+                "SELECT COUNT(*) FROM {$wpdb->sitemeta} WHERE meta_key LIKE '_site_transient_msd_%'"
+            );
+
+            $cache_status = [
+                'widget_cache' => !empty($widget_cache),
+                'network_cache' => !empty(get_site_transient('msd_network_overview')),
+                'transient_count' => (int) $transient_count,
+                'last_updated' => current_time('Y-m-d H:i:s')
+            ];
+
+            wp_send_json_success($cache_status);
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __("Failed to get cache status", "wp-multisite-dashboard")
+            );
+        }
+    }
+
+    public function get_performance_stats()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            $performance_manager = WP_MSD_Performance_Manager::get_instance();
+            $stats = $performance_manager->get_cache_stats();
+            
+            wp_send_json_success($stats);
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __("Failed to get performance stats", "wp-multisite-dashboard")
+            );
+        }
+    }
+
+    public function get_memory_stats()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            $memory_stats = [
+                'current_usage' => size_format(memory_get_usage(true)),
+                'peak_usage' => size_format(memory_get_peak_usage(true)),
+                'limit' => ini_get('memory_limit')
+            ];
+            
+            wp_send_json_success($memory_stats);
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __("Failed to get memory stats", "wp-multisite-dashboard")
+            );
+        }
+    }
+
+    public function optimize_cache()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            $performance_manager = WP_MSD_Performance_Manager::get_instance();
+            
+            // 清理过期缓存
+            $performance_manager->cleanup_memory();
+            
+            // 清理旧的transients
+            global $wpdb;
+            $wpdb->query(
+                "DELETE FROM {$wpdb->sitemeta} 
+                 WHERE meta_key LIKE '_site_transient_timeout_msd_%' 
+                 AND meta_value < UNIX_TIMESTAMP()"
+            );
+            
+            wp_send_json_success([
+                'message' => __('Cache optimization completed', 'wp-multisite-dashboard')
+            ]);
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __("Failed to optimize cache", "wp-multisite-dashboard")
+            );
+        }
+    }
+
+    public function analyze_database()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            global $wpdb;
+            
+            // 获取数据库统计信息
+            $query_count = $wpdb->num_queries;
+            
+            // 检查慢查询（简化版本）
+            $slow_queries = 0;
+            
+            // 获取数据库大小
+            $database_size = $wpdb->get_var(
+                "SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) AS 'DB Size in MB' 
+                 FROM information_schema.tables 
+                 WHERE table_schema = DATABASE()"
+            );
+            
+            $stats = [
+                'query_count' => $query_count,
+                'slow_queries' => $slow_queries,
+                'database_size' => $database_size . ' MB'
+            ];
+            
+            wp_send_json_success($stats);
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __("Failed to analyze database", "wp-multisite-dashboard")
+            );
+        }
+    }
+
+    public function optimize_database()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            global $wpdb;
+            
+            // 获取所有MSD相关的表
+            $tables = $wpdb->get_results(
+                "SHOW TABLES LIKE '{$wpdb->prefix}%'",
+                ARRAY_N
+            );
+            
+            $optimized_tables = 0;
+            
+            foreach ($tables as $table) {
+                $table_name = $table[0];
+                $result = $wpdb->query("OPTIMIZE TABLE `{$table_name}`");
+                if ($result !== false) {
+                    $optimized_tables++;
+                }
+            }
+            
+            // 清理过期的transients
+            $wpdb->query(
+                "DELETE FROM {$wpdb->sitemeta} 
+                 WHERE meta_key LIKE '_site_transient_timeout_%' 
+                 AND meta_value < UNIX_TIMESTAMP()"
+            );
+            
+            wp_send_json_success([
+                'message' => sprintf(
+                    __('Optimized %d tables successfully', 'wp-multisite-dashboard'),
+                    $optimized_tables
+                )
+            ]);
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __("Failed to optimize database", "wp-multisite-dashboard")
+            );
+        }
+    }
+
+    public function get_widget_list()
+    {
+        // Ultra-aggressive output cleaning
+        $this->force_clean_output();
+        
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            $settings_manager = new WP_MSD_Settings_Manager();
+            $available_widgets = $settings_manager->get_available_system_widgets();
+            $disabled_widgets = get_site_option("msd_disabled_system_widgets", []);
+
+            // 生成HTML
+            $html = $this->generate_widget_list_html($available_widgets, $disabled_widgets);
+            
+            // 统计信息
+            $stats = [
+                'total' => count($available_widgets),
+                'system' => count(array_filter($available_widgets, function($widget) {
+                    return $widget['is_system'] ?? false;
+                })),
+                'third_party' => count(array_filter($available_widgets, function($widget) {
+                    return !($widget['is_system'] ?? false) && !($widget['is_custom'] ?? false);
+                }))
+            ];
+
+            // Send clean JSON response
+            $this->send_clean_json_response(true, [
+                'html' => $html,
+                'stats' => $stats
+            ]);
+        } catch (Exception $e) {
+            // Send clean error response
+            $this->send_clean_json_response(false, 
+                __("Failed to get widget list", "wp-multisite-dashboard")
+            );
+        }
+    }
+
+    private function generate_widget_list_html($available_widgets, $disabled_widgets)
+    {
+        $system_widgets = array_filter($available_widgets, function ($widget) {
+            return $widget["is_system"] ?? false;
+        });
+
+        $third_party_widgets = array_filter($available_widgets, function ($widget) {
+            return !($widget["is_system"] ?? false) && !($widget["is_custom"] ?? false);
+        });
+
+        $html = '';
+
+        // 检测状态信息栏
+        $stats = $this->get_widget_detection_stats($available_widgets);
+        $html .= '<div class="msd-detection-status">';
+        $html .= '<p><span class="dashicons dashicons-info"></span>';
+        $html .= '<strong>' . __('Detection Status:', 'wp-multisite-dashboard') . '</strong> ';
+        $html .= sprintf(
+            __('Found %d widgets (%d system, %d third-party). Last detection: %s', 'wp-multisite-dashboard'),
+            $stats['total'],
+            $stats['system'],
+            $stats['third_party'],
+            $stats['last_detection_human']
+        );
+        $html .= '</p></div>';
+
+        // 系统小工具部分
+        if (!empty($system_widgets)) {
+            $html .= '<div class="msd-widget-section">';
+            $html .= '<h4>' . __('WordPress System Widgets', 'wp-multisite-dashboard') . '</h4>';
+            
+            foreach ($system_widgets as $widget_id => $widget_data) {
+                $checked = !in_array($widget_id, $disabled_widgets) ? 'checked' : '';
+                $html .= '<div class="msd-widget-toggle">';
+                $html .= '<label>';
+                $html .= '<input type="checkbox" name="system_widgets[' . esc_attr($widget_id) . ']" value="1" ' . $checked . ' />';
+                $html .= esc_html($widget_data["title"]);
+                $html .= '<span class="msd-widget-meta">(' . esc_html($widget_data["context"]) . ')</span>';
+                $html .= '</label>';
+                $html .= '</div>';
+            }
+            
+            $html .= '</div>';
+        }
+
+        // 第三方小工具部分
+        $html .= '<div class="msd-widget-section">';
+        $html .= '<h4>' . __('Third-Party Plugin Widgets', 'wp-multisite-dashboard') . '</h4>';
+        
+        if (!empty($third_party_widgets)) {
+            // 显示检测到的第三方小工具
+            foreach ($third_party_widgets as $widget_id => $widget_data) {
+                $checked = !in_array($widget_id, $disabled_widgets) ? 'checked' : '';
+                $html .= '<div class="msd-widget-toggle">';
+                $html .= '<label>';
+                $html .= '<input type="checkbox" name="system_widgets[' . esc_attr($widget_id) . ']" value="1" ' . $checked . ' />';
+                $html .= esc_html($widget_data["title"]);
+                $html .= '<span class="msd-widget-meta">(' . esc_html($widget_data["context"]) . ')</span>';
+                if (isset($widget_data["source"]) && $widget_data["source"] === "child_site") {
+                    $html .= '<span class="msd-widget-source">' . __('Child Site', 'wp-multisite-dashboard') . '</span>';
+                }
+                $html .= '</label>';
+                $html .= '</div>';
+            }
+            
+            // 显示重新扫描提示
+            $html .= '<div class="msd-rescan-section">';
+            $html .= '<p class="description">' . __('Found third-party widgets above. You can rescan to detect new widgets or refresh the list using the controls below.', 'wp-multisite-dashboard') . '</p>';
+            $html .= '</div>';
+        } else {
+            // 没有检测到第三方小工具
+            $html .= '<div class="msd-no-third-party">';
+            $html .= '<p>' . __('No third-party widgets detected yet.', 'wp-multisite-dashboard') . '</p>';
+            $html .= '<p class="description">' . __('Third-party widgets are automatically detected when you visit the network dashboard. If you have plugins that add dashboard widgets, visit the dashboard first, then use the detection controls below.', 'wp-multisite-dashboard') . '</p>';
+            $html .= '</div>';
+        }
+        
+        $html .= '</div>';
+
+        // 始终显示检测按钮区域（独立于小工具列表）
+        $html .= $this->generate_detection_buttons_html();
+
+        return $html;
+    }
+
+    /**
+     * 生成检测按钮HTML（始终显示）
+     */
+    private function generate_detection_buttons_html()
+    {
+        $html = '<div class="msd-detection-controls">';
+        $html .= '<h4>' . __('Widget Detection Controls', 'wp-multisite-dashboard') . '</h4>';
+        $html .= '<p class="description">' . __('Use these controls to detect new widgets or refresh the current list.', 'wp-multisite-dashboard') . '</p>';
+        $html .= '<div class="msd-action-buttons">';
+        $html .= '<a href="' . network_admin_url() . '" class="button button-secondary">';
+        $html .= '<span class="dashicons dashicons-external"></span>';
+        $html .= __('Visit Network Dashboard', 'wp-multisite-dashboard');
+        $html .= '</a>';
+        $html .= '<button type="button" class="button" onclick="MSD.clearWidgetCache(this)">';
+        $html .= '<span class="dashicons dashicons-update"></span>';
+        $html .= __('Refresh Widget Detection', 'wp-multisite-dashboard');
+        $html .= '</button>';
+        $html .= '<button type="button" class="button button-primary" onclick="MSD.forceNetworkWidgetDetection(this)">';
+        $html .= '<span class="dashicons dashicons-search"></span>';
+        $html .= __('Force Network Scan', 'wp-multisite-dashboard');
+        $html .= '</button>';
+        $html .= '<button type="button" class="button" onclick="MSD.forceWidgetDetection(true, this)" style="margin-left: 5px;">';
+        $html .= '<span class="dashicons dashicons-admin-multisite"></span>';
+        $html .= __('Deep Scan (Include Child Sites)', 'wp-multisite-dashboard');
+        $html .= '</button>';
+        $html .= '</div>';
+        $html .= '</div>';
+        
+        return $html;
+    }
+
+    private function get_widget_detection_stats($available_widgets)
+    {
+        $last_detection = get_site_option('msd_last_widget_detection', 0);
+        
+        $stats = [
+            'total' => count($available_widgets),
+            'system' => count(array_filter($available_widgets, function($widget) {
+                return $widget['is_system'] ?? false;
+            })),
+            'third_party' => count(array_filter($available_widgets, function($widget) {
+                return !($widget['is_system'] ?? false) && !($widget['is_custom'] ?? false);
+            })),
+            'last_detection' => $last_detection,
+            'last_detection_human' => $last_detection ? human_time_diff($last_detection) . ' ' . __('ago', 'wp-multisite-dashboard') : __('Never', 'wp-multisite-dashboard')
+        ];
+        
+        return $stats;
+    }
+
+    private function generate_no_widgets_html()
+    {
+        $html = '<div class="msd-no-widgets">';
+        $html .= '<p>' . __('No system widgets found.', 'wp-multisite-dashboard') . '</p>';
+        $html .= '<p>' . __('Visit the network dashboard to detect available widgets.', 'wp-multisite-dashboard') . '</p>';
+        $html .= '<div class="msd-action-buttons">';
+        $html .= '<a href="' . network_admin_url() . '" class="button button-secondary">' . __('Visit Network Dashboard', 'wp-multisite-dashboard') . '</a>';
+        $html .= '<button type="button" class="button" onclick="MSD.clearWidgetCache(this)">' . __('Refresh Widget Detection', 'wp-multisite-dashboard') . '</button>';
+        $html .= '<button type="button" class="button button-primary" onclick="MSD.forceNetworkWidgetDetection(this)">' . __('Force Network Scan', 'wp-multisite-dashboard') . '</button>';
+        $html .= '<button type="button" class="button" onclick="MSD.forceWidgetDetection(true, this)" style="margin-left: 5px;">' . __('Deep Scan (Include Child Sites)', 'wp-multisite-dashboard') . '</button>';
+        $html .= '</div>';
+        $html .= '</div>';
+        
+        return $html;
+    }
+
     private function verify_ajax_request()
     {
         if (!wp_verify_nonce($_POST["nonce"] ?? "", "msd_ajax_nonce")) {
@@ -951,5 +1591,154 @@ class WP_MSD_Ajax_Handler
 
         set_site_transient($cache_key, $feed_items, 3600);
         return $feed_items;
+    }
+
+    public function get_error_log()
+    {
+        $error_handler = WP_MSD_Error_Handler::get_instance();
+        $error_handler->get_error_log();
+    }
+
+    public function clear_error_log()
+    {
+        $error_handler = WP_MSD_Error_Handler::get_instance();
+        $error_handler->clear_error_log();
+    }
+
+    /**
+     * Get error logs (new monitoring feature)
+     */
+    public function get_error_logs()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            $error_log_manager = WP_MSD_Error_Log_Manager::get_instance();
+            
+            $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 100;
+            $filters = isset($_POST['filters']) ? $_POST['filters'] : [];
+            
+            $result = $error_log_manager->get_error_logs($limit, $filters);
+            
+            wp_send_json_success($result);
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __('Failed to load error logs', 'wp-multisite-dashboard')
+            );
+        }
+    }
+
+    /**
+     * Clear error logs (new monitoring feature)
+     */
+    public function clear_error_logs()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            $error_log_manager = WP_MSD_Error_Log_Manager::get_instance();
+            $result = $error_log_manager->clear_log_file();
+            
+            if ($result['success']) {
+                wp_send_json_success([
+                    'message' => $result['message']
+                ]);
+            } else {
+                wp_send_json_error($result['message']);
+            }
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __('Failed to clear error logs', 'wp-multisite-dashboard')
+            );
+        }
+    }
+
+    /**
+     * Get 404 statistics
+     */
+    public function get_404_stats()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            $monitor_404 = WP_MSD_404_Monitor::get_instance();
+            
+            $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 20;
+            $days = isset($_POST['days']) ? intval($_POST['days']) : 30;
+            
+            $stats = $monitor_404->get_statistics($limit, $days);
+            
+            wp_send_json_success($stats);
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __('Failed to load 404 statistics', 'wp-multisite-dashboard')
+            );
+        }
+    }
+
+    /**
+     * Toggle 404 monitoring
+     */
+    public function toggle_404_monitoring()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            $monitor_404 = WP_MSD_404_Monitor::get_instance();
+            $enabled = isset($_POST['enabled']) && $_POST['enabled'] === 'true';
+            
+            $monitor_404->set_monitoring_enabled($enabled);
+            
+            $status = $enabled ? __('enabled', 'wp-multisite-dashboard') : __('disabled', 'wp-multisite-dashboard');
+            
+            wp_send_json_success([
+                'message' => sprintf(
+                    __('404 monitoring %s successfully', 'wp-multisite-dashboard'),
+                    $status
+                ),
+                'enabled' => $enabled
+            ]);
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __('Failed to toggle 404 monitoring', 'wp-multisite-dashboard')
+            );
+        }
+    }
+
+    /**
+     * Clear 404 logs
+     */
+    public function clear_404_logs()
+    {
+        if (!$this->verify_ajax_request()) {
+            return;
+        }
+
+        try {
+            $monitor_404 = WP_MSD_404_Monitor::get_instance();
+            $result = $monitor_404->clear_all_records();
+            
+            if ($result) {
+                wp_send_json_success([
+                    'message' => __('404 logs cleared successfully', 'wp-multisite-dashboard')
+                ]);
+            } else {
+                wp_send_json_error(
+                    __('Failed to clear 404 logs', 'wp-multisite-dashboard')
+                );
+            }
+        } catch (Exception $e) {
+            wp_send_json_error(
+                __('Failed to clear 404 logs', 'wp-multisite-dashboard')
+            );
+        }
     }
 }

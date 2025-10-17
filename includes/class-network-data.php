@@ -9,96 +9,116 @@ class WP_MSD_Network_Data
     private $wpdb;
     private $cache_group = "msd_network_data";
     private $cache_timeout = 3600;
+    private $performance_manager;
 
     public function __construct()
     {
         global $wpdb;
         $this->wpdb = $wpdb;
+        $this->performance_manager = WP_MSD_Performance_Manager::get_instance();
     }
 
     public function get_total_sites()
     {
-        $cache_key = "total_sites";
-        $cached = $this->get_cache($cache_key);
+        $cache_key = "total_sites_count";
+        $cached = $this->performance_manager->get_cache($cache_key, $this->cache_group);
 
         if ($cached !== false) {
             return $cached;
         }
 
-        $count = get_sites(["count" => true]);
-        $this->set_cache($cache_key, $count, 1800);
+        // 优化查询：只计数，不获取完整对象
+        $count = get_sites([
+            "count" => true,
+            "archived" => 0,
+            "spam" => 0,
+            "deleted" => 0
+        ]);
+        
+        $this->performance_manager->set_cache(
+            $cache_key, 
+            $count, 
+            WP_MSD_Performance_Manager::CACHE_LONG, 
+            $this->cache_group
+        );
 
         return $count;
     }
 
     public function get_total_users()
     {
-        $cache_key = "total_users";
-        $cached = $this->get_cache($cache_key);
+        $cache_key = "total_users_count";
+        $cached = $this->performance_manager->get_cache($cache_key, $this->cache_group);
 
         if ($cached !== false) {
             return $cached;
         }
 
-        $user_count = $this->wpdb->get_var(
-            "SELECT COUNT(DISTINCT ID) FROM {$this->wpdb->users}"
-        );
+        // 优化查询：使用更高效的计数方式
+        if (function_exists('get_user_count')) {
+            $count = get_user_count();
+        } else {
+            // 备用方案：直接数据库查询
+            $user_count = $this->wpdb->get_var(
+                $this->wpdb->prepare(
+                    "SELECT COUNT(DISTINCT ID) FROM {$this->wpdb->users} WHERE user_status = %d",
+                    0
+                )
+            );
+            $count = intval($user_count);
+        }
 
-        $count = intval($user_count);
-        $this->set_cache($cache_key, $count, 1800);
+        $this->performance_manager->set_cache(
+            $cache_key, 
+            $count, 
+            WP_MSD_Performance_Manager::CACHE_LONG, 
+            $this->cache_group
+        );
 
         return $count;
     }
 
     public function get_total_posts()
     {
-        $cache_key = "total_posts";
-        $cached = $this->get_cache($cache_key);
+        $cache_key = "total_posts_count";
+        $cached = $this->performance_manager->get_cache($cache_key, $this->cache_group);
 
         if ($cached !== false) {
             return $cached;
         }
 
-        $sites = get_sites(["number" => 100]);
-        $total_posts = 0;
-
-        foreach ($sites as $site) {
-            $blog_id = $site->blog_id;
-            switch_to_blog($blog_id);
-
-            $posts_count = wp_count_posts();
-            $total_posts += $posts_count->publish;
-
-            restore_current_blog();
-        }
-
-        $this->set_cache($cache_key, $total_posts, 3600);
+        // 优化：使用单个数据库查询而不是循环切换博客
+        $total_posts = $this->get_network_post_count('post');
+        
+        $this->performance_manager->set_cache(
+            $cache_key, 
+            $total_posts, 
+            WP_MSD_Performance_Manager::CACHE_EXTENDED, 
+            $this->cache_group
+        );
+        
         return $total_posts;
     }
 
     public function get_total_pages()
     {
-        $cache_key = "total_pages";
-        $cached = $this->get_cache($cache_key);
+        $cache_key = "total_pages_count";
+        $cached = $this->performance_manager->get_cache($cache_key, $this->cache_group);
 
         if ($cached !== false) {
             return $cached;
         }
 
-        $sites = get_sites(["number" => 100]);
-        $total_pages = 0;
-
-        foreach ($sites as $site) {
-            $blog_id = $site->blog_id;
-            switch_to_blog($blog_id);
-
-            $pages_count = wp_count_posts("page");
-            $total_pages += $pages_count->publish;
-
-            restore_current_blog();
-        }
-
-        $this->set_cache($cache_key, $total_pages, 3600);
+        // 优化：使用单个数据库查询而不是循环切换博客
+        $total_pages = $this->get_network_post_count('page');
+        
+        $this->performance_manager->set_cache(
+            $cache_key, 
+            $total_pages, 
+            WP_MSD_Performance_Manager::CACHE_EXTENDED, 
+            $this->cache_group
+        );
+        
         return $total_pages;
     }
 
@@ -988,18 +1008,125 @@ class WP_MSD_Network_Data
 
     private function get_cache($key)
     {
-        return get_site_transient("msd_{$key}");
+        // 向后兼容的缓存获取方法
+        return $this->performance_manager->get_cache($key, $this->cache_group);
     }
 
     private function set_cache($key, $value, $expiration = null)
     {
+        // 向后兼容的缓存设置方法
         $expiration = $expiration ?: $this->cache_timeout;
-        return set_site_transient("msd_{$key}", $value, $expiration);
+        return $this->performance_manager->set_cache($key, $value, $expiration, $this->cache_group);
     }
 
     private function delete_cache($key)
     {
         return delete_site_transient("msd_{$key}");
+    }
+
+    /**
+     * 优化的网络文章计数方法
+     * 使用单个SQL查询替代多次博客切换
+     */
+    private function get_network_post_count($post_type = 'post')
+    {
+        // 获取所有活跃站点的blog_id
+        $sites = get_sites([
+            'fields' => 'ids',
+            'archived' => 0,
+            'spam' => 0,
+            'deleted' => 0,
+            'number' => 1000 // 限制站点数量以避免内存问题
+        ]);
+
+        if (empty($sites)) {
+            return 0;
+        }
+
+        $total_count = 0;
+        $batch_size = 50; // 批量处理以优化内存使用
+        $site_batches = array_chunk($sites, $batch_size);
+
+        foreach ($site_batches as $batch) {
+            $batch_count = $this->get_batch_post_count($batch, $post_type);
+            $total_count += $batch_count;
+            
+            // 检查内存使用情况
+            $current_usage = memory_get_usage(true);
+            $memory_limit = $this->get_memory_limit_bytes();
+            if ($current_usage > ($memory_limit * 0.8)) {
+                error_log('MSD: Memory limit reached during post count calculation');
+                break;
+            }
+        }
+
+        return $total_count;
+    }
+
+    /**
+     * 获取内存限制（字节）
+     */
+    private function get_memory_limit_bytes()
+    {
+        $memory_limit = ini_get('memory_limit');
+        
+        if ($memory_limit == -1) {
+            return PHP_INT_MAX;
+        }
+        
+        $unit = strtolower(substr($memory_limit, -1));
+        $value = (int) $memory_limit;
+        
+        switch ($unit) {
+            case 'g':
+                return $value * 1024 * 1024 * 1024;
+            case 'm':
+                return $value * 1024 * 1024;
+            case 'k':
+                return $value * 1024;
+            default:
+                return $value;
+        }
+    }
+
+    /**
+     * 批量获取文章计数
+     */
+    private function get_batch_post_count($site_ids, $post_type)
+    {
+        if (empty($site_ids)) {
+            return 0;
+        }
+
+        $total_count = 0;
+        
+        // 为每个站点构建表名
+        foreach ($site_ids as $blog_id) {
+            $table_name = $blog_id == 1 ? 
+                $this->wpdb->posts : 
+                $this->wpdb->get_blog_prefix($blog_id) . 'posts';
+            
+            // 检查表是否存在
+            $table_exists = $this->wpdb->get_var(
+                $this->wpdb->prepare(
+                    "SHOW TABLES LIKE %s",
+                    $table_name
+                )
+            );
+            
+            if ($table_exists) {
+                $count = $this->wpdb->get_var(
+                    $this->wpdb->prepare(
+                        "SELECT COUNT(*) FROM {$table_name} 
+                         WHERE post_type = %s AND post_status = 'publish'",
+                        $post_type
+                    )
+                );
+                $total_count += intval($count);
+            }
+        }
+
+        return $total_count;
     }
 
     public function get_network_stats_summary()

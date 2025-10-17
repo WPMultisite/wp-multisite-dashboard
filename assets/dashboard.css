@@ -1646,6 +1646,12 @@ div#network_dashboard_right_now .inside {
     line-height: 1.4;
 }
 
+@media screen and (max-width: 782px) {
+    .msd-settings-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .msd-card {
     background: #fff;
     border: 1px solid #ccd0d4;
@@ -1907,7 +1913,6 @@ body.modal-open {
     text-decoration: underline;
 }
 
-
 .postbox-header {
     display: flex;
     align-items: center;
@@ -1941,4 +1946,1328 @@ body.modal-open {
 .notice-error {
     background-color: #f2dede;
     border-left: 4px solid #dc3232;
+}
+
+/* 检测状态栏样式 */
+.msd-detection-status {
+    background: #f0f6fc;
+    border: 1px solid #007cba;
+    border-radius: var(--msd-radius-small);
+    padding: 12px 16px;
+    margin: 16px 0;
+    display: none;
+}
+
+.msd-detection-status.show {
+    display: block;
+}
+
+.msd-detection-status p {
+    margin: 0;
+    color: #1d2327;
+    font-size: 14px;
+}
+
+.msd-detection-status .dashicons {
+    color: #007cba;
+    margin-right: 8px;
+}
+
+/* 检测控制区域样式 */
+.msd-detection-controls {
+    background: #f0f6fc;
+    border: 1px solid #007cba;
+    border-radius: var(--msd-radius);
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.msd-detection-controls h4 {
+    margin: 0 0 12px 0;
+    color: #1d2327;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.msd-detection-controls .description {
+    margin: 0 0 16px 0;
+    color: #646970;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.msd-detection-controls .msd-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.msd-detection-controls .button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    padding: 6px 12px;
+    height: auto;
+    line-height: 1.4;
+}
+
+.msd-detection-controls .button .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* 小工具切换样式 */
+.msd-widget-toggle {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: var(--msd-radius-small);
+    margin-bottom: 8px;
+    background: #fff;
+    transition: all 0.2s ease;
+}
+
+.msd-widget-toggle:hover {
+    border-color: #007cba;
+    background: #f9f9f9;
+}
+
+.msd-widget-toggle label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    cursor: pointer;
+    width: 100%;
+    font-size: 14px;
+}
+
+.msd-widget-toggle input[type="checkbox"] {
+    margin: 0;
+}
+
+.msd-widget-meta {
+    color: #646970;
+    font-size: 12px;
+    margin-left: auto;
+}
+
+.msd-widget-source {
+    background: #007cba;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+/* 小工具部分样式 */
+.msd-widget-section {
+    margin-bottom: 24px;
+}
+
+.msd-widget-section h4 {
+    margin: 0 0 12px 0;
+    padding: 8px 0;
+    border-bottom: 2px solid #007cba;
+    color: #1d2327;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.msd-no-third-party {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: var(--msd-radius-small);
+    padding: 16px;
+    text-align: center;
+}
+
+.msd-no-third-party p {
+    margin: 0 0 8px 0;
+    color: #646970;
+}
+
+.msd-rescan-section {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: var(--msd-radius-small);
+    padding: 12px;
+    margin-top: 12px;
+}
+
+.msd-rescan-section p {
+    margin: 0;
+    color: #856404;
+    font-size: 13px;
+}
+
+/* 加载遮罩样式 */
+.msd-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    border-radius: var(--msd-radius-small);
+}
+
+.msd-loading-overlay p {
+    margin: 0;
+    color: #646970;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.msd-loading-overlay p:before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ddd;
+    border-top: 2px solid #007cba;
+    border-radius: 50%;
+    animation: msd-spin 1s linear infinite;
+}
+
+/* 通知样式改进 */
+#msd-status {
+    margin: 16px 0;
+    border-radius: var(--msd-radius-small);
+}
+
+#msd-status.notice-success {
+    border-left-color: var(--msd-success);
+    background: #f0f9ff;
+}
+
+#msd-status.notice-error {
+    border-left-color: var(--msd-danger);
+    background: #fef2f2;
+}
+
+#msd-status.notice-warning {
+    border-left-color: var(--msd-warning);
+    background: #fffbeb;
+}
+
+/* 标签页样式改进 */
+.msd-tabs-wrapper {
+    margin-bottom: 20px;
+}
+
+.msd-sync-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.msd-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    background: #f6f7f7;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    border-radius: var(--msd-radius-small) var(--msd-radius-small) 0 0;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #646970;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.msd-tab:hover {
+    background: #e9ecef;
+    color: #1d2327;
+}
+
+.msd-tab.active {
+    background: #fff;
+    color: #007cba;
+    border-color: #007cba;
+    border-bottom: 1px solid #fff;
+    margin-bottom: -1px;
+    position: relative;
+    z-index: 1;
+}
+
+.msd-tab .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* 卡片样式 */
+.msd-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: var(--msd-radius);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.msd-section {
+    padding: 20px;
+    display: none;
+}
+
+.msd-section.active {
+    display: block;
+}
+
+/* 性能统计样式 */
+.msd-performance-stats,
+.msd-database-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+}
+
+.msd-stat-item {
+    background: #f9f9f9;
+    border-radius: var(--msd-radius-small);
+    padding: 16px;
+    text-align: center;
+}
+
+.msd-stat-label {
+    display: block;
+    font-size: 12px;
+    color: #646970;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.msd-stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+/* 缓存信息样式 */
+.msd-cache-info {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: var(--msd-radius-small);
+    padding: 16px;
+    margin: 16px 0;
+}
+
+.msd-cache-info p {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+}
+
+.msd-cache-info p:last-child {
+    margin-bottom: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .msd-sync-tabs {
+        flex-direction: column;
+    }
+
+    .msd-tab {
+        border-radius: var(--msd-radius-small);
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 4px;
+    }
+
+    .msd-tab.active {
+        border-bottom: 1px solid #007cba;
+        margin-bottom: 4px;
+    }
+
+    .msd-detection-controls .msd-action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .msd-detection-controls .button {
+        justify-content: center;
+    }
+
+    .msd-performance-stats,
+    .msd-database-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 动画改进 */
+@keyframes msd-fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.msd-section {
+    animation: msd-fadeIn 0.3s ease-out;
+}
+
+/* 按钮状态样式 */
+.button:disabled,
+.button.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.button.refreshing {
+    position: relative;
+    color: transparent !important;
+}
+
+.button.refreshing:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid #fff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: msd-spin 1s linear infinite;
+}
+/* ====================
+   Monitoring Widgets Styles
+   ==================== */
+
+/* Common monitoring header */
+.msd-monitoring-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--msd-border);
+}
+
+.msd-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--msd-text);
+    flex: 1;
+}
+
+.msd-header-title > .dashicons {
+    font-size: 18px;
+    color: var(--msd-primary);
+}
+
+.msd-status-badge {
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.msd-status-badge.enabled {
+    background: #d4edda;
+    color: #155724;
+}
+
+.msd-status-badge.disabled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Alert box */
+.msd-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--msd-radius-small);
+    margin-bottom: 16px;
+    font-size: 13px;
+}
+
+.msd-alert .dashicons {
+    flex-shrink: 0;
+}
+
+.msd-alert-warning {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    color: #856404;
+}
+
+.msd-alert-info {
+    background: #d1ecf1;
+    border: 1px solid #17a2b8;
+    color: #0c5460;
+}
+
+.msd-alert strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.msd-alert small {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+/* ====================
+   Error Log Widget
+   ==================== */
+
+.msd-log-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin-bottom: 12px;
+}
+
+.msd-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.msd-control-group label {
+    font-size: 12px;
+    color: var(--msd-text-light);
+}
+
+.msd-control-group select,
+.msd-control-group input {
+    border: 1px solid var(--msd-border);
+    border-radius: var(--msd-radius-small);
+    font-size: 13px;
+}
+
+.msd-control-search {
+    flex: 1;
+    min-width: 150px;
+}
+
+.msd-log-controls .button-small {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+.msd-log-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 12px;
+    background: var(--msd-bg);
+    border-left: 3px solid var(--msd-primary);
+    border-radius: var(--msd-radius-small);
+    font-size: 12px;
+    color: var(--msd-text-light);
+    margin-bottom: 12px;
+}
+
+.msd-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.msd-summary-item strong {
+    color: var(--msd-text);
+    font-weight: 500;
+}
+
+.msd-errorlog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.msd-log-item {
+    background: var(--msd-bg-light);
+    border: 1px solid var(--msd-border);
+    border-radius: var(--msd-radius-small);
+    padding: 12px;
+    transition: all 0.2s ease;
+}
+
+.msd-log-item:hover {
+    border-color: var(--msd-primary);
+    box-shadow: 0 2px 8px var(--msd-shadow);
+}
+
+/* Error type specific colors */
+.msd-log-fatal {
+    border-left: 3px solid #d63638;
+}
+
+.msd-log-warning {
+    border-left: 3px solid #dba617;
+}
+
+.msd-log-notice {
+    border-left: 3px solid #2271b1;
+}
+
+.msd-log-deprecated {
+    border-left: 3px solid #9b59b6;
+}
+
+.msd-log-parse {
+    border-left: 3px solid #e67e22;
+}
+
+.msd-log-other {
+    border-left: 3px solid #95a5a6;
+}
+
+.msd-log-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.msd-log-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.msd-log-icon .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.msd-log-time {
+    font-size: 12px;
+    color: var(--msd-text-light);
+    font-family: monospace;
+}
+
+.msd-log-type-badge {
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.msd-badge-fatal {
+    background: #fee;
+    color: #d63638;
+}
+
+.msd-badge-warning {
+    background: #fff8e1;
+    color: #dba617;
+}
+
+.msd-badge-notice {
+    background: #e3f2fd;
+    color: #2271b1;
+}
+
+.msd-badge-deprecated {
+    background: #f3e5f5;
+    color: #9b59b6;
+}
+
+.msd-badge-parse {
+    background: #ffe5cc;
+    color: #e67e22;
+}
+
+.msd-badge-other {
+    background: #ecf0f1;
+    color: #95a5a6;
+}
+
+.msd-log-toggle {
+    margin-left: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--msd-radius-small);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.msd-log-toggle:hover {
+    background: var(--msd-bg);
+}
+
+.msd-log-toggle .dashicons {
+    font-size: 16px;
+    color: var(--msd-text-light);
+}
+
+.msd-log-preview {
+    font-size: 13px;
+    color: var(--msd-text);
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.msd-log-body {
+    margin: 8px 0 0 0;
+    padding: 12px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: var(--msd-radius-small);
+    font-size: 12px;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
+    line-height: 1.6;
+    color: #2c3e50;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* ====================
+   404 Monitor Widget
+   ==================== */
+
+.msd-404-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin-bottom: 12px;
+}
+
+/* Simple toggle switch */
+.msd-toggle-switch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.msd-toggle-switch input[type="checkbox"] {
+    display: none;
+}
+
+.msd-toggle-slider {
+    position: relative;
+    width: 40px;
+    height: 20px;
+    background: #ccc;
+    border-radius: 20px;
+    transition: background 0.2s;
+}
+
+.msd-toggle-slider:before {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 2px;
+    top: 2px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.msd-toggle-switch input:checked + .msd-toggle-slider {
+    background: #46b450;
+}
+
+.msd-toggle-switch input:checked + .msd-toggle-slider:before {
+    transform: translateX(20px);
+}
+
+.msd-toggle-label {
+    font-size: 12px;
+    color: var(--msd-text);
+}
+
+.msd-404-controls .button-small {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+/* Stats cards */
+.msd-404-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.msd-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    background: var(--msd-bg);
+    border: 1px solid var(--msd-border);
+    border-radius: var(--msd-radius);
+    transition: all 0.2s ease;
+}
+
+.msd-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--msd-shadow);
+}
+
+.msd-stat-card.active {
+    background: #d4edda;
+    border-color: #28a745;
+}
+
+.msd-stat-card.inactive {
+    background: #f8d7da;
+    border-color: #dc3545;
+}
+
+.msd-stat-icon {
+    flex-shrink: 0;
+}
+
+.msd-stat-icon.dashicons {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: var(--msd-primary);
+}
+
+.msd-stat-content {
+    flex: 1;
+}
+
+.msd-stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--msd-text);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.msd-stat-label {
+    font-size: 11px;
+    color: var(--msd-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Trend chart */
+.msd-404-trend-container {
+    margin-bottom: 16px;
+}
+
+.msd-trend-title,
+.msd-section-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--msd-text);
+    margin-bottom: 12px;
+}
+
+.msd-404-trend {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 4px;
+    height: 100px;
+    padding: 12px;
+    background: var(--msd-bg);
+    border-radius: var(--msd-radius-small);
+    border: 1px solid var(--msd-border);
+}
+
+.msd-404-bar-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.msd-404-bar {
+    width: 100%;
+    background: linear-gradient(to top, #dc3545, #ffc107);
+    border-radius: 3px 3px 0 0;
+    transition: all 0.3s ease;
+    min-height: 5%;
+}
+
+.msd-404-bar:hover {
+    opacity: 0.8;
+    transform: scaleY(1.05);
+}
+
+.msd-404-bar-label {
+    font-size: 9px;
+    color: var(--msd-text-light);
+    text-align: center;
+}
+
+/* 404 URL list */
+.msd-404-section {
+    margin-top: 16px;
+}
+
+.msd-404-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.msd-404-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background: var(--msd-bg);
+    border-radius: var(--msd-radius-small);
+    transition: background 0.2s;
+}
+
+.msd-404-item:hover {
+    background: var(--msd-bg-light);
+}
+
+/* Severity indicators */
+.msd-severity-critical {
+    border-left: 4px solid #dc3545;
+}
+
+.msd-severity-warning {
+    border-left: 4px solid #ffc107;
+}
+
+.msd-severity-normal {
+    border-left: 4px solid #17a2b8;
+}
+
+.msd-404-rank {
+    flex-shrink: 0;
+    min-width: 24px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--msd-text-light);
+}
+
+.msd-404-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.msd-404-url-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.msd-404-url {
+    font-size: 13px;
+    font-family: monospace;
+    color: var(--msd-text);
+    word-break: break-all;
+    line-height: 1.4;
+    flex: 1;
+}
+
+.msd-severity-label {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.msd-severity-label.msd-severity-critical {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.msd-severity-label.msd-severity-warning {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.msd-severity-label.msd-severity-normal {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.msd-404-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--msd-text-light);
+}
+
+.msd-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Monitoring widget refresh button - matches other widgets */
+.msd-monitoring-header .msd-refresh-btn {
+    position: static;
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: var(--msd-text-light);
+    transition: color 0.2s;
+}
+
+.msd-monitoring-header .msd-refresh-btn .dashicons {
+    font-size: 16px;
+}
+
+.msd-monitoring-header .msd-refresh-btn:hover {
+    color: var(--msd-primary);
+}
+
+/* Settings link in monitoring header */
+.msd-monitoring-header .msd-settings-link {
+    padding: 6px 12px;
+    font-size: 11px;
+    background: transparent;
+    border: 1px solid var(--msd-border);
+    border-radius: var(--msd-radius-small);
+    color: var(--msd-text-light);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.msd-monitoring-header .msd-settings-link:hover {
+    background: var(--msd-primary);
+    border-color: var(--msd-primary);
+    color: white;
+    transform: none;
+    box-shadow: none;
+}
+
+.msd-monitoring-header .msd-settings-link .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+/* Widget footer with settings link */
+.msd-widget-footer {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--msd-border);
+    text-align: center;
+}
+
+.msd-settings-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--msd-bg);
+    border: 1px solid var(--msd-border);
+    border-radius: var(--msd-radius-small);
+    color: var(--msd-text);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.msd-settings-link:hover {
+    background: var(--msd-primary);
+    border-color: var(--msd-primary);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--msd-shadow);
+}
+
+.msd-settings-link .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* ====================
+   Monitoring Settings Page Styles
+   ==================== */
+
+.msd-monitoring-card {
+    background: white;
+    border: 1px solid var(--msd-border);
+    border-radius: var(--msd-radius);
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.msd-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--msd-border);
+}
+
+.msd-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.msd-card-title .dashicons {
+    font-size: 18px;
+    color: var(--msd-primary);
+}
+
+.msd-card-title h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--msd-text);
+}
+
+.msd-badge {
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.msd-badge-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.msd-badge-warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.msd-badge-inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.msd-card-description {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--msd-bg);
+    font-size: 12px;
+    color: var(--msd-text-light);
+    line-height: 1.5;
+}
+
+.msd-card-description .dashicons {
+    font-size: 16px;
+    color: var(--msd-text-light);
+    flex-shrink: 0;
+}
+
+.msd-card-description .dashicons-warning {
+    color: #d63638;
+}
+
+.msd-card-description .dashicons-yes-alt {
+    color: #46b450;
+}
+
+.msd-hint {
+    margin: 4px 0 0 0;
+    font-size: 11px;
+    color: var(--msd-text-light);
+}
+
+.msd-error-log-controls,
+.msd-404-toggle {
+    padding: 16px;
+}
+
+.msd-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.msd-filter-group label {
+    font-size: 12px;
+    color: var(--msd-text-light);
+}
+
+.msd-filter-group select,
+.msd-filter-group input[type="text"] {
+    border: 1px solid var(--msd-border);
+    border-radius: var(--msd-radius-small);
+    font-size: 13px;
+}
+
+.msd-action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.msd-action-buttons .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+}
+
+.msd-action-buttons .button .dashicons {
+    font-size: 16px;
+}
+
+/* Simple switch for monitoring toggle */
+.msd-switch {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 12px 0;
+}
+
+.msd-switch input[type="checkbox"] {
+    display: none;
+}
+
+.msd-slider {
+    position: relative;
+    width: 40px;
+    height: 20px;
+    background: #ccc;
+    border-radius: 20px;
+    transition: background 0.2s;
+}
+
+.msd-slider:before {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 2px;
+    top: 2px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.msd-switch input:checked + .msd-slider {
+    background: #46b450;
+}
+
+.msd-switch input:checked + .msd-slider:before {
+    transform: translateX(20px);
+}
+
+.msd-switch-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--msd-text);
+}
+
+.msd-monitoring-disabled-notice {
+    padding: 12px 16px;
+    background: var(--msd-bg);
+    border-top: 1px solid var(--msd-border);
+    color: var(--msd-text-light);
+    font-size: 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 782px) {
+    .msd-monitoring-header {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .msd-monitoring-header .msd-header-title {
+        flex: 1 1 100%;
+    }
+
+    .msd-monitoring-header .msd-settings-link {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .msd-monitoring-header .msd-refresh-btn {
+        flex-shrink: 0;
+    }
+
+    .msd-log-controls,
+    .msd-404-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .msd-log-controls select,
+    .msd-log-controls input,
+    .msd-404-controls select {
+        width: 100%;
+    }
+
+    .msd-404-stats-row {
+        grid-template-columns: 1fr;
+    }
+
+    .msd-404-trend {
+        height: 80px;
+    }
 }
